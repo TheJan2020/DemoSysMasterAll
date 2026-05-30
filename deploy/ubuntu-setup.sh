@@ -72,7 +72,17 @@ fi
 # ---------------------------------------------------------------------------
 step "Cloning / refreshing repo at $APP_HOME"
 if [ ! -d "$APP_HOME/.git" ]; then
-    sudo -u "$APP_USER" git clone "$REPO_URL" "$APP_HOME"
+    # `useradd --create-home` already populated $APP_HOME with bash
+    # skeleton dotfiles, so `git clone` would refuse the non-empty
+    # target. Clone into a temp dir, then move everything (incl. .git)
+    # into $APP_HOME and reassign ownership.
+    TMP="$(mktemp -d)"
+    git clone -q "$REPO_URL" "$TMP/repo"
+    shopt -s dotglob nullglob
+    cp -a "$TMP/repo/." "$APP_HOME/"
+    shopt -u dotglob nullglob
+    rm -rf "$TMP"
+    chown -R "$APP_USER":"$APP_USER" "$APP_HOME"
 else
     sudo -u "$APP_USER" git -C "$APP_HOME" fetch --all --prune
     # Don't reset --hard if the user opted into Mutagen sync (which mutates
