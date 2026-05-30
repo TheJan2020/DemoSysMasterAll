@@ -3,7 +3,12 @@
 #
 # Idempotent. Run on a fresh VM as root (or via sudo):
 #
-#     sudo REPO_URL=https://github.com/YOU/PWDemoMaster.git bash deploy/ubuntu-setup.sh
+#     curl -fsSL https://raw.githubusercontent.com/TheJan2020/DemoSysMasterAll/main/deploy/ubuntu-setup.sh \
+#       | sudo bash
+#
+# Or, after cloning manually:
+#
+#     sudo bash deploy/ubuntu-setup.sh
 #
 # After it finishes there are FOUR manual steps the script cannot do on its
 # own (each requires interactive auth):
@@ -34,7 +39,7 @@
 
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/YOUR_USER/PWDemoMaster.git}"
+REPO_URL="${REPO_URL:-https://github.com/TheJan2020/DemoSysMasterAll.git}"
 APP_USER="pwdemo"
 APP_HOME="/opt/pwdemo"
 APP_PORT="${APP_PORT:-8080}"
