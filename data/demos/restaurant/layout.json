@@ -1,0 +1,470 @@
+{
+  "canvas": {
+    "width": 900,
+    "height": 500
+  },
+  "floors": [
+    {
+      "id": "indoor",
+      "name_en": "Indoor",
+      "name_ar": "داخلي",
+      "sort_order": 1
+    },
+    {
+      "id": "outdoor",
+      "name_en": "Outdoor",
+      "name_ar": "خارجي",
+      "sort_order": 2
+    }
+  ],
+  "tables": [
+    {
+      "id": "TBL-001",
+      "floor_id": "indoor",
+      "number": "T01",
+      "x": 180,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-002",
+      "floor_id": "indoor",
+      "number": "T02",
+      "x": 405,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-003",
+      "floor_id": "indoor",
+      "number": "T03",
+      "x": 630,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 6,
+      "status": "occupied",
+      "guests": 4,
+      "ordered_items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Tabbouleh",
+          "name_ar": "تبّولة",
+          "qty": 1,
+          "price": 25.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Shish Tawook",
+          "name_ar": "شيش طاووق",
+          "qty": 2,
+          "price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780132748,
+      "server_name": "Omar"
+    },
+    {
+      "id": "TBL-004",
+      "floor_id": "indoor",
+      "number": "T04",
+      "x": 180,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "occupied",
+      "guests": 3,
+      "ordered_items": [
+        {
+          "name_en": "Mutabbal",
+          "name_ar": "متبّل",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Falafel",
+          "name_ar": "فلافل",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Fattoush",
+          "name_ar": "فتّوش",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arabic Coffee",
+          "name_ar": "قهوة عربية",
+          "qty": 3,
+          "price": 14.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780130948,
+      "server_name": "Layla"
+    },
+    {
+      "id": "TBL-005",
+      "floor_id": "indoor",
+      "number": "T05",
+      "x": 405,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "reserved",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": "Reservation: Mr. Khalid Al-Otaibi · 20:00"
+    },
+    {
+      "id": "TBL-006",
+      "floor_id": "indoor",
+      "number": "T06",
+      "x": 630,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 8,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-007",
+      "floor_id": "indoor",
+      "number": "T07",
+      "x": 180,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "occupied",
+      "guests": 4,
+      "ordered_items": [
+        {
+          "name_en": "Mixed Grill",
+          "name_ar": "مشاوي مشكّلة",
+          "qty": 2,
+          "price": 110.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Ayran",
+          "name_ar": "عيران",
+          "qty": 4,
+          "price": 12.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Baklava",
+          "name_ar": "بقلاوة",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780133648,
+      "server_name": "Omar"
+    },
+    {
+      "id": "TBL-008",
+      "floor_id": "indoor",
+      "number": "T08",
+      "x": 405,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-009",
+      "floor_id": "indoor",
+      "number": "T09",
+      "x": 630,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 6,
+      "status": "occupied",
+      "guests": 5,
+      "ordered_items": [
+        {
+          "name_en": "Lamb Chops",
+          "name_ar": "ريش الغنم",
+          "qty": 2,
+          "price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mansaf",
+          "name_ar": "منسف",
+          "qty": 1,
+          "price": 88.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Knafeh Nabulsia",
+          "name_ar": "كنافة نابلسية",
+          "qty": 2,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Tea",
+          "name_ar": "شاي بالنعناع",
+          "qty": 3,
+          "price": 12.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780130048,
+      "server_name": "Layla"
+    },
+    {
+      "id": "TBL-010",
+      "floor_id": "outdoor",
+      "number": "T10",
+      "x": 180,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-011",
+      "floor_id": "outdoor",
+      "number": "T11",
+      "x": 405,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-012",
+      "floor_id": "outdoor",
+      "number": "T12",
+      "x": 630,
+      "y": 80,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 6,
+      "status": "occupied",
+      "guests": 5,
+      "ordered_items": [
+        {
+          "name_en": "Ouzi",
+          "name_ar": "أوزي",
+          "qty": 1,
+          "price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Sayadieh",
+          "name_ar": "صيادية",
+          "qty": 1,
+          "price": 85.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Jallab",
+          "name_ar": "جلاب",
+          "qty": 3,
+          "price": 16.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780134008,
+      "server_name": "Hadi"
+    },
+    {
+      "id": "TBL-013",
+      "floor_id": "outdoor",
+      "number": "T13",
+      "x": 180,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "reserved",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": "Reservation: Mrs. Aisha Al-Harbi · 21:00"
+    },
+    {
+      "id": "TBL-014",
+      "floor_id": "outdoor",
+      "number": "T14",
+      "x": 405,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-015",
+      "floor_id": "outdoor",
+      "number": "T15",
+      "x": 630,
+      "y": 200,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "occupied",
+      "guests": 2,
+      "ordered_items": [
+        {
+          "name_en": "Rocket & Halloumi",
+          "name_ar": "جرجير وحلوم",
+          "qty": 1,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Chicken Shawarma Plate",
+          "name_ar": "صحن شاورما دجاج",
+          "qty": 1,
+          "price": 55.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "opened_at": 1780134368,
+      "server_name": "Hadi"
+    },
+    {
+      "id": "TBL-016",
+      "floor_id": "outdoor",
+      "number": "T16",
+      "x": 180,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 2,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-017",
+      "floor_id": "outdoor",
+      "number": "T17",
+      "x": 405,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 4,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": ""
+    },
+    {
+      "id": "TBL-018",
+      "floor_id": "outdoor",
+      "number": "T18",
+      "x": 630,
+      "y": 320,
+      "width": 90,
+      "height": 90,
+      "shape": "round",
+      "seats": 10,
+      "status": "free",
+      "guests": 0,
+      "ordered_items": [],
+      "opened_at": null,
+      "server_name": "(VIP table — pergola)"
+    }
+  ]
+}

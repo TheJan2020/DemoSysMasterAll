@@ -25,6 +25,46 @@ data/demos/*/escalation.json
 data/demos/*/escalation.json.tmp
 data/demos/*/whatsapp_inbox.json
 data/demos/*/whatsapp_inbox.json.tmp
+data/demos/*/whatsapp_conversations.json
+data/demos/*/whatsapp_conversations.json.tmp
+data/demos/*/lid_phone_cache.json
+data/demos/*/lid_phone_cache.json.tmp
+data/demos/*/whatsapp_media/
+# main_settings.json itself IS tracked (operator-edited content like
+# persona.txt and kb.txt), but the atomic-write temp file should not be.
+data/demos/*/main_settings.json.tmp
+data/demos/*/meals_catalog.json.tmp
+data/demos/*/subscriptions.json.tmp
+data/demos/*/meal_schedules.json.tmp
+data/demos/*/clients.json.tmp
+data/demos/*/reservations.json.tmp
+data/demos/*/layout.json.tmp
+data/demos/*/menu.json.tmp
+data/demos/*/invoices.json.tmp
+data/demos/*/catering_orders.json.tmp
+data/demos/*/catering_menu.json.tmp
+data/demos/*/catering_packages.json.tmp
+data/demos/*/catering_delivery.json.tmp
+data/demos/*/cm_delivery.json.tmp
+data/demos/*/kitchen_layout.json.tmp
+data/demos/*/kitchen_staff.json.tmp
+data/demos/*/kitchen_appliances.json.tmp
+data/demos/*/kitchen_camera_config.json.tmp
+# AI-History — person-detection ledger + saved JPEGs are PII (kitchen
+# footage with identifiable faces). Per-machine, not source.
+data/demos/*/ai_history.json
+data/demos/*/ai_history.json.tmp
+data/demos/*/ai_history/
+# Kitchen AI-Rules — rules + iteration ledger + iteration snapshots.
+# Iteration JPEGs are kitchen footage (PII); per-machine.
+data/demos/*/kitchen_rules.json
+data/demos/*/kitchen_rules.json.tmp
+data/demos/*/kitchen_rules/
+# AI-Center Playground — free-form Q+A ledger + thumbnail JPEGs of
+# whatever the operator uploaded or snapshotted. PII; per-machine.
+data/demos/*/ai_center.json
+data/demos/*/ai_center.json.tmp
+data/demos/*/ai_center/
 
 # AI-Camera runtime — snapshot images + iteration logs accumulate
 # constantly; not source.

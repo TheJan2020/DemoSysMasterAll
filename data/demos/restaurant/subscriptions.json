@@ -1,0 +1,255 @@
+{
+  "plans": [
+    {
+      "id": "PLN-STARTER",
+      "code": "STARTER",
+      "name_en": "Lebanese Starter",
+      "name_ar": "الباقة التمهيدية",
+      "description_en": "One healthy lunch every day, 7 days a week. Best for trying out the service.",
+      "description_ar": "غداء صحي واحد يومياً لمدة 7 أيام في الأسبوع.",
+      "meals_per_week": 7,
+      "meal_slots": [
+        "lunch"
+      ],
+      "required_diet_tags": [],
+      "excluded_allergens": [],
+      "calorie_target": 0,
+      "price_weekly": 220.0,
+      "price_monthly": 800.0,
+      "price_quarterly": 2280.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 1
+    },
+    {
+      "id": "PLN-BALANCED",
+      "code": "BALANCED",
+      "name_en": "Balanced Daily",
+      "name_ar": "اليومي المتوازن",
+      "description_en": "Lunch + dinner, 7 days a week (14 meals). Balanced macros.",
+      "description_ar": "غداء وعشاء يومياً (14 وجبة أسبوعياً).",
+      "meals_per_week": 14,
+      "meal_slots": [
+        "lunch",
+        "dinner"
+      ],
+      "required_diet_tags": [],
+      "excluded_allergens": [],
+      "calorie_target": 1800,
+      "price_weekly": 430.0,
+      "price_monthly": 1600.0,
+      "price_quarterly": 4560.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 2
+    },
+    {
+      "id": "PLN-FAMILY",
+      "code": "FAMILY",
+      "name_en": "Family Plan",
+      "name_ar": "باقة العائلة",
+      "description_en": "Breakfast + lunch + dinner (21 meals/week). For households of 2-5.",
+      "description_ar": "فطور وغداء وعشاء (21 وجبة أسبوعياً) للعائلات.",
+      "meals_per_week": 21,
+      "meal_slots": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "required_diet_tags": [],
+      "excluded_allergens": [],
+      "calorie_target": 0,
+      "price_weekly": 680.0,
+      "price_monthly": 2500.0,
+      "price_quarterly": 7100.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 3
+    },
+    {
+      "id": "PLN-KETO",
+      "code": "KETO",
+      "name_en": "Keto Custom",
+      "name_ar": "كيتو مخصّص",
+      "description_en": "Lunch + dinner, strictly low-carb. 14 meals/week, < 30g net carbs/day.",
+      "description_ar": "غداء وعشاء بنظام الكيتو (14 وجبة أسبوعياً).",
+      "meals_per_week": 14,
+      "meal_slots": [
+        "lunch",
+        "dinner"
+      ],
+      "required_diet_tags": [
+        "low-carb"
+      ],
+      "excluded_allergens": [],
+      "calorie_target": 1700,
+      "price_weekly": 520.0,
+      "price_monthly": 1950.0,
+      "price_quarterly": 5550.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 4
+    },
+    {
+      "id": "PLN-WEIGHT",
+      "code": "WEIGHT",
+      "name_en": "Weight Management",
+      "name_ar": "إدارة الوزن",
+      "description_en": "Lunch + dinner + 1 snack, calorie-controlled at 1500/day.",
+      "description_ar": "غداء وعشاء ووجبة خفيفة (1500 سعرة حرارية يومياً).",
+      "meals_per_week": 21,
+      "meal_slots": [
+        "lunch",
+        "dinner",
+        "snack"
+      ],
+      "required_diet_tags": [
+        "low-sodium"
+      ],
+      "excluded_allergens": [],
+      "calorie_target": 1500,
+      "price_weekly": 490.0,
+      "price_monthly": 1820.0,
+      "price_quarterly": 5180.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 5
+    },
+    {
+      "id": "PLN-PLANT",
+      "code": "PLANT",
+      "name_en": "Plant-Based",
+      "name_ar": "نباتي",
+      "description_en": "Lunch + dinner, all plant-based. Optional dairy via 'vegetarian' upgrade.",
+      "description_ar": "غداء وعشاء نباتي بالكامل.",
+      "meals_per_week": 14,
+      "meal_slots": [
+        "lunch",
+        "dinner"
+      ],
+      "required_diet_tags": [
+        "vegetarian"
+      ],
+      "excluded_allergens": [],
+      "calorie_target": 1750,
+      "price_weekly": 400.0,
+      "price_monthly": 1480.0,
+      "price_quarterly": 4220.0,
+      "currency": "SAR",
+      "active": true,
+      "sort_order": 6
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "SUB-001",
+      "client_id": "CLT-001",
+      "plan_id": "PLN-BALANCED",
+      "start_date": "2026-05-10",
+      "end_date": "2026-07-09",
+      "billing_cycle": "monthly",
+      "price": 1600.0,
+      "currency": "SAR",
+      "status": "active",
+      "payment_status": "paid",
+      "delivery_address": "Al-Olaya, Riyadh",
+      "delivery_window": "evening",
+      "meal_overrides": [],
+      "extra_allergens": [],
+      "notes": "Wants extra grilled chicken — log extras as add-ons.",
+      "created_at": 1778234648
+    },
+    {
+      "id": "SUB-002",
+      "client_id": "CLT-002",
+      "plan_id": "PLN-FAMILY",
+      "start_date": "2026-05-20",
+      "end_date": "2026-07-19",
+      "billing_cycle": "monthly",
+      "price": 2500.0,
+      "currency": "SAR",
+      "status": "active",
+      "payment_status": "paid",
+      "delivery_address": "Al-Yasmin, Riyadh",
+      "delivery_window": "morning",
+      "meal_overrides": [],
+      "extra_allergens": [
+        "wheat"
+      ],
+      "notes": "Two kids on the plan — half portions on weekends.",
+      "created_at": 1779098648
+    },
+    {
+      "id": "SUB-003",
+      "client_id": "CLT-003",
+      "plan_id": "PLN-WEIGHT",
+      "start_date": "2026-04-30",
+      "end_date": "2026-07-29",
+      "billing_cycle": "quarterly",
+      "price": 5180.0,
+      "currency": "SAR",
+      "status": "active",
+      "payment_status": "paid",
+      "delivery_address": "Al-Nakheel, Riyadh",
+      "delivery_window": "afternoon",
+      "meal_overrides": [],
+      "extra_allergens": [],
+      "notes": "Cardiologist note on file — strict 1500 cal cap.",
+      "created_at": 1777370648
+    },
+    {
+      "id": "SUB-004",
+      "client_id": "CLT-004",
+      "plan_id": "PLN-PLANT",
+      "start_date": "2026-05-25",
+      "end_date": "2026-06-24",
+      "billing_cycle": "monthly",
+      "price": 1480.0,
+      "currency": "SAR",
+      "status": "active",
+      "payment_status": "paid",
+      "delivery_address": "Al-Sahafah, Riyadh",
+      "delivery_window": "evening",
+      "meal_overrides": [],
+      "extra_allergens": [],
+      "notes": "Eats fish occasionally — flag as exception when added.",
+      "created_at": 1779530648
+    },
+    {
+      "id": "SUB-005",
+      "client_id": "CLT-005",
+      "plan_id": "PLN-KETO",
+      "start_date": "2026-05-27",
+      "end_date": "2026-06-24",
+      "billing_cycle": "monthly",
+      "price": 1950.0,
+      "currency": "SAR",
+      "status": "active",
+      "payment_status": "paid",
+      "delivery_address": "Hittin, Riyadh",
+      "delivery_window": "morning",
+      "meal_overrides": [],
+      "extra_allergens": [],
+      "notes": "Trains 6x/week — request 200g protein/day.",
+      "created_at": 1779789848
+    },
+    {
+      "id": "SUB-006",
+      "client_id": "CLT-008",
+      "plan_id": "PLN-PLANT",
+      "start_date": "2026-05-15",
+      "end_date": "2026-07-14",
+      "billing_cycle": "monthly",
+      "price": 1480.0,
+      "currency": "SAR",
+      "status": "paused",
+      "payment_status": "paid",
+      "delivery_address": "Al-Malqa, Riyadh",
+      "delivery_window": "anytime",
+      "meal_overrides": [],
+      "extra_allergens": [],
+      "notes": "Paused for travel — resume in 7 days.",
+      "created_at": 1778666648
+    }
+  ]
+}

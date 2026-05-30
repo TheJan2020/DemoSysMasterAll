@@ -1,0 +1,83 @@
+{
+  "drivers": [
+    {
+      "id": "CMD-001",
+      "name": "Hassan Al-Yami",
+      "name_ar": "حسن اليامي",
+      "phone": "+966 50 200 1100",
+      "license_no": "2200000001",
+      "vehicle_type": "van_refrigerated",
+      "vehicle_plate": "RYD-1001",
+      "shift": "morning",
+      "capacity_orders": 35,
+      "zones": [
+        "Al-Olaya",
+        "Al-Murabba",
+        "Al-Sahafah"
+      ],
+      "status": "available",
+      "rating": 4.8,
+      "active": true,
+      "notes": "Lead driver — primary breakfast route."
+    },
+    {
+      "id": "CMD-002",
+      "name": "Ibrahim Al-Khalil",
+      "name_ar": "إبراهيم الخليل",
+      "phone": "+966 55 300 2200",
+      "license_no": "2200000002",
+      "vehicle_type": "van_refrigerated",
+      "vehicle_plate": "RYD-1002",
+      "shift": "morning",
+      "capacity_orders": 35,
+      "zones": [
+        "Al-Yasmin",
+        "Al-Malqa",
+        "Al-Nakheel"
+      ],
+      "status": "available",
+      "rating": 4.7,
+      "active": true,
+      "notes": "Covers north Riyadh — fastest at Al-Yasmin compounds."
+    },
+    {
+      "id": "CMD-003",
+      "name": "Majid Al-Zahrani",
+      "name_ar": "ماجد الزهراني",
+      "phone": "+966 56 400 3300",
+      "license_no": "2200000003",
+      "vehicle_type": "suv",
+      "vehicle_plate": "RYD-1003",
+      "shift": "afternoon",
+      "capacity_orders": 20,
+      "zones": [
+        "Hittin",
+        "Diriyah"
+      ],
+      "status": "available",
+      "rating": 4.6,
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "CMD-004",
+      "name": "Rayan Al-Mutairi",
+      "name_ar": "ريان المطيري",
+      "phone": "+966 53 500 4400",
+      "license_no": "2200000004",
+      "vehicle_type": "motorbike",
+      "vehicle_plate": "RYD-1004",
+      "shift": "evening",
+      "capacity_orders": 12,
+      "zones": [
+        "Al-Olaya",
+        "Al-Murabba"
+      ],
+      "status": "off_duty",
+      "rating": 4.5,
+      "active": true,
+      "notes": "Evening dinner deliveries within 5 km radius."
+    }
+  ],
+  "assignments": []
+}

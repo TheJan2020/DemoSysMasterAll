@@ -44,12 +44,33 @@ _HTML = """<!DOCTYPE html>
                    color: var(--dim); }
     .card h2 { margin: 0; font-size: 16px; }
     .card p { margin: 0; color: var(--dim); font-size: 13px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center;
+              margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+    .topbar .home { display: inline-flex; align-items: center; gap: 6px;
+                    padding: 8px 14px; border: 1px solid var(--border);
+                    border-radius: 8px; color: var(--text); text-decoration: none;
+                    background: var(--panel-2); font-size: 13px;
+                    transition: border-color .15s, background .15s; }
+    .topbar .home:hover { border-color: var(--accent); background: var(--panel); }
+    .topbar .home svg { width: 14px; height: 14px; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>PW Demo · Vertical apps</h1>
-    <p class="sub">Six industry demos, each backed by Lena as a Live Representative.</p>
+    <div class="topbar">
+      <div>
+        <h1>PW Demo · Vertical apps</h1>
+        <p class="sub" style="margin:0;">Six industry demos, each backed by Lena as a Live Representative.</p>
+      </div>
+      <!-- Full page load to "/" — the master PW Demo app (hash-routed SPA). -->
+      <a href="/" class="home" title="Back to PW Demo Master">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to main app
+      </a>
+    </div>
 
     <div class="cards">
       <div class="card live">

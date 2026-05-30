@@ -1,0 +1,118 @@
+{
+  "drivers": [
+    {
+      "id": "DRV-001",
+      "name": "Ahmed Al-Ghamdi",
+      "name_ar": "أحمد الغامدي",
+      "phone": "+966 50 111 2233",
+      "license_no": "1234567890",
+      "vehicle_type": "van_refrigerated",
+      "vehicle_plate": "ABC-2451",
+      "capacity_kg": 800,
+      "zones": [
+        "Al-Olaya",
+        "Al-Sahafah",
+        "Al-Malqa"
+      ],
+      "status": "available",
+      "rating": 4.8,
+      "active": true,
+      "notes": "Lead driver — handles wedding events."
+    },
+    {
+      "id": "DRV-002",
+      "name": "Yousef Al-Shahrani",
+      "name_ar": "يوسف الشهراني",
+      "phone": "+966 55 222 4455",
+      "license_no": "1234567891",
+      "vehicle_type": "van_refrigerated",
+      "vehicle_plate": "XYZ-7788",
+      "capacity_kg": 800,
+      "zones": [
+        "Hittin",
+        "Al-Yasmin",
+        "Diriyah"
+      ],
+      "status": "available",
+      "rating": 4.7,
+      "active": true,
+      "notes": "Has chilled cabinet — preferred for cold-platter heavy loads."
+    },
+    {
+      "id": "DRV-003",
+      "name": "Saad Al-Otaibi",
+      "name_ar": "سعد العتيبي",
+      "phone": "+966 53 333 6677",
+      "license_no": "1234567892",
+      "vehicle_type": "van_standard",
+      "vehicle_plate": "DEF-1102",
+      "capacity_kg": 600,
+      "zones": [
+        "Al-Murabba",
+        "Al-Nakheel",
+        "Al-Olaya"
+      ],
+      "status": "available",
+      "rating": 4.6,
+      "active": true,
+      "notes": ""
+    },
+    {
+      "id": "DRV-004",
+      "name": "Tariq Al-Mansour",
+      "name_ar": "طارق المنصور",
+      "phone": "+966 56 444 8899",
+      "license_no": "1234567893",
+      "vehicle_type": "truck_small",
+      "vehicle_plate": "GHI-5544",
+      "capacity_kg": 1500,
+      "zones": [
+        "Diriyah",
+        "Hittin",
+        "Al-Sahafah"
+      ],
+      "status": "available",
+      "rating": 4.9,
+      "active": true,
+      "notes": "Big-event truck — needed for 200+ guest setups with linens."
+    },
+    {
+      "id": "DRV-005",
+      "name": "Khaled Al-Sharif",
+      "name_ar": "خالد الشريف",
+      "phone": "+966 50 555 1100",
+      "license_no": "1234567894",
+      "vehicle_type": "suv",
+      "vehicle_plate": "JKL-8821",
+      "capacity_kg": 250,
+      "zones": [
+        "Al-Olaya",
+        "Al-Malqa",
+        "Al-Yasmin"
+      ],
+      "status": "available",
+      "rating": 4.5,
+      "active": true,
+      "notes": "Small loads + box-lunch drop-offs to offices."
+    },
+    {
+      "id": "DRV-006",
+      "name": "Bassam Al-Qurashi",
+      "name_ar": "بسام القرشي",
+      "phone": "+966 54 666 7700",
+      "license_no": "1234567895",
+      "vehicle_type": "motorbike",
+      "vehicle_plate": "MNO-3030",
+      "capacity_kg": 30,
+      "zones": [
+        "Al-Olaya",
+        "Al-Murabba"
+      ],
+      "status": "off_duty",
+      "rating": 4.4,
+      "active": true,
+      "notes": "Last-mile rush for forgotten items / extra dessert trays."
+    }
+  ],
+  "assignments": []
+}

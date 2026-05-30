@@ -5,3 +5,5 @@ pydantic>=2.5
 google-genai>=0.8.0
 aiomqtt>=2.0
 python-multipart>=0.0.9
+Pillow>=10.0
+websockets>=12.0

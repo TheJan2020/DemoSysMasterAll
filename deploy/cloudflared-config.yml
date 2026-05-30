@@ -1,0 +1,26 @@
+# /etc/cloudflared/config.yml
+#
+# Replace BOTH placeholders before `cloudflared service install`:
+#   * YOUR_TUNNEL_ID            — the UUID from `cloudflared tunnel create pwdemo`.
+#   * pwdemo.yourdomain.com     — the hostname you ran `tunnel route dns` on.
+#
+# WebSockets pass through cloudflared natively; no extra flag needed. The
+# generous keep-alive numbers below are for the app's long-lived WS
+# channels (Live Agent audio, kitchen rules engine, AI-Camera Playground).
+
+tunnel: YOUR_TUNNEL_ID
+credentials-file: /etc/cloudflared/YOUR_TUNNEL_ID.json
+
+ingress:
+  - hostname: pwdemo.yourdomain.com
+    service: http://localhost:8080
+    originRequest:
+      connectTimeout: 30s
+      tlsTimeout: 10s
+      tcpKeepAlive: 30s
+      keepAliveConnections: 100
+      keepAliveTimeout: 2m
+      # The app emits Server-Sent-Events on a couple of admin endpoints —
+      # disable proxy buffering so they stream rather than batch.
+      disableChunkedEncoding: false
+  - service: http_status:404

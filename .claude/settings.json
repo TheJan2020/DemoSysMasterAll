@@ -4,7 +4,21 @@
       "Bash(curl -sf http://127.0.0.1:8765/api/health)",
       "Bash(curl -s \"http://127.0.0.1:8765/api/frigate/motion\")",
       "Bash(curl -s http://127.0.0.1:8765/api/frigate/cameras)",
-      "Bash(python3 -m json.tool)"
+      "Bash(python3 -m json.tool)",
+      "Read(//Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-clinic/src/routes/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Read(//Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-restaurant/src/components/**)",
+      "Read(//Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-restaurant/src/routes/**)",
+      "Bash(.venv/bin/python -c ' *)",
+      "Read(//Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-restaurant/**)",
+      "Bash(npm run *)"
+    ],
+    "additionalDirectories": [
+      "/Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-clinic/src/routes",
+      "/Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-restaurant/src/routes",
+      "/Users/zeyadibrahim/Documents/New Projects 2026/prime-mate-restaurant/src/components"
     ]
   }
 }

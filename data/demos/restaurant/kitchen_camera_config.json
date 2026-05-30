@@ -1,0 +1,113 @@
+{
+  "people": [
+    {
+      "id": "KP-001",
+      "name": "Tarek Al-Halabi",
+      "role": "head_chef",
+      "description": "Head chef. Tall, wearing a white double-breasted chef coat with rolled-up sleeves, dark trousers, white skullcap, well-trimmed beard. Often near the pass or hot line directing plating.",
+      "active": true
+    },
+    {
+      "id": "KP-002",
+      "name": "Yara Karam",
+      "role": "sous_chef",
+      "description": "Sous chef. Medium height, white chef coat (single-breasted), black apron, hair tied back with a white bandana. Floats between stations.",
+      "active": true
+    },
+    {
+      "id": "KP-003",
+      "name": "Bashir Naim",
+      "role": "grill_cook",
+      "description": "Grill cook. Black apron over a black t-shirt + black baseball cap. Always at the grill / mixed-grill station with tongs.",
+      "active": true
+    },
+    {
+      "id": "KP-004",
+      "name": "Rana Saad",
+      "role": "pastry_chef",
+      "description": "Pastry chef. White coat + pink apron, hair under a white cap. Works at the pastry / dessert station with knafeh and baklava.",
+      "active": true
+    },
+    {
+      "id": "KP-005",
+      "name": "Joud Mansour",
+      "role": "prep_cook",
+      "description": "Prep cook. Black t-shirt + black apron, blue disposable gloves while chopping. At the prep table or near the walk-in cooler.",
+      "active": true
+    },
+    {
+      "id": "KP-006",
+      "name": "Eyad Rifai",
+      "role": "dishwasher",
+      "description": "Dishwasher. Black rubber apron, yellow gloves, always at the dish station behind a conveyor dishwasher.",
+      "active": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "KA-001",
+      "label": "Preparing sandwiches",
+      "description": "Building sandwiches/wraps: cutting bread, assembling fillings, wrapping in paper or grilling on a panini press.",
+      "station_zone_id": "ZN-COLD",
+      "color": "#0ea5e9",
+      "active": true
+    },
+    {
+      "id": "KA-002",
+      "label": "Cleaning station",
+      "description": "Wiping a worktop with a cloth, spraying sanitiser, mopping the floor, scrubbing a station, taking out trash.",
+      "station_zone_id": "ZN-DISH",
+      "color": "#a855f7",
+      "active": true
+    },
+    {
+      "id": "KA-003",
+      "label": "Grilling meat",
+      "description": "Turning skewers, kebabs or burgers on a charcoal/gas grill; flipping shawarma meat on a vertical rotisserie.",
+      "station_zone_id": "ZN-HOT",
+      "color": "#ef4444",
+      "active": true
+    },
+    {
+      "id": "KA-004",
+      "label": "Plating dishes at the pass",
+      "description": "Arranging food on a plate at the pass/expediter window for service, garnishing, wiping plate rims, calling tickets.",
+      "station_zone_id": "ZN-PASS",
+      "color": "#f59e0b",
+      "active": true
+    },
+    {
+      "id": "KA-005",
+      "label": "Mise-en-place / prep work",
+      "description": "Chopping vegetables, deboning chicken, portioning rice into containers, restocking the line, weighing ingredients.",
+      "station_zone_id": "ZN-PREP",
+      "color": "#22c55e",
+      "active": true
+    },
+    {
+      "id": "KA-006",
+      "label": "Pastry / dessert work",
+      "description": "Rolling pastry, layering knafeh, piping cream, dusting sugar, arranging baklava trays.",
+      "station_zone_id": "ZN-PASTRY",
+      "color": "#ec4899",
+      "active": true
+    },
+    {
+      "id": "KA-007",
+      "label": "Washing dishes",
+      "description": "Loading or unloading the conveyor dishwasher, hand-scrubbing pots in a sink, racking glassware.",
+      "station_zone_id": "ZN-DISH",
+      "color": "#a855f7",
+      "active": true
+    },
+    {
+      "id": "KA-008",
+      "label": "Idle / off-task",
+      "description": "Standing around not actively working — phone in hand, leaning on a counter, chatting away from their station.",
+      "station_zone_id": "",
+      "color": "#94a3b8",
+      "active": true
+    }
+  ],
+  "camera_assignments": []
+}

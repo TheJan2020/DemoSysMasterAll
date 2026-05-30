@@ -1128,6 +1128,14 @@ def _auto_send_template(template_id: str, ctx: dict, variables: dict,
     inject a sensible language default ('ar', matching the persona's
     Arabic-first stance) when the agent hasn't told us otherwise.
     """
+    # WhatsApp Bot mode: the bot is ALREADY replying over WhatsApp with
+    # its own message. Firing the template too would land the user with
+    # two messages per mutation (template + bot reply). The bot is free
+    # to call send_whatsapp_template itself if a templated copy is
+    # actually desired.
+    if ctx.get("skip_auto_whatsapp"):
+        logger.info("auto-send WhatsApp template=%s SKIPPED (bot mode)", template_id)
+        return
     args = {
         "template_id": template_id,
         "language":    (language or ctx.get("call_language") or "ar"),

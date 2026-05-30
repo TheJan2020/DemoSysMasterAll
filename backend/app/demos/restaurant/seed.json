@@ -1,0 +1,15 @@
+{
+  "leads": [],
+  "patients": [
+    {"id": "P-001", "name": "Sara A.",      "phone": "+961 70 100 200", "last_visit": "2026-04-12"},
+    {"id": "P-002", "name": "Mohammed K.",  "phone": "+961 71 220 331", "last_visit": "2026-04-29"},
+    {"id": "P-003", "name": "Fatima R.",    "phone": "+961 76 510 909", "last_visit": "2026-05-02"},
+    {"id": "P-004", "name": "Omar S.",      "phone": "+961 03 884 552", "last_visit": "2026-05-11"}
+  ],
+  "appointments": [
+    {"id": "A-1001", "patient_id": "P-001", "doctor": "Dr. Khoury",    "specialty": "Pediatrics",  "starts_at": "2026-05-16T09:00:00", "status": "scheduled"},
+    {"id": "A-1002", "patient_id": "P-002", "doctor": "Dr. Saliba",    "specialty": "Dental",      "starts_at": "2026-05-16T10:30:00", "status": "scheduled"},
+    {"id": "A-1003", "patient_id": "P-003", "doctor": "Dr. Haddad",    "specialty": "Cardiology",  "starts_at": "2026-05-16T11:15:00", "status": "checked_in"},
+    {"id": "A-1004", "patient_id": "P-004", "doctor": "Dr. Mansour",   "specialty": "General",     "starts_at": "2026-05-17T14:00:00", "status": "scheduled"}
+  ]
+}

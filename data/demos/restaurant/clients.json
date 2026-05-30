@@ -1,0 +1,155 @@
+{
+  "clients": [
+    {
+      "id": "CLT-001",
+      "name": "Khalid Al-Otaibi",
+      "name_ar": "خالد العتيبي",
+      "phone": "+966 50 123 4567",
+      "email": "khalid.otaibi@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "high-protein"
+      ],
+      "allergies": "",
+      "notes": "Prefers grilled, avoids spicy.",
+      "created_at": 1776247448,
+      "active": true
+    },
+    {
+      "id": "CLT-002",
+      "name": "Aisha Al-Harbi",
+      "name_ar": "عائشة الحربي",
+      "phone": "+966 55 987 6543",
+      "email": "aisha.h@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "gluten-free"
+      ],
+      "allergies": "Wheat (celiac).",
+      "notes": "Two kids — half portions on weekends.",
+      "created_at": 1769767448,
+      "active": true
+    },
+    {
+      "id": "CLT-003",
+      "name": "Mohammed Al-Faraj",
+      "name_ar": "محمد الفرج",
+      "phone": "+966 53 222 1111",
+      "email": "mfaraj@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "low-sodium",
+        "diabetic"
+      ],
+      "allergies": "",
+      "notes": "Cardiologist-recommended low-sodium plan.",
+      "created_at": 1773396248,
+      "active": true
+    },
+    {
+      "id": "CLT-004",
+      "name": "Layla Al-Qahtani",
+      "name_ar": "ليلى القحطاني",
+      "phone": "+966 56 333 7788",
+      "email": "layla.q@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "vegetarian"
+      ],
+      "allergies": "Peanuts.",
+      "notes": "Eats fish but no meat.",
+      "created_at": 1777543448,
+      "active": true
+    },
+    {
+      "id": "CLT-005",
+      "name": "Omar Al-Bandar",
+      "name_ar": "عمر البندر",
+      "phone": "+966 54 555 8899",
+      "email": "obandar@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "high-protein",
+        "keto"
+      ],
+      "allergies": "",
+      "notes": "Trains 6 days/week — wants 200g protein/day.",
+      "created_at": 1779098648,
+      "active": true
+    },
+    {
+      "id": "CLT-006",
+      "name": "Noura Al-Saleh",
+      "name_ar": "نورة الصالح",
+      "phone": "+966 55 234 5678",
+      "email": "noura.s@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "low-carb"
+      ],
+      "allergies": "Shellfish.",
+      "notes": "Working professional — likes ready-to-eat lunches.",
+      "created_at": 1774951448,
+      "active": true
+    },
+    {
+      "id": "CLT-007",
+      "name": "Salem Al-Rashid",
+      "name_ar": "سالم الرشيد",
+      "phone": "+966 50 777 8899",
+      "email": "salem.r@example.com",
+      "city": "Riyadh",
+      "diet_tags": [],
+      "allergies": "",
+      "notes": "Family plan for 5 — Friday lunch is the big meal.",
+      "created_at": 1762855448,
+      "active": true
+    },
+    {
+      "id": "CLT-008",
+      "name": "Hanan Al-Mutairi",
+      "name_ar": "حنان المطيري",
+      "phone": "+966 53 888 9911",
+      "email": "hanan.m@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "vegan"
+      ],
+      "allergies": "Nuts (cashew + walnut).",
+      "notes": "Strict vegan — no honey.",
+      "created_at": 1778839448,
+      "active": true
+    },
+    {
+      "id": "CLT-009",
+      "name": "Faisal Al-Dosari",
+      "name_ar": "فيصل الدوسري",
+      "phone": "+966 56 444 7700",
+      "email": "faisal.d@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "low-carb",
+        "high-protein"
+      ],
+      "allergies": "",
+      "notes": "Dropped subscription twice — handle politely.",
+      "created_at": 1764583448,
+      "active": false
+    },
+    {
+      "id": "CLT-010",
+      "name": "Mariam Al-Subaie",
+      "name_ar": "مريم السبيعي",
+      "phone": "+966 50 222 3344",
+      "email": "mariam.s@example.com",
+      "city": "Riyadh",
+      "diet_tags": [
+        "dairy-free"
+      ],
+      "allergies": "Lactose intolerant.",
+      "notes": "Two daughters in the plan — peanut-friendly.",
+      "created_at": 1779530648,
+      "active": true
+    }
+  ]
+}

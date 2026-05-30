@@ -1,0 +1,53 @@
+# Mutagen one-way sync: Mac (alpha) -> VM (beta).
+#
+# Prereqs on Mac:
+#   brew install mutagen-io/mutagen/mutagen
+#   ssh-copy-id pwdemo@<vm-hostname>      # passwordless SSH
+#   # Add an ~/.ssh/config alias so the URL below is clean, e.g.:
+#   #   Host pwdemo
+#   #     HostName 100.x.y.z              (Tailscale IP or DNS)
+#   #     User     pwdemo
+#
+# Usage:
+#   mutagen project start -f deploy/mutagen.yml
+#   mutagen project list     # see status
+#   mutagen project terminate
+#
+# Edits on Mac propagate to the VM within ~1s. `uvicorn --reload` on the
+# VM (if you flip it on) picks up .py changes automatically. SPA changes
+# require rebuilding on Mac first (`npm run build` + the copy step),
+# Mutagen syncs the built artifacts under frontend/demos/<vertical>/.
+
+sync:
+  pwdemo:
+    alpha: "."
+    # Change `pwdemo` to whatever SSH alias / hostname / user@host you use.
+    beta:  "pwdemo:/opt/pwdemo"
+    mode:  "one-way-replica"
+    ignore:
+      vcs: true
+      paths:
+        # Toolchain / build artifacts — VM has its own copy.
+        - "/.venv"
+        - "/node_modules"
+        - "/prime-mate-restaurant/node_modules"
+        - "/prime-mate-clinic/node_modules"
+        - "/prime-mate-restaurant/dist"
+        - "/prime-mate-clinic/dist"
+        - "**/__pycache__"
+        - "*.pyc"
+
+        # Per-machine state — NEVER overwrite the VM's copies with
+        # local-dev credentials / call recordings / inboxes.
+        - "/data/state.json"
+        - "/data/demos/*/calls"
+        - "/data/demos/*/snapshot.json"
+        - "/data/demos/*/whatsapp_inbox.json"
+        - "/data/demos/*/escalation.json"
+        - "/data/ai_camera"
+
+        # macOS noise.
+        - ".DS_Store"
+
+        # Live agent runtime audio dumps.
+        - "/data/live_calls"

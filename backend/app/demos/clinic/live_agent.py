@@ -421,6 +421,35 @@ DEFAULT_ESCALATION = {
     "auto_keyword_match":       True,
     "auto_on_tool_errors":      True,
     "tool_error_threshold":     3,
+    # WhatsApp Bot — when enabled, every inbound WhatsApp message that's
+    # NOT from us and NOT a LID (opaque privacy id) is processed by the
+    # whatsapp_bot module, which runs the same persona + tools as the
+    # voice agent over Gemini's text generate_content endpoint and
+    # replies via WasenderApi. Off by default so a fresh deploy doesn't
+    # surprise the operator. The text model lets the operator override
+    # the default (gemini-2.5-flash) if their account has access to a
+    # better one — leave empty to use the default.
+    "whatsapp_bot_enabled":     False,
+    "whatsapp_bot_text_model":  "",
+    # Public base URL the backend should advertise when handing media URLs
+    # to WasenderApi (image / video / audio / document sends). Wasender's
+    # servers fetch the file from this URL, so it must resolve to THIS
+    # host from the public internet. When empty we fall back to whatever
+    # base URL the inbound request carries — which works when the
+    # operator accesses the SPA via the Cloudflare tunnel itself but
+    # fails ("must be publicly accessible") when they're hitting
+    # localhost / a LAN IP directly. Set this to your tunnel hostname
+    # (e.g. https://clinicmac.primewave2.tech) so local-browser access
+    # still produces public media URLs.
+    "public_base_url":          "",
+    # Per-vertical Live Agent (AudioSocket) bind settings. Each vertical
+    # binds its own TCP listener so multiple verticals can run side-by-
+    # side without fighting over a single port. Empty/zero means "use
+    # the global state.cda_* default" (back-compat). The clinic's
+    # historical default is 8092; the restaurant clone defaults to 8093.
+    "live_agent_enabled":       True,
+    "live_agent_bind_host":     "0.0.0.0",
+    "live_agent_bind_port":     8092,
 }
 
 
@@ -877,13 +906,13 @@ def _build_roster_block() -> str:
     )
 
 
-def _build_system_instruction() -> str:
-    # Inject the current date + time so the agent never has to invent a
-    # weekday or wonder whether 11:00 "today" has already passed. We also
-    # emit tomorrow and day-after-tomorrow precomputed — the agent has
-    # been observed saying "tomorrow is the 15th" when today was the 17th
-    # (off-by-two mental-arithmetic mistake). Giving it the answer in
-    # YYYY-MM-DD form removes the failure mode.
+def build_current_time_block() -> str:
+    """Module-public so the WhatsApp Bot's text-mode system instruction
+    can reuse the same authoritative date+time block. Without it, the
+    model defaults to its training-cutoff date and runs list_free_slots
+    against an old year (we observed it calling `date='2024-06-13'` when
+    today is in 2026). Returns a self-contained markdown block ready
+    to concatenate onto a system instruction."""
     import datetime as _dt
     now = time.localtime()
     weekday_en = ["Sunday", "Monday", "Tuesday", "Wednesday",
@@ -897,7 +926,7 @@ def _build_system_instruction() -> str:
                                 "Thursday", "Friday", "Saturday"][(d.weekday() + 1) % 7]
     weekday_ar_of = lambda d: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء",
                                 "الخميس", "الجمعة", "السبت"][(d.weekday() + 1) % 7]
-    current = (
+    return (
         "\n\n## CURRENT TIME (authoritative — do not invent a different day)\n"
         f"- Today: {today_d.isoformat()} ({weekday_en} / {weekday_ar})\n"
         f"- Tomorrow: {tom_d.isoformat()} ({weekday_en_of(tom_d)} / {weekday_ar_of(tom_d)})\n"
@@ -913,6 +942,10 @@ def _build_system_instruction() -> str:
         "  slot within the 15-minute booking buffer. Quote ONLY what it\n"
         "  returns."
     )
+
+
+def _build_system_instruction() -> str:
+    current = build_current_time_block()
     # Escalation triggers — operator-editable. Defines exactly when the
     # agent should call `flag_for_supervisor`. We render the saved
     # keywords + scenarios into the prompt every call so changes from
@@ -1768,12 +1801,35 @@ class ClinicLiveAgentService:
                 except Exception: pass
 
     # ----- lifecycle -----
+    # Each method reads the vertical's own escalation.json for the
+    # enabled flag + bind host/port, so multiple verticals can run
+    # side-by-side on different TCP ports without sharing the global
+    # state.cda_* settings (which would fight over one port).
+    def _resolved_bind(self) -> tuple[bool, str, int]:
+        cfg = load_escalation_config()
+        # Default values from escalation; fall back to global state when
+        # they're empty/zero so an operator who hasn't touched the new
+        # fields still gets the historical behaviour.
+        enabled = bool(cfg.get("live_agent_enabled", True))
+        if cfg.get("live_agent_enabled") is None:
+            enabled = bool(state.cda_enabled)
+        host = (cfg.get("live_agent_bind_host") or "").strip() \
+               or (state.cda_bind_host or "0.0.0.0")
+        try:
+            port = int(cfg.get("live_agent_bind_port") or 0)
+        except Exception:
+            port = 0
+        if not port:
+            port = int(state.cda_bind_port or 8092)
+        return enabled, host, port
+
     def status(self) -> dict:
+        enabled, host, port = self._resolved_bind()
         return {
             "running":    self._server is not None,
-            "enabled":    bool(state.cda_enabled),
-            "host":       state.cda_bind_host,
-            "port":       state.cda_bind_port,
+            "enabled":    enabled,
+            "host":       host,
+            "port":       port,
             "active":     len(self._calls),
             "bound_at":   self.bound_at,
             "last_error": self.last_error,
@@ -1802,16 +1858,18 @@ class ClinicLiveAgentService:
         return self._calls.get(call_id)
 
     def apply_config(self) -> None:
-        """Idempotent — call after edits to cda_enabled / host / port."""
-        if state.cda_enabled and self._server is None:
+        """Idempotent — call after edits to live_agent_enabled / host /
+        port (escalation.json) or the legacy cda_* global state."""
+        enabled, host, port = self._resolved_bind()
+        if enabled and self._server is None:
             self.start()
-        elif (not state.cda_enabled) and self._server is not None:
+        elif (not enabled) and self._server is not None:
             asyncio.create_task(self.stop())
         elif self._server is not None:
             sock = next(iter(self._server.sockets or []), None)
             if sock:
                 cur_host, cur_port = sock.getsockname()[:2]
-                if cur_port != int(state.cda_bind_port) or cur_host != state.cda_bind_host:
+                if cur_port != port or cur_host != host:
                     asyncio.create_task(self._restart())
 
     def start(self) -> None:
@@ -1839,8 +1897,7 @@ class ClinicLiveAgentService:
         self.start()
 
     async def _run(self) -> None:
-        host = state.cda_bind_host or "0.0.0.0"
-        port = int(state.cda_bind_port or 8092)
+        _enabled, host, port = self._resolved_bind()
         try:
             self._server = await asyncio.start_server(self._handle, host, port)
             self.bound_at = time.time()
@@ -2297,24 +2354,41 @@ class _DebugBroadcastHandler(logging.Handler):
 
 
 def _install_debug_handler() -> None:
-    """Attach the broadcast handler to all clinic loggers once at
-    import. Safe to call repeatedly — duplicates are filtered."""
-    targets = (
+    """Attach the broadcast handler to the TOP-LEVEL clinic loggers
+    once at import. Python's logging propagates child records up to
+    ancestor loggers, so attaching to `demo_clinic` automatically
+    captures every `demo_clinic.<sub>` logger too — attaching to BOTH
+    fires each event twice in the Debug page (which is exactly what
+    was happening before this cleanup). Children just need their level
+    set so their INFO records aren't filtered before propagation."""
+    roots = (
         "clinic_live_agent",
         "clinic_agent_tools",
         "demo_clinic",
+    )
+    handler = _DebugBroadcastHandler()
+    for name in roots:
+        lg = logging.getLogger(name)
+        if not any(isinstance(h, _DebugBroadcastHandler) for h in lg.handlers):
+            lg.addHandler(handler)
+        lg.setLevel(logging.INFO)
+    # Children: set level only (so INFO records aren't filtered before
+    # propagating up to the root handler). Don't attach the handler —
+    # that's what caused the duplicate log lines.
+    for name in (
         "demo_clinic.ami",
         "demo_clinic.wasender",
         "demo_clinic.whatsapp_inbox",
         "demo_clinic.whatsapp_templates",
-    )
-    handler = _DebugBroadcastHandler()
-    for name in targets:
+        "demo_clinic.whatsapp_bot",
+    ):
         lg = logging.getLogger(name)
-        # Avoid duplicate handlers on hot-reload.
-        if not any(isinstance(h, _DebugBroadcastHandler) for h in lg.handlers):
-            lg.addHandler(handler)
-            lg.setLevel(logging.INFO)
+        lg.setLevel(logging.INFO)
+        # Defensive: remove any stale duplicate handlers a previous
+        # version of this function (or a hot-reload) may have attached.
+        for h in list(lg.handlers):
+            if isinstance(h, _DebugBroadcastHandler):
+                lg.removeHandler(h)
 
 
 _install_debug_handler()

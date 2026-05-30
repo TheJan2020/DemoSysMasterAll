@@ -1,0 +1,6 @@
+{
+  "clinic_location": {
+    "en": "Hello {patient_name},\n\nHere is the location of {clinic_name}:\n{clinic_location}\n\n📍 Google Maps: https://maps.app.goo.gl/QiuX3eZkHhypTUKn9\n\nIf you need anything else, just reply to this message.\n— Primewave Mate Clinics",
+    "ar": "السلام عليكم {patient_name_ar},\n\nموقع {clinic_name_ar}:\n{clinic_location_ar}\n\n📍 خرائط قوقل: https://maps.app.goo.gl/QiuX3eZkHhypTUKn9\n\nفي حال احتجت شيء إضافي، الرد على هذه الرسالة كافٍ.\n— عيادات برايم ميت"
+  }
+}

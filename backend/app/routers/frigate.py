@@ -7,6 +7,7 @@ from typing import Any, Optional
 
 import httpx
 from fastapi import APIRouter, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from ..core.state import state
@@ -128,6 +129,63 @@ async def snapshot(camera: str, h: int = 300) -> Response:
         )
     except httpx.HTTPError as e:
         raise HTTPException(status_code=502, detail=f"Snapshot fetch failed: {e}") from e
+
+
+# ---------- live stream proxy ------------------------------------------------
+# Frigate's per-camera live endpoint at /api/<camera> serves a continuous
+# multipart/x-mixed-replace MJPEG stream (via the embedded go2rtc). Browsers
+# render that natively when set as `<img src>` — much smoother than polling
+# /latest.jpg every couple of seconds. We just relay the stream bytes + the
+# upstream Content-Type so anything Frigate serves (MJPEG, fallback JPEG)
+# Just Works for the client.
+
+_STREAM_TIMEOUT = httpx.Timeout(connect=5.0, read=None, write=10.0, pool=5.0)
+
+
+@router.get("/stream/{camera}")
+async def stream(camera: str) -> StreamingResponse:
+    base = _require_url()
+    upstream = f"{base}/api/{camera}"
+
+    # Open the connection up front so we know the upstream is alive and we
+    # can pass back the real Content-Type (MJPEG vs JPEG).
+    client = httpx.AsyncClient(timeout=_STREAM_TIMEOUT)
+    try:
+        req = client.build_request("GET", upstream)
+        upstream_resp = await client.send(req, stream=True)
+    except httpx.HTTPError as e:
+        await client.aclose()
+        raise HTTPException(502, f"Frigate stream open failed: {e}") from e
+
+    if upstream_resp.status_code != 200:
+        status = upstream_resp.status_code
+        await upstream_resp.aclose()
+        await client.aclose()
+        raise HTTPException(502, f"Frigate stream returned HTTP {status}")
+
+    content_type = upstream_resp.headers.get("content-type", "image/jpeg")
+
+    async def relay():
+        try:
+            async for chunk in upstream_resp.aiter_raw():
+                yield chunk
+        except (httpx.HTTPError, GeneratorExit):
+            return
+        finally:
+            try:
+                await upstream_resp.aclose()
+            finally:
+                await client.aclose()
+
+    return StreamingResponse(
+        relay(),
+        media_type=content_type,
+        headers={
+            "Cache-Control": "no-store",
+            # MJPEG streams should never be sniffed/transformed by intermediaries.
+            "X-Content-Type-Options": "nosniff",
+        },
+    )
 
 
 # ---------- live motion (push-based via MQTT) --------------------------------

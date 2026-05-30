@@ -1,0 +1,23 @@
+[Unit]
+Description=PW Demo Master (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=@APP_USER@
+WorkingDirectory=@APP_HOME@
+Environment="PATH=@APP_HOME@/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+EnvironmentFile=-/etc/pwdemo.env
+ExecStart=@APP_HOME@/.venv/bin/python -m uvicorn app.main:app \
+    --app-dir backend \
+    --host @APP_BIND@ --port @APP_PORT@
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=15
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

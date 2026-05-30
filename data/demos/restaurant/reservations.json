@@ -1,0 +1,52 @@
+{
+  "reservations": [
+    {
+      "id": "RES-0001",
+      "table_number": "T05",
+      "date": "2026-05-30",
+      "time": "20:00",
+      "duration_min": 120,
+      "guest_name": "Mr. Khalid Al-Otaibi",
+      "guest_phone": "+966 50 123 4567",
+      "party_size": 2,
+      "notes": "Anniversary — quiet corner please.",
+      "status": "pending"
+    },
+    {
+      "id": "RES-0002",
+      "table_number": "T13",
+      "date": "2026-05-30",
+      "time": "21:00",
+      "duration_min": 120,
+      "guest_name": "Mrs. Aisha Al-Harbi",
+      "guest_phone": "+966 55 987 6543",
+      "party_size": 4,
+      "notes": "Outdoor with shade if possible.",
+      "status": "pending"
+    },
+    {
+      "id": "RES-0003",
+      "table_number": "T06",
+      "date": "2026-05-31",
+      "time": "19:30",
+      "duration_min": 90,
+      "guest_name": "Salem family",
+      "guest_phone": "+966 53 222 1111",
+      "party_size": 6,
+      "notes": "Kids menu for two.",
+      "status": "pending"
+    },
+    {
+      "id": "RES-0004",
+      "table_number": "T18",
+      "date": "2026-05-31",
+      "time": "21:30",
+      "duration_min": 150,
+      "guest_name": "Al-Bandar group (VIP)",
+      "guest_phone": "+966 56 333 7788",
+      "party_size": 8,
+      "notes": "Pre-order Mansaf + Ouzi.",
+      "status": "pending"
+    }
+  ]
+}

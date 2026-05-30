@@ -1,0 +1,758 @@
+{
+  "invoices": [
+    {
+      "id": "INV-0001",
+      "table_number": "T02",
+      "closed_at": 1780133700,
+      "server_name": "Layla",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Fattoush",
+          "name_ar": "فتّوش",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Shish Tawook",
+          "name_ar": "شيش طاووق",
+          "category_id": "CAT-GRILL",
+          "qty": 2,
+          "price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 208.0,
+      "tax": 31.2,
+      "tip": 10.4,
+      "total": 249.6,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0002",
+      "table_number": "T01",
+      "closed_at": 1780135500,
+      "server_name": "Omar",
+      "guests": 4,
+      "items": [
+        {
+          "name_en": "Mutabbal",
+          "name_ar": "متبّل",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Tabbouleh",
+          "name_ar": "تبّولة",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 25.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Kibbeh (4 pcs)",
+          "name_ar": "كبّة (4 قطع)",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mixed Grill",
+          "name_ar": "مشاوي مشكّلة",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 110.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Ayran",
+          "name_ar": "عيران",
+          "category_id": "CAT-BEV",
+          "qty": 4,
+          "price": 12.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Baklava (6 pcs)",
+          "name_ar": "بقلاوة",
+          "category_id": "CAT-DESS",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 261.0,
+      "tax": 39.15,
+      "tip": 13.05,
+      "total": 313.2,
+      "currency": "SAR",
+      "payment_method": "mada"
+    },
+    {
+      "id": "INV-0003",
+      "table_number": "T11",
+      "closed_at": 1780050300,
+      "server_name": "Hadi",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Falafel (6 pcs)",
+          "name_ar": "فلافل (6 قطع)",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Tea",
+          "name_ar": "شاي بالنعناع",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 12.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 64.0,
+      "tax": 9.6,
+      "tip": 0.0,
+      "total": 73.6,
+      "currency": "SAR",
+      "payment_method": "cash"
+    },
+    {
+      "id": "INV-0004",
+      "table_number": "T06",
+      "closed_at": 1780051800,
+      "server_name": "Layla",
+      "guests": 6,
+      "items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Muhammara",
+          "name_ar": "محمّرة",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Sambousek (cheese)",
+          "name_ar": "سمبوسك بالجبن",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Lamb Kafta",
+          "name_ar": "كفتة لحم",
+          "category_id": "CAT-GRILL",
+          "qty": 2,
+          "price": 72.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Shish Tawook",
+          "name_ar": "شيش طاووق",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Knafeh Nabulsia",
+          "name_ar": "كنافة نابلسية",
+          "category_id": "CAT-DESS",
+          "qty": 2,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Jallab",
+          "name_ar": "جلاب",
+          "category_id": "CAT-BEV",
+          "qty": 4,
+          "price": 16.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 421.0,
+      "tax": 63.15,
+      "tip": 21.05,
+      "total": 505.2,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0005",
+      "table_number": "T04",
+      "closed_at": 1780053000,
+      "server_name": "Omar",
+      "guests": 3,
+      "items": [
+        {
+          "name_en": "Labneh",
+          "name_ar": "لبنة",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 20.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arayes",
+          "name_ar": "عرايس",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Lamb Chops (4 pcs)",
+          "name_ar": "ريش الغنم",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arabic Coffee",
+          "name_ar": "قهوة عربية",
+          "category_id": "CAT-BEV",
+          "qty": 3,
+          "price": 14.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 189.0,
+      "tax": 28.35,
+      "tip": 9.45,
+      "total": 226.8,
+      "currency": "SAR",
+      "payment_method": "mada"
+    },
+    {
+      "id": "INV-0006",
+      "table_number": "T14",
+      "closed_at": 1780054800,
+      "server_name": "Hadi",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Rocket & Halloumi",
+          "name_ar": "جرجير وحلوم",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Chicken Shawarma Plate",
+          "name_ar": "صحن شاورما دجاج",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 55.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 123.0,
+      "tax": 18.45,
+      "tip": 6.15,
+      "total": 147.6,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0007",
+      "table_number": "T05",
+      "closed_at": 1780056000,
+      "server_name": "Layla",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Tabbouleh",
+          "name_ar": "تبّولة",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 25.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Falafel (6 pcs)",
+          "name_ar": "فلافل (6 قطع)",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mhalabia",
+          "name_ar": "مهلبية",
+          "category_id": "CAT-DESS",
+          "qty": 2,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Ayran",
+          "name_ar": "عيران",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 12.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 115.0,
+      "tax": 17.25,
+      "tip": 5.75,
+      "total": 138.0,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0008",
+      "table_number": "T08",
+      "closed_at": 1780057800,
+      "server_name": "Omar",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Warak Enab (cold)",
+          "name_ar": "ورق عنب بزيت",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 26.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Sayadieh",
+          "name_ar": "صيادية",
+          "category_id": "CAT-MAIN",
+          "qty": 1,
+          "price": 85.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arabic Coffee",
+          "name_ar": "قهوة عربية",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 14.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 139.0,
+      "tax": 20.85,
+      "tip": 0.0,
+      "total": 159.85,
+      "currency": "SAR",
+      "payment_method": "cash"
+    },
+    {
+      "id": "INV-0009",
+      "table_number": "T18",
+      "closed_at": 1780059900,
+      "server_name": "Hadi",
+      "guests": 8,
+      "items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 2,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mutabbal",
+          "name_ar": "متبّل",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Fatayer (spinach)",
+          "name_ar": "فطاير سبانخ",
+          "category_id": "CAT-HOT",
+          "qty": 2,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Beetroot Salad",
+          "name_ar": "سلطة الشمندر",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Ouzi",
+          "name_ar": "أوزي",
+          "category_id": "CAT-MAIN",
+          "qty": 1,
+          "price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mansaf",
+          "name_ar": "منسف",
+          "category_id": "CAT-MAIN",
+          "qty": 1,
+          "price": 88.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mixed Grill",
+          "name_ar": "مشاوي مشكّلة",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 110.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Baklava (6 pcs)",
+          "name_ar": "بقلاوة",
+          "category_id": "CAT-DESS",
+          "qty": 2,
+          "price": 28.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Tea",
+          "name_ar": "شاي بالنعناع",
+          "category_id": "CAT-BEV",
+          "qty": 6,
+          "price": 12.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 551.0,
+      "tax": 82.65,
+      "tip": 27.55,
+      "total": 661.2,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0010",
+      "table_number": "T15",
+      "closed_at": 1780062300,
+      "server_name": "Layla",
+      "guests": 4,
+      "items": [
+        {
+          "name_en": "Muhammara",
+          "name_ar": "محمّرة",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Kibbeh (4 pcs)",
+          "name_ar": "كبّة (4 قطع)",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Shish Tawook",
+          "name_ar": "شيش طاووق",
+          "category_id": "CAT-GRILL",
+          "qty": 2,
+          "price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Atayef Bil Jibneh",
+          "name_ar": "قطايف بالجبنة",
+          "category_id": "CAT-DESS",
+          "qty": 1,
+          "price": 26.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Jallab",
+          "name_ar": "جلاب",
+          "category_id": "CAT-BEV",
+          "qty": 4,
+          "price": 16.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 272.0,
+      "tax": 40.8,
+      "tip": 13.6,
+      "total": 326.4,
+      "currency": "SAR",
+      "payment_method": "mada"
+    },
+    {
+      "id": "INV-0011",
+      "table_number": "T17",
+      "closed_at": 1780064400,
+      "server_name": "Hadi",
+      "guests": 3,
+      "items": [
+        {
+          "name_en": "Tabbouleh",
+          "name_ar": "تبّولة",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 25.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Lamb Chops (4 pcs)",
+          "name_ar": "ريش الغنم",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mhalabia",
+          "name_ar": "مهلبية",
+          "category_id": "CAT-DESS",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "category_id": "CAT-BEV",
+          "qty": 3,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 196.0,
+      "tax": 29.4,
+      "tip": 9.8,
+      "total": 235.2,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0012",
+      "table_number": "T10",
+      "closed_at": 1780066800,
+      "server_name": "Hadi",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Chicken Shawarma Plate",
+          "name_ar": "صحن شاورما دجاج",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 55.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Knafeh Nabulsia",
+          "name_ar": "كنافة نابلسية",
+          "category_id": "CAT-DESS",
+          "qty": 1,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arabic Coffee",
+          "name_ar": "قهوة عربية",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 14.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 133.0,
+      "tax": 19.95,
+      "tip": 6.65,
+      "total": 159.6,
+      "currency": "SAR",
+      "payment_method": "card"
+    },
+    {
+      "id": "INV-0013",
+      "table_number": "T16",
+      "closed_at": 1780068600,
+      "server_name": "Omar",
+      "guests": 2,
+      "items": [
+        {
+          "name_en": "Labneh",
+          "name_ar": "لبنة",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 20.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Sambousek (cheese)",
+          "name_ar": "سمبوسك بالجبن",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mahshi Mixed",
+          "name_ar": "محشي مشكّل",
+          "category_id": "CAT-MAIN",
+          "qty": 1,
+          "price": 68.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Tea",
+          "name_ar": "شاي بالنعناع",
+          "category_id": "CAT-BEV",
+          "qty": 2,
+          "price": 12.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 136.0,
+      "tax": 20.4,
+      "tip": 6.8,
+      "total": 163.2,
+      "currency": "SAR",
+      "payment_method": "mada"
+    },
+    {
+      "id": "INV-0014",
+      "table_number": "T13",
+      "closed_at": 1780070400,
+      "server_name": "Layla",
+      "guests": 4,
+      "items": [
+        {
+          "name_en": "Hummus",
+          "name_ar": "حمّص",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mutabbal",
+          "name_ar": "متبّل",
+          "category_id": "CAT-COLD",
+          "qty": 1,
+          "price": 22.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Fattoush",
+          "name_ar": "فتّوش",
+          "category_id": "CAT-SALAD",
+          "qty": 1,
+          "price": 24.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Arayes",
+          "name_ar": "عرايس",
+          "category_id": "CAT-HOT",
+          "qty": 1,
+          "price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Lamb Kafta",
+          "name_ar": "كفتة لحم",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 72.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Shish Tawook",
+          "name_ar": "شيش طاووق",
+          "category_id": "CAT-GRILL",
+          "qty": 1,
+          "price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Baklava (6 pcs)",
+          "name_ar": "بقلاوة",
+          "category_id": "CAT-DESS",
+          "qty": 1,
+          "price": 28.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "category_id": "CAT-BEV",
+          "qty": 4,
+          "price": 18.0,
+          "currency": "SAR"
+        }
+      ],
+      "subtotal": 333.0,
+      "tax": 49.95,
+      "tip": 16.65,
+      "total": 399.6,
+      "currency": "SAR",
+      "payment_method": "card"
+    }
+  ]
+}

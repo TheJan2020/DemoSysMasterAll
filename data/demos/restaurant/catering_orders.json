@@ -1,0 +1,538 @@
+{
+  "orders": [
+    {
+      "id": "CAT-0001",
+      "client_name": "Khalid Al-Otaibi",
+      "client_name_ar": "خالد العتيبي",
+      "client_phone": "+966 50 123 4567",
+      "client_email": "khalid@example.com",
+      "client_company": "",
+      "event_date": "2026-06-06",
+      "event_time": "09:00",
+      "event_type": "corporate",
+      "package": "box_lunch",
+      "venue": "Riyadh Tower, 18th floor",
+      "guests": 25,
+      "items": [
+        {
+          "name_en": "Chicken Shawarma Plate",
+          "name_ar": "صحن شاورما دجاج",
+          "qty": 25,
+          "unit_price": 55.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Hummus & Mutabbal",
+          "name_ar": "حمّص ومتبّل",
+          "qty": 25,
+          "unit_price": 18.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mint Lemonade",
+          "name_ar": "ليمون نعناع",
+          "qty": 25,
+          "unit_price": 14.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 87.0,
+      "subtotal": 2175.0,
+      "vat": 326.25,
+      "delivery_fee": 150.0,
+      "deposit_due": 795.38,
+      "deposit_paid": 795.38,
+      "amount_paid": 795.38,
+      "total": 2651.25,
+      "currency": "SAR",
+      "status": "confirmed",
+      "payment_status": "deposit_paid",
+      "dietary": [],
+      "allergens": [
+        "sesame"
+      ],
+      "notes": "Boardroom — quiet drop-off through service lift.",
+      "created_at": 1779877094
+    },
+    {
+      "id": "CAT-0002",
+      "client_name": "Aisha Al-Harbi",
+      "client_name_ar": "عائشة الحربي",
+      "client_phone": "+966 55 987 6543",
+      "client_email": "aisha.h@example.com",
+      "client_company": "",
+      "event_date": "2026-06-20",
+      "event_time": "20:00",
+      "event_type": "wedding",
+      "package": "plated_dinner",
+      "venue": "Al-Faisaliah Ballroom, Riyadh",
+      "guests": 200,
+      "items": [
+        {
+          "name_en": "3-course plated dinner",
+          "name_ar": "عشاء بثلاث أطباق",
+          "qty": 200,
+          "unit_price": 245.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Welcome cocktail station",
+          "name_ar": "محطة استقبال",
+          "qty": 1,
+          "unit_price": 3500.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Dessert table",
+          "name_ar": "طاولة حلويات",
+          "qty": 1,
+          "unit_price": 4500.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 245.0,
+      "subtotal": 57000.0,
+      "vat": 8550.0,
+      "delivery_fee": 150.0,
+      "deposit_due": 19710.0,
+      "deposit_paid": 19710.0,
+      "amount_paid": 19710.0,
+      "total": 65700.0,
+      "currency": "SAR",
+      "status": "confirmed",
+      "payment_status": "deposit_paid",
+      "dietary": [],
+      "allergens": [
+        "wheat"
+      ],
+      "notes": "Bride is celiac — strict gluten-free on the head-table service.",
+      "created_at": 1776248294
+    },
+    {
+      "id": "CAT-0003",
+      "client_name": "Bandar Holdings",
+      "client_name_ar": "شركة البندر القابضة",
+      "client_phone": "+966 11 234 5678",
+      "client_email": "events@bandar.example",
+      "client_company": "",
+      "event_date": "2026-05-30",
+      "event_time": "13:00",
+      "event_type": "corporate",
+      "package": "buffet",
+      "venue": "Bandar HQ — Riyadh",
+      "guests": 80,
+      "items": [
+        {
+          "name_en": "Lebanese buffet (full)",
+          "name_ar": "بوفيه لبناني كامل",
+          "qty": 80,
+          "unit_price": 145.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 145.0,
+      "subtotal": 11600.0,
+      "vat": 1740.0,
+      "delivery_fee": 150.0,
+      "deposit_due": 4047.0,
+      "deposit_paid": 4047.0,
+      "amount_paid": 13490.0,
+      "total": 13490.0,
+      "currency": "SAR",
+      "status": "in_kitchen",
+      "payment_status": "paid_in_full",
+      "dietary": [],
+      "allergens": [],
+      "notes": "Setup at 11:30, lunch served 13:00-14:30. Buffet teardown 15:00.",
+      "created_at": 1779617894
+    },
+    {
+      "id": "CAT-0004",
+      "client_name": "Hilton Riyadh Conference",
+      "client_name_ar": "مؤتمر هيلتون الرياض",
+      "client_phone": "+966 11 555 9988",
+      "client_email": "fb@hilton-rh.example",
+      "client_company": "",
+      "event_date": "2026-05-30",
+      "event_time": "10:00",
+      "event_type": "conference",
+      "package": "box_lunch",
+      "venue": "Hilton Riyadh — Sheraton Ballroom",
+      "guests": 120,
+      "items": [
+        {
+          "name_en": "Box lunch (gluten-free)",
+          "name_ar": "صندوق غذاء (خالي من الجلوتين)",
+          "qty": 30,
+          "unit_price": 95.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Box lunch (vegetarian)",
+          "name_ar": "صندوق غذاء نباتي",
+          "qty": 40,
+          "unit_price": 85.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Box lunch (standard)",
+          "name_ar": "صندوق غذاء عادي",
+          "qty": 50,
+          "unit_price": 80.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 85.0,
+      "subtotal": 10250.0,
+      "vat": 1537.5,
+      "delivery_fee": 150.0,
+      "deposit_due": 3581.25,
+      "deposit_paid": 3581.25,
+      "amount_paid": 11937.5,
+      "total": 11937.5,
+      "currency": "SAR",
+      "status": "out_for_delivery",
+      "payment_status": "paid_in_full",
+      "dietary": [],
+      "allergens": [
+        "wheat"
+      ],
+      "notes": "30 GF boxes need to be sealed and clearly labelled.",
+      "created_at": 1779704294
+    },
+    {
+      "id": "CAT-0005",
+      "client_name": "Layla Al-Qahtani",
+      "client_name_ar": "ليلى القحطاني",
+      "client_phone": "+966 56 333 7788",
+      "client_email": "layla.q@example.com",
+      "client_company": "",
+      "event_date": "2026-05-29",
+      "event_time": "19:00",
+      "event_type": "birthday",
+      "package": "cocktail_reception",
+      "venue": "Private villa — Hittin, Riyadh",
+      "guests": 60,
+      "items": [
+        {
+          "name_en": "Cocktail reception (12 items/guest)",
+          "name_ar": "كوكتيل ريسبشن (12 صنف)",
+          "qty": 60,
+          "unit_price": 135.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Knafeh station (live)",
+          "name_ar": "محطة كنافة مباشرة",
+          "qty": 1,
+          "unit_price": 1800.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 135.0,
+      "subtotal": 9900.0,
+      "vat": 1485.0,
+      "delivery_fee": 0.0,
+      "deposit_due": 3415.5,
+      "deposit_paid": 3415.5,
+      "amount_paid": 11385.0,
+      "total": 11385.0,
+      "currency": "SAR",
+      "status": "delivered",
+      "payment_status": "paid_in_full",
+      "dietary": [
+        "vegetarian"
+      ],
+      "allergens": [
+        "peanut"
+      ],
+      "notes": "One guest has severe peanut allergy — kitchen lead briefed.",
+      "created_at": 1778926694
+    },
+    {
+      "id": "CAT-0006",
+      "client_name": "King Abdulaziz School",
+      "client_name_ar": "مدرسة الملك عبدالعزيز",
+      "client_phone": "+966 11 880 0011",
+      "client_email": "events@kas.example",
+      "client_company": "",
+      "event_date": "2026-05-16",
+      "event_time": "11:00",
+      "event_type": "graduation",
+      "package": "buffet",
+      "venue": "School main hall — Riyadh",
+      "guests": 350,
+      "items": [
+        {
+          "name_en": "Graduation buffet",
+          "name_ar": "بوفيه التخرّج",
+          "qty": 350,
+          "unit_price": 88.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Cake (3 tier)",
+          "name_ar": "كيكة 3 طبقات",
+          "qty": 1,
+          "unit_price": 2400.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 88.0,
+      "subtotal": 33200.0,
+      "vat": 4980.0,
+      "delivery_fee": 0.0,
+      "deposit_due": 11454.0,
+      "deposit_paid": 11454.0,
+      "amount_paid": 38180.0,
+      "total": 38180.0,
+      "currency": "SAR",
+      "status": "completed",
+      "payment_status": "paid_in_full",
+      "dietary": [],
+      "allergens": [],
+      "notes": "Tip submitted post-event — ask for testimonial.",
+      "created_at": 1777112294
+    },
+    {
+      "id": "CAT-0007",
+      "client_name": "Omar Al-Bandar",
+      "client_name_ar": "عمر البندر",
+      "client_phone": "+966 54 555 8899",
+      "client_email": "obandar@example.com",
+      "client_company": "",
+      "event_date": "2026-06-04",
+      "event_time": "13:00",
+      "event_type": "ramadan_iftar",
+      "package": "buffet",
+      "venue": "Family majlis — Riyadh",
+      "guests": 45,
+      "items": [
+        {
+          "name_en": "Iftar buffet (premium)",
+          "name_ar": "بوفيه إفطار فاخر",
+          "qty": 45,
+          "unit_price": 175.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 175.0,
+      "subtotal": 7875.0,
+      "vat": 1181.25,
+      "delivery_fee": 150.0,
+      "deposit_due": 2761.88,
+      "deposit_paid": 2761.88,
+      "amount_paid": 2761.88,
+      "total": 9206.25,
+      "currency": "SAR",
+      "status": "confirmed",
+      "payment_status": "deposit_paid",
+      "dietary": [],
+      "allergens": [],
+      "notes": "Sunset 18:32 — table must be set by 18:00.",
+      "created_at": 1779272294
+    },
+    {
+      "id": "CAT-0008",
+      "client_name": "TechHub Riyadh",
+      "client_name_ar": "تك هاب الرياض",
+      "client_phone": "+966 11 444 7700",
+      "client_email": "ops@techhub.example",
+      "client_company": "",
+      "event_date": "2026-06-13",
+      "event_time": "18:00",
+      "event_type": "corporate",
+      "package": "cocktail_reception",
+      "venue": "TechHub Diriyah office",
+      "guests": 150,
+      "items": [],
+      "per_guest_price": 125.0,
+      "subtotal": 18750.0,
+      "vat": 2812.5,
+      "delivery_fee": 150.0,
+      "deposit_due": 6513.75,
+      "deposit_paid": 0.0,
+      "amount_paid": 0.0,
+      "total": 21712.5,
+      "currency": "SAR",
+      "status": "inquiry",
+      "payment_status": "unpaid",
+      "dietary": [],
+      "allergens": [],
+      "notes": "Product launch — want a Live-Cooking station option.",
+      "created_at": 1779963494
+    },
+    {
+      "id": "CAT-0009",
+      "client_name": "Sara Al-Mutairi",
+      "client_name_ar": "سارة المطيري",
+      "client_phone": "+966 53 888 9911",
+      "client_email": "sara.m@example.com",
+      "client_company": "",
+      "event_date": "2026-06-27",
+      "event_time": "19:00",
+      "event_type": "wedding",
+      "package": "tea_ceremony",
+      "venue": "Family villa — Diriyah, Riyadh",
+      "guests": 80,
+      "items": [
+        {
+          "name_en": "Saudi qahwa & dates",
+          "name_ar": "قهوة وتمر",
+          "qty": 80,
+          "unit_price": 32.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Mezze platter",
+          "name_ar": "صحن مقبلات",
+          "qty": 80,
+          "unit_price": 65.0,
+          "currency": "SAR"
+        },
+        {
+          "name_en": "Knafeh nabulsia",
+          "name_ar": "كنافة نابلسية",
+          "qty": 80,
+          "unit_price": 28.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 125.0,
+      "subtotal": 10000.0,
+      "vat": 1500.0,
+      "delivery_fee": 150.0,
+      "deposit_due": 3495.0,
+      "deposit_paid": 3495.0,
+      "amount_paid": 3495.0,
+      "total": 11650.0,
+      "currency": "SAR",
+      "status": "confirmed",
+      "payment_status": "deposit_paid",
+      "dietary": [],
+      "allergens": [
+        "tree-nut"
+      ],
+      "notes": "Henna night — no music; modest service.",
+      "created_at": 1778235494
+    },
+    {
+      "id": "CAT-0010",
+      "client_name": "PIF Office",
+      "client_name_ar": "صندوق الاستثمارات العامة",
+      "client_phone": "+966 11 200 3344",
+      "client_email": "ext-fb@pif.example",
+      "client_company": "",
+      "event_date": "2026-06-02",
+      "event_time": "12:00",
+      "event_type": "corporate",
+      "package": "plated_dinner",
+      "venue": "PIF HQ — King Abdullah Financial District",
+      "guests": 40,
+      "items": [
+        {
+          "name_en": "Executive plated lunch",
+          "name_ar": "غداء تنفيذي بثلاث أطباق",
+          "qty": 40,
+          "unit_price": 280.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 280.0,
+      "subtotal": 11200.0,
+      "vat": 1680.0,
+      "delivery_fee": 150.0,
+      "deposit_due": 3909.0,
+      "deposit_paid": 3909.0,
+      "amount_paid": 3909.0,
+      "total": 13030.0,
+      "currency": "SAR",
+      "status": "confirmed",
+      "payment_status": "deposit_paid",
+      "dietary": [
+        "low-sodium"
+      ],
+      "allergens": [],
+      "notes": "VIP — silver service, table linens in firm's brand colours.",
+      "created_at": 1779445094
+    },
+    {
+      "id": "CAT-0011",
+      "client_name": "Faisal Al-Dosari",
+      "client_name_ar": "فيصل الدوسري",
+      "client_phone": "+966 56 444 7700",
+      "client_email": "faisal.d@example.com",
+      "client_company": "",
+      "event_date": "2026-05-24",
+      "event_time": "20:00",
+      "event_type": "birthday",
+      "package": "buffet",
+      "venue": "Faisal's residence — Al-Murabba, Riyadh",
+      "guests": 35,
+      "items": [
+        {
+          "name_en": "Mixed Lebanese buffet",
+          "name_ar": "بوفيه لبناني مشكّل",
+          "qty": 35,
+          "unit_price": 110.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 110.0,
+      "subtotal": 3850.0,
+      "vat": 577.5,
+      "delivery_fee": 0.0,
+      "deposit_due": 1328.25,
+      "deposit_paid": 0.0,
+      "amount_paid": 0.0,
+      "total": 4427.5,
+      "currency": "SAR",
+      "status": "cancelled",
+      "payment_status": "refunded",
+      "dietary": [],
+      "allergens": [],
+      "notes": "Cancelled 48h prior — refund processed minus 10% admin.",
+      "created_at": 1778321894
+    },
+    {
+      "id": "CAT-0012",
+      "client_name": "Noura Al-Saleh",
+      "client_name_ar": "نورة الصالح",
+      "client_phone": "+966 55 234 5678",
+      "client_email": "noura.s@example.com",
+      "client_company": "",
+      "event_date": "2026-07-11",
+      "event_time": "13:00",
+      "event_type": "reception",
+      "package": "plated_dinner",
+      "venue": "Four Seasons Riyadh — Al-Faisaliah Suite",
+      "guests": 90,
+      "items": [
+        {
+          "name_en": "Bridal-shower plated brunch",
+          "name_ar": "إفطار حفل عروس مع أطباق",
+          "qty": 90,
+          "unit_price": 195.0,
+          "currency": "SAR"
+        }
+      ],
+      "per_guest_price": 195.0,
+      "subtotal": 17550.0,
+      "vat": 2632.5,
+      "delivery_fee": 150.0,
+      "deposit_due": 6099.75,
+      "deposit_paid": 0.0,
+      "amount_paid": 0.0,
+      "total": 20332.5,
+      "currency": "SAR",
+      "status": "inquiry",
+      "payment_status": "unpaid",
+      "dietary": [
+        "vegetarian"
+      ],
+      "allergens": [],
+      "notes": "Wants 2 vegan options + 1 dairy-free dessert.",
+      "created_at": 1780049894
+    }
+  ]
+}

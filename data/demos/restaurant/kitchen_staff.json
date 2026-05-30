@@ -1,0 +1,248 @@
+{
+  "staff": [
+    {
+      "id": "STF-001",
+      "name": "Tarek Al-Halabi",
+      "name_ar": "طارق الحلبي",
+      "role": "head_chef",
+      "phone": "+966 50 110 1100",
+      "beacon_id": "BCN-2A41",
+      "shift": "evening",
+      "status": "on_shift",
+      "tint": "#dc2626",
+      "schedule": [
+        {
+          "zone_id": "GF-CHICKEN-STOCK",
+          "dwell_s": 60
+        },
+        {
+          "zone_id": "GF-MEAT-STOCK",
+          "dwell_s": 60
+        },
+        {
+          "zone_id": "GF-FISH-STOCK",
+          "dwell_s": 30
+        },
+        {
+          "zone_id": "GF-DRY-STORE",
+          "dwell_s": 45
+        },
+        {
+          "zone_id": "GF-CHIEF-OFFICE",
+          "dwell_s": 40
+        }
+      ],
+      "active": true,
+      "notes": "Walks the line, plates expedite."
+    },
+    {
+      "id": "STF-002",
+      "name": "Yara Karam",
+      "name_ar": "يارا كرم",
+      "role": "sous_chef",
+      "phone": "+966 55 220 2200",
+      "beacon_id": "BCN-2A42",
+      "shift": "evening",
+      "status": "on_shift",
+      "tint": "#ea580c",
+      "schedule": [
+        {
+          "zone_id": "GF-MEAT-STOCK",
+          "dwell_s": 70
+        },
+        {
+          "zone_id": "GF-VEG-PROCESS",
+          "dwell_s": 60
+        },
+        {
+          "zone_id": "FF-CHICKEN-PROC",
+          "dwell_s": 40
+        },
+        {
+          "zone_id": "GF-FISH-STOCK",
+          "dwell_s": 50
+        }
+      ],
+      "active": true,
+      "notes": "Floats between stations during peak."
+    },
+    {
+      "id": "STF-003",
+      "name": "Bashir Naim",
+      "name_ar": "بشير نعيم",
+      "role": "grill_cook",
+      "phone": "+966 53 330 3300",
+      "beacon_id": "BCN-2A43",
+      "shift": "evening",
+      "status": "on_shift",
+      "tint": "#f97316",
+      "schedule": [
+        {
+          "zone_id": "GF-MEAT-STOCK",
+          "dwell_s": 220
+        },
+        {
+          "zone_id": "GF-CHICKEN-STOCK",
+          "dwell_s": 90
+        },
+        {
+          "zone_id": "GF-DRY-STORE",
+          "dwell_s": 30
+        }
+      ],
+      "active": true,
+      "notes": "Mixed grill specialist."
+    },
+    {
+      "id": "STF-004",
+      "name": "Rana Saad",
+      "name_ar": "رنا سعد",
+      "role": "pastry_chef",
+      "phone": "+966 56 440 4400",
+      "beacon_id": "BCN-2A44",
+      "shift": "evening",
+      "status": "on_shift",
+      "tint": "#ec4899",
+      "schedule": [
+        {
+          "zone_id": "FF-CHILLER-BREAD",
+          "dwell_s": 200
+        },
+        {
+          "zone_id": "FF-FRZ-BREAD",
+          "dwell_s": 30
+        },
+        {
+          "zone_id": "FF-CHILLER-BREAD",
+          "dwell_s": 220
+        },
+        {
+          "zone_id": "FF-DAIRY-CH",
+          "dwell_s": 35
+        }
+      ],
+      "active": true,
+      "notes": "Knafeh + baklava + bread station."
+    },
+    {
+      "id": "STF-005",
+      "name": "Joud Mansour",
+      "name_ar": "جود منصور",
+      "role": "prep_cook",
+      "phone": "+966 50 550 5500",
+      "beacon_id": "BCN-2A45",
+      "shift": "afternoon",
+      "status": "on_shift",
+      "tint": "#10b981",
+      "schedule": [
+        {
+          "zone_id": "GF-VEG-CLEANING",
+          "dwell_s": 150
+        },
+        {
+          "zone_id": "GF-VEG-PROCESS",
+          "dwell_s": 120
+        },
+        {
+          "zone_id": "GF-VEG-CHILLER",
+          "dwell_s": 40
+        },
+        {
+          "zone_id": "GF-VEG-PROCESSED",
+          "dwell_s": 40
+        }
+      ],
+      "active": true,
+      "notes": "Chops + stocks the cold line."
+    },
+    {
+      "id": "STF-006",
+      "name": "Sami Hadid",
+      "name_ar": "سامي هادي",
+      "role": "prep_cook",
+      "phone": "+966 55 660 6600",
+      "beacon_id": "BCN-2A46",
+      "shift": "afternoon",
+      "status": "on_break",
+      "tint": "#14b8a6",
+      "schedule": [
+        {
+          "zone_id": "FF-CHICKEN-PROC",
+          "dwell_s": 100
+        },
+        {
+          "zone_id": "FF-FISH-PROC",
+          "dwell_s": 70
+        },
+        {
+          "zone_id": "FF-MEAT-PROC",
+          "dwell_s": 90
+        }
+      ],
+      "active": true,
+      "notes": "On 15-min break."
+    },
+    {
+      "id": "STF-007",
+      "name": "Eyad Rifai",
+      "name_ar": "إياد الرفاعي",
+      "role": "dishwasher",
+      "phone": "+966 53 770 7700",
+      "beacon_id": "BCN-2A47",
+      "shift": "evening",
+      "status": "on_shift",
+      "tint": "#a855f7",
+      "schedule": [
+        {
+          "zone_id": "GF-CLEAN-POT",
+          "dwell_s": 280
+        },
+        {
+          "zone_id": "GF-JANITOR",
+          "dwell_s": 30
+        }
+      ],
+      "active": true,
+      "notes": "Anchored at clean pot."
+    },
+    {
+      "id": "STF-008",
+      "name": "Mounir Saade",
+      "name_ar": "منير سعادة",
+      "role": "stock_lead",
+      "phone": "+966 56 880 8800",
+      "beacon_id": "BCN-2A48",
+      "shift": "afternoon",
+      "status": "on_shift",
+      "tint": "#0ea5e9",
+      "schedule": [
+        {
+          "zone_id": "GF-DRY-STORE",
+          "dwell_s": 40
+        },
+        {
+          "zone_id": "GF-PROTEIN-FRZ",
+          "dwell_s": 35
+        },
+        {
+          "zone_id": "GF-RECEIVING-BAY",
+          "dwell_s": 50
+        },
+        {
+          "zone_id": "GF-DISPATCH",
+          "dwell_s": 30
+        },
+        {
+          "zone_id": "FF-FISH-FRZ",
+          "dwell_s": 30
+        },
+        {
+          "zone_id": "FF-CHILLER-ROOM",
+          "dwell_s": 35
+        }
+      ],
+      "active": true,
+      "notes": "Receives + rotates stock across both floors."
+    }
+  ]
+}

@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, File, Form, HTTPException, Request, Response, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import asyncio
@@ -25,6 +26,8 @@ from .wasender import build_client as build_wasender_client
 from . import whatsapp_inbox
 from . import whatsapp_templates
 from . import whatsapp_contacts
+from . import whatsapp_bot
+from . import main_settings as main_settings_mod
 from .agent_tools import load_snapshot, save_snapshot
 from ..auth import (
     clear_session,
@@ -290,10 +293,23 @@ async def whatsapp_webhook(request: Request) -> dict:
             payload = json.loads(body) if body.strip().startswith(("{", "[")) else {"raw": body}
         except Exception:
             payload = {}
-    added = whatsapp_inbox.store_webhook(payload if isinstance(payload, dict) else {"payload": payload})
+    safe_payload = payload if isinstance(payload, dict) else {"payload": payload}
+    added = whatsapp_inbox.store_webhook(safe_payload)
     if added:
         logger.info("WhatsApp webhook stored %d new message(s)", added)
-    return {"ok": True, "added": added}
+    # Fan the newly-arrived inbound envelopes into the bot — best effort,
+    # gated on the operator's toggle. The bot walks the FULL payload itself
+    # so it sees the outer message envelope (with text + audio blocks),
+    # not the inner `key` row that the inbox's _candidate_rows captures.
+    dispatched = 0
+    try:
+        dispatched = whatsapp_bot.maybe_dispatch_webhook(
+            safe_payload,
+            broadcast=clinic_live_agent_service._broadcast,
+        )
+    except Exception:
+        logger.exception("WhatsApp webhook → bot dispatch failed (non-fatal)")
+    return {"ok": True, "added": added, "bot_dispatched": dispatched}
 
 
 @router.get("/whatsapp/inbox")
@@ -351,6 +367,176 @@ async def whatsapp_templates_set(payload: WhatsAppTemplatesIn) -> dict:
         "ok":        True,
         "templates": whatsapp_templates.resolved_templates(),
     }
+
+
+# Public per-machine directory where operator-uploaded media is stored.
+# Files here are served by the /whatsapp/outgoing/{name} endpoint and
+# Wasender fetches them by URL when we call send-message with imageUrl /
+# videoUrl / documentUrl / audioUrl. Lives under data/ so it's gitignored
+# automatically (PII: caller phones + the media they receive).
+_OUTGOING_DIR = (Path(__file__).resolve().parents[4]
+                 / "data" / "demos" / "clinic" / "whatsapp_outgoing")
+
+
+def _detect_media_kind(content_type: str, filename: str) -> str:
+    """Map an upload's content_type / extension onto Wasender's
+    messageType enum. Returns 'image' | 'video' | 'audio' | 'document'.
+    Documents is the safe catch-all."""
+    ct = (content_type or "").lower().split(";")[0].strip()
+    ext = Path(filename or "").suffix.lower().lstrip(".")
+    if ct.startswith("image/") or ext in {"jpg", "jpeg", "png", "gif", "webp"}:
+        return "image"
+    if ct.startswith("video/") or ext in {"mp4", "mov", "webm", "mkv", "m4v"}:
+        return "video"
+    if ct.startswith("audio/") or ext in {"mp3", "ogg", "m4a", "aac", "opus", "wav"}:
+        return "audio"
+    return "document"
+
+
+@router.post("/whatsapp/send-media")
+async def whatsapp_send_media(
+    request: Request,
+    to:      str = Form(...),
+    caption: str = Form(""),
+    file:    UploadFile = File(...),
+) -> dict:
+    """Send an image / video / audio / document via WasenderApi.
+
+    Wasender's send-message endpoint takes a public URL for each media
+    type (imageUrl / videoUrl / audioUrl / documentUrl). We save the
+    upload under data/demos/clinic/whatsapp_outgoing/, then construct
+    the public URL using the request's own host so the file is
+    reachable through the Cloudflare tunnel (clinicmac.primewave2.tech).
+    If you're testing on bare localhost the URL will be unreachable by
+    Wasender — that's flagged in the response.
+    """
+    if not (to or "").strip():
+        raise HTTPException(400, "to is required")
+    if whatsapp_contacts.is_lid_jid(to):
+        return {
+            "ok":    False,
+            "status": 0,
+            "error": "Cannot send to a WhatsApp LID (privacy ID). Need a phone.",
+        }
+    if not file or not file.filename:
+        raise HTTPException(400, "file is required")
+    cfg = load_escalation_config()
+    api_key = str(cfg.get("wasender_api_key") or "").strip()
+    if not api_key:
+        return {"ok": False, "status": 0,
+                "error": "WhatsApp API key not configured."}
+
+    # Save under a randomised filename to prevent collisions + simple
+    # path-traversal proof. Keep the original extension so MIME sniffing
+    # on Wasender's / WhatsApp's side works.
+    import uuid as _uuid
+    ext = Path(file.filename).suffix.lower()[:10] or ".bin"
+    safe_name = f"{_uuid.uuid4().hex}{ext}"
+    _OUTGOING_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = _OUTGOING_DIR / safe_name
+    data = await file.read()
+    if not data:
+        raise HTTPException(400, "empty file")
+    out_path.write_bytes(data)
+
+    # Build the public URL Wasender will fetch from. Prefer the operator's
+    # configured public base URL (set on Call Center → Configuration); the
+    # request's own host only works when the operator is currently
+    # browsing via the public tunnel hostname. Falling back to the
+    # request URL means "send-media works from the same hostname that
+    # serves the SPA" but breaks for local-browser access.
+    rel_path = f"/api/demo/clinic/whatsapp/outgoing/{safe_name}"
+    public_base = str(cfg.get("public_base_url") or "").rstrip("/").strip()
+    if public_base and public_base.startswith(("http://", "https://")):
+        public_url = f"{public_base}{rel_path}"
+    else:
+        public_url = str(request.url_for("whatsapp_serve_outgoing",
+                                          filename=safe_name))
+    private_host = any(
+        s in public_url for s in (
+            "localhost", "127.0.0.1", "://10.", "://192.168.",
+            "://172.16.", "://172.17.", "://172.18.", "://172.19.",
+            "://172.2", "://172.30.", "://172.31.",
+        )
+    )
+    if private_host:
+        return {
+            "ok":    False,
+            "status": 0,
+            "url":    public_url,
+            "error": (
+                "The media URL the backend would hand to Wasender "
+                f"({public_url}) points at a private/loopback address that "
+                "Wasender's servers cannot reach from the public internet. "
+                "Open Call Center → Configuration and set "
+                "'Public base URL' to your Cloudflare tunnel "
+                "(e.g. https://clinicmac.primewave2.tech), then retry."
+            ),
+        }
+
+    # Pick the messageType + URL field WasenderApi expects.
+    kind = _detect_media_kind(file.content_type or "", file.filename)
+    body: dict = {"to": to, "messageType": kind}
+    if kind == "image":
+        body["imageUrl"] = public_url
+        if caption.strip(): body["text"] = caption.strip()
+    elif kind == "video":
+        body["videoUrl"] = public_url
+        if caption.strip(): body["text"] = caption.strip()
+    elif kind == "audio":
+        body["audioUrl"] = public_url
+    else:
+        body["documentUrl"] = public_url
+        body["fileName"]    = file.filename
+        if caption.strip(): body["text"] = caption.strip()
+
+    logger.info("send-media: kind=%s to=%s file=%s (%d bytes) url=%s",
+                kind, to, file.filename, len(data), public_url)
+    import httpx as _hx
+    try:
+        async with _hx.AsyncClient(timeout=30.0) as client:
+            r = await client.post(
+                "https://www.wasenderapi.com/api/send-message",
+                headers={"Authorization": f"Bearer {api_key}",
+                         "Content-Type":  "application/json",
+                         "Accept":        "application/json"},
+                json=body,
+            )
+    except _hx.RequestError as e:
+        return {"ok": False, "status": 0, "error": f"network: {e}"}
+    try:
+        payload = r.json()
+    except Exception:
+        payload = {"raw": (r.text or "")[:500]}
+    ok = 200 <= r.status_code < 300 and not (
+        isinstance(payload, dict) and payload.get("success") is False
+    )
+    data_field = (payload.get("data") or {}) if isinstance(payload, dict) else {}
+    mid = data_field.get("msgId") or data_field.get("message_id")
+    return {
+        "ok":          ok,
+        "status":      r.status_code,
+        "message_id":  mid,
+        "kind":        kind,
+        "url":         public_url,
+        "error":       (payload.get("message") or payload.get("error")
+                        if not ok and isinstance(payload, dict) else None),
+        "raw":         payload,
+    }
+
+
+@router.get("/whatsapp/outgoing/{filename}", name="whatsapp_serve_outgoing")
+async def whatsapp_serve_outgoing(filename: str):
+    """Public-by-design endpoint that hands Wasender (and recipients
+    fetching previews) the operator-uploaded media. The path is
+    deliberately not session-gated — if it were, Wasender's servers
+    couldn't fetch the file at all."""
+    if "/" in filename or ".." in filename or len(filename) > 200:
+        raise HTTPException(400, "invalid filename")
+    p = _OUTGOING_DIR / filename
+    if not p.exists():
+        raise HTTPException(404, "not found")
+    return FileResponse(str(p))
 
 
 @router.post("/whatsapp/send")
@@ -754,6 +940,10 @@ async def whatsapp_messages(jid: str, limit: int = 300) -> dict:
     patients_for_merge = (_load_snap() or {}).get("patients") or []
     name_index = whatsapp_contacts.build_patient_name_index(patients_for_merge)
 
+    # Read the bot's outbound msgId ledger once per request so each
+    # outbound row can be flagged sent_by_ai without doing per-row file I/O.
+    ai_ids = whatsapp_bot.ai_sent_ids()
+
     rows = []
     for m in items:
         if not isinstance(m, dict):
@@ -765,17 +955,119 @@ async def whatsapp_messages(jid: str, limit: int = 300) -> dict:
         if _digits(canon_row) != target_digits and canon_row != jid and \
            _digits(row_jid) != target_digits and row_jid != jid:
             continue
+        msg_id = m.get("id") or (m.get("key") or {}).get("id")
+        # Surface any inbound media (voice note, image, video, document)
+        # as a `media_url` so the SPA can render the appropriate player /
+        # preview / download link. The endpoint behind that URL fetches
+        # the file from Wasender, decrypts it with the mediaKey if
+        # needed, and caches the plaintext on disk.
+        media_url = None
+        media_type = None
+        media_filename = None
+        if msg_id:
+            _block, _kind, _fname = whatsapp_bot._find_media_block(m)
+            if _block and _kind:
+                media_url = f"/api/demo/clinic/whatsapp/media/{msg_id}"
+                media_type = _kind
+                media_filename = _fname
+        from_me = _msg_from_me(m, our_digits)
         rows.append({
-            "id":       m.get("id") or (m.get("key") or {}).get("id"),
-            "ts":       _msg_ts(m),
-            "from_me":  _msg_from_me(m, our_digits),
-            "text":     _msg_text(m),
+            "id":            msg_id,
+            "ts":            _msg_ts(m),
+            "from_me":       from_me,
+            "text":          _msg_text(m),
             # Raw type tag for icons / styling
-            "type":     m.get("messageType") or m.get("type") or "text",
+            "type":          m.get("messageType") or m.get("type") or "text",
+            "media_type":    media_type,
+            "media_url":     media_url,
+            "media_filename": media_filename,
+            # True when the bot (not the operator at the WhatsApp page)
+            # sent this outbound row. Frontend renders an "AI" badge so
+            # the operator can distinguish hand-typed replies from
+            # bot-handled ones at a glance.
+            "sent_by_ai":    bool(from_me and msg_id and str(msg_id) in ai_ids),
         })
     rows.sort(key=lambda r: r["ts"])
     return {"ok": True, "messages": rows, "count": len(rows),
             "our_digits": our_digits}
+
+
+# Map media kind → a sensible extension for the disk cache filename. We
+# don't trust the mimetype's extension because Wasender often gives
+# `application/octet-stream` for audio and "bin" for everything else.
+_EXT_FOR_KIND = {
+    "audio":    "ogg",
+    "image":    "jpg",
+    "video":    "mp4",
+    "document": "bin",   # overridden by the block's fileName when present
+    "sticker":  "webp",
+}
+
+
+@router.get("/whatsapp/media/{message_id}")
+async def whatsapp_media(message_id: str):
+    """Return the decrypted media bytes for an inbound WhatsApp row.
+    Handles every kind of media — voice notes, images, videos,
+    documents — by routing to `whatsapp_bot._fetch_media_bytes` with
+    the right kind. WhatsApp media is E2E-encrypted with the `mediaKey`
+    carried in the message block, so the raw URL Wasender gives us is
+    a ciphertext blob that has to be HKDF+AES decrypted first.
+    Decrypted bytes get cached on disk because Wasender's presigned
+    URLs expire quickly and re-fetching wouldn't even work after a few
+    minutes."""
+    if not message_id or len(message_id) > 128 or "/" in message_id \
+            or ".." in message_id:
+        raise HTTPException(400, "invalid message_id")
+    cache_dir = Path(__file__).resolve().parents[4] / "data" / "demos" / "clinic" / "whatsapp_media"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+
+    # Look up the inbound row so we know what kind of media this is
+    # AND what filename to advertise to the browser (documents come
+    # with a human-readable `fileName` we want to preserve).
+    target = None
+    for row in whatsapp_inbox.list_inbox():
+        rid = row.get("id") or (row.get("key") or {}).get("id")
+        if rid == message_id:
+            target = row
+            break
+    if not target:
+        raise HTTPException(404, "message not found in inbox")
+    block, kind, fname = whatsapp_bot._find_media_block(target)
+    if not block or not kind:
+        raise HTTPException(404, "message has no media block")
+
+    # Cache key per (id, kind, ext). Reuse the document's original
+    # filename for the on-disk extension when we have one — picture-
+    # perfect downloads for PDFs / DOCX / etc.
+    ext = _EXT_FOR_KIND.get(kind, "bin")
+    if kind == "document" and fname and "." in fname:
+        ext = fname.rsplit(".", 1)[-1].lower()[:8] or "bin"
+    cache_path = cache_dir / f"{message_id}.{ext}"
+    download_name = fname if (kind == "document" and fname) else f"{message_id}.{ext}"
+
+    mime_from_block = whatsapp_bot._mime_from_block(block, kind)
+    if cache_path.exists():
+        return FileResponse(
+            str(cache_path), media_type=mime_from_block,
+            filename=download_name,
+        )
+
+    media_bytes, mime = await whatsapp_bot._fetch_media_bytes(block, kind)
+    if not media_bytes:
+        raise HTTPException(502, "media fetch or decrypt failed — "
+                                 "check the bot debug log")
+    if whatsapp_bot._looks_like_media(media_bytes, kind):
+        cache_path.write_bytes(media_bytes)
+    else:
+        logger.warning("whatsapp_media: bytes don't match expected %s "
+                        "container for id=%s — serving uncached",
+                        kind, message_id)
+    return Response(
+        content=media_bytes,
+        media_type=(mime or mime_from_block),
+        headers={"Content-Disposition":
+                 f'inline; filename="{download_name}"'},
+    )
 
 
 @router.get("/whatsapp/raw_contacts")
@@ -853,6 +1145,332 @@ async def whatsapp_raw(limit: int = 5) -> dict:
         # more pages (last_page, total, next_page_url, etc.) when
         # Wasender wraps results.
         "raw_wrapper": result.get("raw"),
+    }
+
+
+# ----- WhatsApp Bot --------------------------------------------------------
+# Read-only views over data/demos/clinic/whatsapp_conversations.json so the
+# SPA's Bot page can show per-phone histories and a status pill, plus a
+# toggle endpoint mirroring the escalation config field.
+
+@router.get("/whatsapp/bot/status")
+async def whatsapp_bot_status() -> dict:
+    """Whether the bot is on, what model it'd use, and how many phones
+    we have history for. Mirrors keys from the escalation config."""
+    cfg = load_escalation_config()
+    enabled = bool(cfg.get("whatsapp_bot_enabled"))
+    model = (str(cfg.get("whatsapp_bot_text_model") or "").strip()
+             or whatsapp_bot.DEFAULT_TEXT_MODEL)
+    convs = whatsapp_bot.list_conversations()
+    return {
+        "ok":             True,
+        "enabled":        enabled,
+        "model":          model,
+        "has_api_key":    bool(str(cfg.get("wasender_api_key") or "").strip()),
+        "has_gemini_key": bool(state.gemini_api_key),
+        "conversations":  len(convs),
+    }
+
+
+class BotToggleIn(BaseModel):
+    enabled: bool
+    text_model: Optional[str] = None
+
+
+@router.post("/whatsapp/bot/toggle")
+async def whatsapp_bot_toggle(payload: BotToggleIn) -> dict:
+    """One-knob enable/disable. Persists to the escalation.json file."""
+    patch: dict = {"whatsapp_bot_enabled": bool(payload.enabled)}
+    if payload.text_model is not None:
+        patch["whatsapp_bot_text_model"] = str(payload.text_model or "").strip()
+    cfg = save_escalation_config(patch)
+    return {
+        "ok":         True,
+        "enabled":    bool(cfg.get("whatsapp_bot_enabled")),
+        "text_model": str(cfg.get("whatsapp_bot_text_model") or "").strip(),
+    }
+
+
+@router.get("/whatsapp/bot/conversations")
+async def whatsapp_bot_conversations() -> dict:
+    """List every phone we have a bot conversation for, newest-first."""
+    return {"ok": True, "items": whatsapp_bot.list_conversations()}
+
+
+@router.get("/whatsapp/bot/conversations/{phone}")
+async def whatsapp_bot_conversation(phone: str) -> dict:
+    """Full turn-by-turn transcript for one phone (digits-only key)."""
+    digits = "".join(ch for ch in (phone or "") if ch.isdigit())
+    if not digits:
+        raise HTTPException(400, "phone must be digits")
+    return {
+        "ok":    True,
+        "phone": digits,
+        "turns": whatsapp_bot.get_conversation(digits),
+    }
+
+
+@router.delete("/whatsapp/bot/conversations/{phone}")
+async def whatsapp_bot_conversation_clear(phone: str) -> dict:
+    digits = "".join(ch for ch in (phone or "") if ch.isdigit())
+    if not digits:
+        raise HTTPException(400, "phone must be digits")
+    removed = whatsapp_bot.clear_conversation(digits)
+    return {"ok": True, "removed": removed}
+
+
+@router.delete("/whatsapp/bot/conversations")
+async def whatsapp_bot_conversation_clear_all() -> dict:
+    n = whatsapp_bot.clear_all_conversations()
+    return {"ok": True, "removed": n}
+
+
+@router.get("/whatsapp/bot/lid-cache")
+async def whatsapp_bot_lid_cache_get() -> dict:
+    """Persistent LID → phone JID map the bot uses to route replies for
+    privacy-mode senders. Survives snapshot patient edits/deletes."""
+    return {"ok": True, "items": whatsapp_bot.lid_cache_dump()}
+
+
+class LidCacheIn(BaseModel):
+    lid_jid:    str   # e.g. "233908264300569@lid"
+    phone_jid:  str   # e.g. "966591697226@s.whatsapp.net" or just "966591697226"
+
+
+@router.post("/whatsapp/bot/lid-cache")
+async def whatsapp_bot_lid_cache_set(payload: LidCacheIn) -> dict:
+    """Manually pin a LID → phone mapping. Use when auto-resolution can't
+    bootstrap a brand-new sender (no patient on file yet, or the push
+    name doesn't match)."""
+    lid = (payload.lid_jid or "").strip()
+    phone = (payload.phone_jid or "").strip()
+    if not lid.endswith("@lid"):
+        raise HTTPException(400, "lid_jid must end in @lid")
+    if "@" not in phone:
+        digits = "".join(c for c in phone if c.isdigit())
+        if not digits:
+            raise HTTPException(400, "phone_jid must be digits or a full JID")
+        phone = f"{digits}@s.whatsapp.net"
+    items = whatsapp_bot.lid_cache_set(lid, phone)
+    return {"ok": True, "items": items}
+
+
+@router.delete("/whatsapp/bot/lid-cache/{lid_jid}")
+async def whatsapp_bot_lid_cache_del(lid_jid: str) -> dict:
+    removed = whatsapp_bot.lid_cache_delete(lid_jid)
+    return {"ok": True, "removed": removed}
+
+
+class BotTestIn(BaseModel):
+    phone: str
+    text:  str
+
+
+@router.post("/whatsapp/bot/test")
+async def whatsapp_bot_test(payload: BotTestIn) -> dict:
+    """Run the bot synchronously on a synthetic inbound message, then
+    return whatever the bot replied. Useful for end-to-end testing
+    without depending on the Wasender webhook actually firing — if THIS
+    works but real WhatsApp messages don't get a reply, the issue is
+    upstream (webhook URL, Wasender event subscription, Cloudflare
+    tunnel)."""
+    digits = "".join(ch for ch in (payload.phone or "") if ch.isdigit())
+    if not digits:
+        raise HTTPException(400, "phone must be digits")
+    if not (payload.text or "").strip():
+        raise HTTPException(400, "text required")
+    # Build a synthetic envelope in the Baileys shape; reuse the live
+    # broadcast bus so the Activity feed shows the run.
+    fake = {
+        "key":     {"remoteJid": f"{digits}@s.whatsapp.net",
+                    "fromMe":    False,
+                    "id":        f"test-{int(asyncio.get_event_loop().time()*1000)}"},
+        "message": {"conversation": payload.text},
+    }
+    try:
+        await whatsapp_bot.process_message(
+            fake, broadcast=clinic_live_agent_service._broadcast,
+        )
+    except Exception as e:
+        return {"ok": False, "error": f"{type(e).__name__}: {e}"}
+    turns = whatsapp_bot.get_conversation(digits)
+    # Find the last model turn — that's the reply we just produced.
+    last_reply = ""
+    for t in reversed(turns):
+        if t.get("role") == "model":
+            last_reply = str(t.get("text") or "")
+            break
+    return {"ok": True, "phone": digits, "reply": last_reply,
+            "turns": len(turns)}
+
+
+# ----- Main settings -------------------------------------------------------
+# The "about us" clinic-group info (name, location, contact details) that
+# the Settings page edits. Stored in data/demos/clinic/main_settings.json
+# and git-tracked so both machines stay in sync.
+
+@router.get("/main-settings")
+async def main_settings_get() -> dict:
+    return {"ok": True, "settings": main_settings_mod.load_main_settings()}
+
+
+class MainSettingsIn(BaseModel):
+    settings: dict
+
+
+@router.post("/main-settings")
+async def main_settings_set(payload: MainSettingsIn) -> dict:
+    if not isinstance(payload.settings, dict):
+        raise HTTPException(400, "settings must be an object")
+    out = main_settings_mod.save_main_settings(payload.settings)
+    return {"ok": True, "settings": out}
+
+
+# ----- Unified Search ------------------------------------------------------
+# Search across patients + calls + WhatsApp by phone / name / file number.
+# Used by Call Center → Search to surface every interaction we have with a
+# given person without the operator having to bounce between three pages.
+
+@router.get("/search")
+async def search(q: str = "") -> dict:
+    """Find every interaction (patient record, call, WhatsApp thread)
+    matching the query. The query is interpreted broadly:
+      - digits → match phone / file_number / id_number
+      - text   → match name / name_ar (case + whitespace insensitive)
+    Calls are matched by `caller_phone`; WhatsApp threads by the
+    digits-only suffix of the JID."""
+    import re as _re
+    query = (q or "").strip()
+    if len(query) < 2:
+        return {"ok": True, "query": query,
+                "patients": [], "calls": [], "whatsapp": []}
+
+    def _norm(s: Optional[str]) -> str:
+        return _re.sub(r"\s+", " ", (s or "").strip()).lower()
+
+    def _digits(s: Optional[str]) -> str:
+        return _re.sub(r"\D+", "", s or "")
+
+    q_norm   = _norm(query)
+    q_digits = _digits(query)
+
+    # ---- Patients --------------------------------------------------------
+    snap = load_snapshot()
+    matched_patients: list[dict] = []
+    phone_set: set[str] = set()
+    for p in snap.get("patients", []):
+        hits: list[str] = []
+        for field in ("name", "name_ar"):
+            v = _norm(p.get(field))
+            if v and q_norm in v:
+                hits.append(field)
+        if q_digits:
+            for field in ("phone", "id_number"):
+                v = _digits(p.get(field))
+                if v and q_digits in v:
+                    hits.append(field)
+            file_num = (p.get("file_number") or "").upper()
+            if query.upper() in file_num:
+                hits.append("file_number")
+        if hits:
+            matched_patients.append({**p, "_matched_on": hits})
+            d = _digits(p.get("phone"))
+            if d:
+                phone_set.add(d)
+                # Last-9 form so 9665XXXXXXXX matches 5XXXXXXXX matches 05XXXXXXXX
+                if len(d) >= 9:
+                    phone_set.add(d[-9:])
+
+    # If the query itself is digits, treat them as a phone too — covers the
+    # case where the operator searches a phone for someone NOT in the
+    # patient registry (e.g. a brand-new caller we have a call recording
+    # for but never created a file for).
+    if q_digits and len(q_digits) >= 7:
+        phone_set.add(q_digits)
+        if len(q_digits) >= 9:
+            phone_set.add(q_digits[-9:])
+
+    # ---- Calls -----------------------------------------------------------
+    calls_matched: list[dict] = []
+    if phone_set:
+        for c in list_saved_calls(limit=500):
+            cp = _digits(c.get("caller_phone"))
+            if not cp:
+                continue
+            if cp in phone_set or (len(cp) >= 9 and cp[-9:] in phone_set):
+                calls_matched.append(c)
+    # Newest first (list_saved_calls already sorts that way).
+
+    # ---- WhatsApp --------------------------------------------------------
+    # Reuse the same merge the /messages endpoint does so we cope with
+    # Wasender's outbound-only logs + our local inbound inbox + LID
+    # canonicalisation.
+    whatsapp_threads: list[dict] = []
+    if phone_set:
+        cfg = load_escalation_config()
+        api_key    = str(cfg.get("wasender_api_key") or "").strip()
+        personal   = str(cfg.get("wasender_personal_token") or "").strip()
+        session_id = str(cfg.get("wasender_session_id") or "").strip()
+        try:
+            wa_client = build_wasender_client(api_key, personal)
+            wa_result = await wa_client.list_messages(session_id, limit=500)
+        except Exception:
+            wa_result = {"items": []}
+        outbound = wa_result.get("items") or []
+        inbound  = whatsapp_inbox.list_inbox()
+        items    = list(outbound) + list(inbound)
+        our_digits = _detect_our_phone(items)
+        name_index = whatsapp_contacts.build_patient_name_index(
+            (snap.get("patients") or []),
+        )
+        ai_ids = whatsapp_bot.ai_sent_ids()
+
+        # Bucket messages per phone — collapse LIDs to their canonical phone.
+        by_phone: dict[str, list[dict]] = {}
+        for m in items:
+            if not isinstance(m, dict):
+                continue
+            row_jid = _msg_jid(m)
+            canon = await whatsapp_contacts.canonical_jid_for(row_jid, name_index)
+            d = _digits(canon.split("@", 1)[0]) if "@" in canon else _digits(canon)
+            if not d:
+                continue
+            if not (d in phone_set
+                    or (len(d) >= 9 and d[-9:] in phone_set)):
+                continue
+            msg_id = m.get("id") or (m.get("key") or {}).get("id")
+            media_url = None
+            if msg_id and whatsapp_bot._find_audio_block(m):
+                media_url = f"/api/demo/clinic/whatsapp/media/{msg_id}"
+            from_me = _msg_from_me(m, our_digits)
+            by_phone.setdefault(d, []).append({
+                "id":         msg_id,
+                "ts":         _msg_ts(m),
+                "from_me":    from_me,
+                "text":       _msg_text(m),
+                "type":       m.get("messageType") or m.get("type") or "text",
+                "media_type": "audio" if media_url else None,
+                "media_url":  media_url,
+                "sent_by_ai": bool(from_me and msg_id and str(msg_id) in ai_ids),
+            })
+        for phone, msgs in by_phone.items():
+            msgs.sort(key=lambda r: r.get("ts") or 0)
+            whatsapp_threads.append({
+                "phone":    phone,
+                "messages": msgs,
+                "count":    len(msgs),
+            })
+        whatsapp_threads.sort(
+            key=lambda t: (t["messages"][-1]["ts"] if t["messages"] else 0),
+            reverse=True,
+        )
+
+    return {
+        "ok":       True,
+        "query":    query,
+        "patients": matched_patients,
+        "calls":    calls_matched,
+        "whatsapp": whatsapp_threads,
     }
 
 

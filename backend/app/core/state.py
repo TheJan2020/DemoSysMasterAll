@@ -20,6 +20,52 @@ class State:
         self.homeassistant_token: Optional[str] = None
         self.gemini_api_key: Optional[str] = None
         self.gemini_model: str = _DEFAULT_GEMINI_MODEL
+        # DeepSeek (OpenAI-compatible API at api.deepseek.com by default).
+        # Used as an alternative vision provider in the Restaurant Kitchen
+        # AI-Camera + AI-Rules pages, side-by-side with Gemini.
+        self.deepseek_api_key: Optional[str] = None
+        self.deepseek_base_url: str = "https://api.deepseek.com"
+        # OpenRouter (OpenAI-compatible aggregator at openrouter.ai). Gives
+        # a single key access to Qwen-VL, DeepSeek-VL2, Llama 3.2 Vision,
+        # Pixtral, GPT-4o, Claude Haiku, and more — used as a third vision
+        # provider so we can pick the cheapest/best model for the task.
+        self.openrouter_api_key: Optional[str] = None
+        self.openrouter_base_url: str = "https://openrouter.ai/api/v1"
+        # ElevenLabs streaming TTS — when an api_key is set, the Live
+        # Agent (currently restaurant only) switches Gemini Live to
+        # text-only response and synthesises voice through ElevenLabs's
+        # bidirectional WebSocket. Defaults are an Arabic-friendly female
+        # voice on the multilingual_v2 model; both are editable from
+        # Settings so you can audition voices without a code change.
+        self.elevenlabs_api_key: Optional[str] = None
+        self.elevenlabs_voice_id: str = "EXAVITQu4vr4xnSDxMaL"   # Sarah
+        self.elevenlabs_model_id: str = "eleven_multilingual_v2"
+        # Voice provider for the restaurant Live Agent — three choices:
+        #   "gemini"                     — Gemini Live native audio
+        #                                   (default, best phone UX).
+        #   "gemini_with_elevenlabs_tts" — Gemini Live's brain + tool
+        #                                   calls + transcription, but
+        #                                   Gemini audio is dropped and
+        #                                   ElevenLabs Streaming TTS
+        #                                   speaks Gemini's text. Lets
+        #                                   you use ANY ElevenLabs voice
+        #                                   (incl. shared community PVCs
+        #                                   like Sahl/Abdullah that CAI
+        #                                   rejects) — at the cost of
+        #                                   streaming-TTS prosody quirks.
+        #   "elevenlabs_cai"             — ElevenLabs Conversational AI;
+        #                                   their stack replaces Gemini
+        #                                   entirely (STT + LLM + TTS
+        #                                   bundled). Persona/KB/tools
+        #                                   are auto-synced via their
+        #                                   REST API; only the agent_id
+        #                                   is stored here. Best voice
+        #                                   quality, but voices must be
+        #                                   CAI-eligible (premade or
+        #                                   owned clones).
+        self.voice_provider: str = "gemini"
+        # Set by `cai_elevenlabs.ensure_agent()` on first create / update.
+        self.elevenlabs_agent_id: Optional[str] = None
         # MQTT broker (used to subscribe to Frigate's push events)
         self.mqtt_host: Optional[str] = None
         self.mqtt_port: int = 1883
@@ -165,6 +211,20 @@ class State:
             self.homeassistant_token = data.get("homeassistant_token") or None
             self.gemini_api_key = data.get("gemini_api_key") or None
             self.gemini_model = data.get("gemini_model") or _DEFAULT_GEMINI_MODEL
+            self.deepseek_api_key = data.get("deepseek_api_key") or None
+            self.deepseek_base_url = data.get("deepseek_base_url") or "https://api.deepseek.com"
+            self.openrouter_api_key = data.get("openrouter_api_key") or None
+            self.openrouter_base_url = data.get("openrouter_base_url") or "https://openrouter.ai/api/v1"
+            self.elevenlabs_api_key  = data.get("elevenlabs_api_key") or None
+            self.elevenlabs_voice_id = data.get("elevenlabs_voice_id") or "EXAVITQu4vr4xnSDxMaL"
+            self.elevenlabs_model_id = data.get("elevenlabs_model_id") or "eleven_multilingual_v2"
+            vp = (data.get("voice_provider") or "gemini").strip().lower()
+            self.voice_provider = vp if vp in (
+                "gemini",
+                "gemini_with_elevenlabs_tts",
+                "elevenlabs_cai",
+            ) else "gemini"
+            self.elevenlabs_agent_id = data.get("elevenlabs_agent_id") or None
             self.mqtt_host = data.get("mqtt_host") or None
             self.mqtt_port = int(data.get("mqtt_port") or 1883)
             self.mqtt_username = data.get("mqtt_username") or None
@@ -233,6 +293,15 @@ class State:
                         "homeassistant_token": self.homeassistant_token,
                         "gemini_api_key": self.gemini_api_key,
                         "gemini_model": self.gemini_model,
+                        "deepseek_api_key": self.deepseek_api_key,
+                        "deepseek_base_url": self.deepseek_base_url,
+                        "openrouter_api_key": self.openrouter_api_key,
+                        "openrouter_base_url": self.openrouter_base_url,
+                        "elevenlabs_api_key":  self.elevenlabs_api_key,
+                        "elevenlabs_voice_id": self.elevenlabs_voice_id,
+                        "elevenlabs_model_id": self.elevenlabs_model_id,
+                        "voice_provider":      self.voice_provider,
+                        "elevenlabs_agent_id": self.elevenlabs_agent_id,
                         "mqtt_host": self.mqtt_host,
                         "mqtt_port": self.mqtt_port,
                         "mqtt_username": self.mqtt_username,
