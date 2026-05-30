@@ -1,0 +1,18 @@
+[Unit]
+Description=Fix Mutagen agent execute permission
+# Mutagen uploads its remote agent binary via SSH but doesn't chmod +x
+# it after the upload, so over some SSH transports (notably Tailscale
+# SSH) the agent lands at 0644 and fails to execute. This unit polls
+# ~/.mutagen-agent* every 50ms and adds the execute bit. Lightweight
+# (one syscall per tick), avoids inotify-tools dependency.
+After=network.target
+
+[Service]
+Type=simple
+User=demosys
+ExecStart=/bin/bash -c 'while true; do chmod +x /home/demosys/.mutagen-agent* 2>/dev/null || true; sleep 0.05; done'
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

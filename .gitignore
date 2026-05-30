@@ -89,3 +89,6 @@ desktop.ini
 # Logs / scratch
 *.log
 /tmp/
+
+# Mutagen project session lock — per-machine
+mutagen.yml.lock

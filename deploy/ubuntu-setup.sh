@@ -136,9 +136,12 @@ sed -e "s|@APP_USER@|$APP_USER|g" \
     -e "s|@APP_PORT@|$APP_PORT|g" \
     -e "s|@APP_BIND@|$APP_BIND|g" \
     "$APP_HOME/deploy/pwdemo.service" > /etc/systemd/system/pwdemo.service
+# Helper service for Mutagen-over-Tailscale-SSH (see file header).
+install -m 644 "$APP_HOME/deploy/mutagen-agent-fix.service" \
+               /etc/systemd/system/mutagen-agent-fix.service
 systemctl daemon-reload
-systemctl enable pwdemo.service
-systemctl restart pwdemo.service
+systemctl enable pwdemo.service mutagen-agent-fix.service
+systemctl restart pwdemo.service mutagen-agent-fix.service
 
 # ---------------------------------------------------------------------------
 step "Configuring firewall (UFW)"

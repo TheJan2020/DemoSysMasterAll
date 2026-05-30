@@ -2,15 +2,15 @@
 #
 # Prereqs on Mac:
 #   brew install mutagen-io/mutagen/mutagen
-#   ssh-copy-id pwdemo@<vm-hostname>      # passwordless SSH
-#   # Add an ~/.ssh/config alias so the URL below is clean, e.g.:
-#   #   Host pwdemo
-#   #     HostName 100.x.y.z              (Tailscale IP or DNS)
-#   #     User     pwdemo
+#   # Tailscale SSH handles auth (no key copy / password needed once the
+#   # Mac is on the same tailnet). Just add a ~/.ssh/config alias, e.g.:
+#   #   Host demosys
+#   #     HostName 100.121.14.32          (Tailscale IP or MagicDNS name)
+#   #     User     demosys
 #
-# Usage:
-#   mutagen project start -f deploy/mutagen.yml
-#   mutagen project list     # see status
+# Usage (run from the project root):
+#   mutagen project start
+#   mutagen sync list -l             # status + conflicts
 #   mutagen project terminate
 #
 # Edits on Mac propagate to the VM within ~1s. `uvicorn --reload` on the
@@ -21,14 +21,30 @@
 sync:
   pwdemo:
     alpha: "."
-    # Change `pwdemo` to whatever SSH alias / hostname / user@host you use.
-    beta:  "pwdemo:/opt/pwdemo"
+    # SSH alias from ~/.ssh/config (Host demosys, HostName 100.121.14.32,
+    # User demosys). The demosys user is a member of the pwdemo group
+    # and /opt/pwdemo is setgid + group-writable, so synced files land
+    # with the correct ownership for the systemd service to read them.
+    beta:  "demosys:/opt/pwdemo"
     mode:  "one-way-replica"
+    # Beta-only permissions: files synced to the VM land as group=pwdemo
+    # mode 0664 so the systemd service (running as pwdemo) can read them
+    # via group permission. demosys is a member of pwdemo so chgrp is
+    # allowed. Setting this under configurationBeta (not the top-level
+    # permissions block) avoids Mutagen trying to look up the `pwdemo`
+    # group on the Mac, which doesn't exist there.
+    configurationBeta:
+      permissions:
+        defaultFileMode: "0664"
+        defaultDirectoryMode: "0775"
+        defaultGroup: "pwdemo"
     ignore:
       vcs: true
       paths:
         # Toolchain / build artifacts — VM has its own copy.
         - "/.venv"
+        - "/.cache"   # pip's cache on the VM (owned by pwdemo, mode 0600 — demosys can't read)
+        - "/.local"   # pip's user-install dir on the VM (same reason)
         - "/node_modules"
         - "/prime-mate-restaurant/node_modules"
         - "/prime-mate-clinic/node_modules"
