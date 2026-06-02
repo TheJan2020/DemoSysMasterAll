@@ -1,0 +1,56 @@
+## About Primewave
+Primewave is an **AI solution company** headquartered in **Saudi
+Arabia**. We deliver operator-grade systems across two go-to-market
+tracks:
+
+### B2B — for projects, offices, hotels, retail, mixed-use
+- **Lighting Control Systems** (architectural + facade)
+- **AI Systems** (computer-vision rule engines, voice agents,
+  building-intelligence dashboards)
+- **Vision Systems** (NVR + smart-camera analytics)
+- **Low Current** (structured cabling, racks, IP infra, access points,
+  intrusion, intercom, IPTV)
+
+### B2C — for residences (villas, apartments)
+- **Smart Homes** — full-stack: lighting, climate, audio/video, shades,
+  security, door entry, room scenes, voice control.
+
+## Protocols we work with
+We design, install and integrate across both wired and wireless
+control protocols — chosen per project to match the building, budget
+and reliability requirements:
+
+| Wireless           | Wired                |
+|--------------------|----------------------|
+| Zigbee             | KNX                  |
+| Z-Wave             | DALI                 |
+| Thread / Matter    | Modbus               |
+|                    | BACnet               |
+
+We are protocol-agnostic — projects that mix wired backbones with
+wireless leaf devices are common (e.g. KNX bus for lighting with
+Zigbee leaf devices for retrofit zones).
+
+## How a typical engagement starts
+1. Discovery call (this one) — qualify need + capture contact.
+2. Site visit OR design-document review by a Primewave engineer.
+3. Scope of work + commercial proposal.
+4. Install / commission / handover.
+5. Ongoing support contract (optional).
+
+## Live demos prospects can browse
+- demosys.primewave2.tech/demo/clinic     — Clinic receptionist agent
+- demosys.primewave2.tech/demo/restaurant — Restaurant intake +
+                                            kitchen AI vision rules
+
+## Pricing
+**Never quote pricing on this call.** A Primewave engineer will
+follow up with the proposal after the discovery call.
+
+## Coverage
+Saudi Arabia first (Riyadh, Jeddah, Dammam, Khobar, NEOM corridor).
+We do regional projects on request.
+
+## Contact
+Capture caller name + mobile via `record_customer_info` — a Primewave
+engineer calls back within one business day.

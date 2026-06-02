@@ -1,0 +1,4286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Primewave Main</title>
+  <style>
+    :root {
+      --bg: #0f1216; --panel: #161a21; --panel-2: #1c222b; --border: #242b36;
+      --text: #e6e9ef; --dim: #98a2b3; --accent: #6aa3ff;
+      --brand: linear-gradient(135deg, #5B2A9E, #3E7BE8 55%, #2BC8E5);
+      --err:  #f87171;
+      --sidebar-w: 240px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body { background: var(--bg); color: var(--text);
+           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color: var(--accent); text-decoration: none; }
+    .hide { display: none !important; }
+    h1 { font-size: 22px; margin: 0 0 4px;
+         background: var(--brand); -webkit-background-clip: text;
+         background-clip: text; color: transparent; }
+    p.sub { color: var(--dim); margin: 0 0 18px; font-size: 13px; }
+
+    /* ---------- LOGIN VIEW ------------------------------------------ */
+    .login-wrap {
+      min-height: 100vh; display: grid; place-items: center; padding: 24px;
+    }
+    .login-card {
+      width: 100%; max-width: 380px;
+      background: var(--panel-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px;
+    }
+    .login-head { display:flex; justify-content:space-between;
+                  align-items:center; margin-bottom: 18px; gap: 12px; }
+    .login-head .back {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); background: var(--panel-2); font-size: 12px;
+    }
+    .login-head .back:hover { border-color: var(--accent); }
+    label { display: block; font-size: 11px; color: var(--dim);
+            text-transform: uppercase; letter-spacing: .06em;
+            margin: 14px 0 6px; }
+    input { width: 100%; padding: 10px 12px; border-radius: 8px;
+            border: 1px solid var(--border); background: var(--panel);
+            color: var(--text); font-size: 14px; }
+    input:focus { outline: none; border-color: var(--accent); }
+    button.primary { margin-top: 18px; width: 100%; padding: 11px 14px;
+            border-radius: 8px; border: 0; background: var(--accent);
+            color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+    button.primary:disabled { opacity: 0.6; cursor: progress; }
+    .err { color: var(--err); font-size: 13px; margin-top: 12px;
+           min-height: 18px; }
+
+    /* ---------- APP SHELL (sidebar + main) -------------------------- */
+    .app { display: grid; grid-template-columns: var(--sidebar-w) 1fr;
+           min-height: 100vh; }
+
+    /* sidebar */
+    aside {
+      background: var(--panel); border-right: 1px solid var(--border);
+      padding: 16px 0; display: flex; flex-direction: column;
+    }
+    aside .brand {
+      padding: 0 18px 14px; border-bottom: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    aside .brand .logo {
+      font-size: 16px; font-weight: 700;
+      background: var(--brand); -webkit-background-clip: text;
+      background-clip: text; color: transparent;
+    }
+    aside .brand .tag {
+      font-size: 10px; color: var(--dim); margin-top: 2px;
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+
+    aside nav { padding: 0 10px; flex: 1; }
+    aside .nav-section {
+      padding: 14px 8px 4px; font-size: 10px;
+      color: var(--dim); text-transform: uppercase; letter-spacing: .08em;
+    }
+    aside .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px; margin: 1px 0;
+      color: var(--text); font-size: 14px; cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    aside .nav-item:hover { background: var(--panel-2); }
+    aside .nav-item.active {
+      background: var(--panel-2); border-color: var(--accent);
+    }
+    aside .nav-item .ico {
+      width: 16px; height: 16px; opacity: .8; flex-shrink: 0;
+    }
+    aside .nav-child { padding-left: 28px; font-size: 13px; color: var(--dim); }
+    aside .nav-child.active { color: var(--text); }
+
+    aside .foot {
+      padding: 12px 18px; border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--dim);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    aside .foot a { color: var(--dim); }
+    aside .foot a:hover { color: var(--accent); }
+    aside .foot button {
+      width: 100%; padding: 7px 10px; border-radius: 6px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--dim); font-size: 12px; cursor: pointer;
+    }
+    aside .foot button:hover { color: var(--text); border-color: var(--accent); }
+
+    /* main */
+    main { padding: 28px 32px; overflow-y: auto; }
+    main header { margin-bottom: 24px; }
+
+    .grid { display: grid; gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .tile { background: var(--panel-2); border: 1px solid var(--border);
+            border-radius: 12px; padding: 18px; min-height: 110px; }
+    .tile h3 { margin: 0 0 6px; font-size: 14px; }
+    .tile p  { margin: 0; color: var(--dim); font-size: 13px; line-height: 1.45; }
+    .tile .num {
+      font-size: 28px; font-weight: 700; margin-top: 4px;
+      background: var(--brand); -webkit-background-clip: text;
+      background-clip: text; color: transparent;
+    }
+
+    .panel { background: var(--panel-2); border: 1px solid var(--border);
+             border-radius: 12px; padding: 22px; margin-top: 18px; }
+    .panel h2 { margin: 0 0 6px; font-size: 16px; }
+    .panel .panel-sub { color: var(--dim); font-size: 13px; margin-bottom: 14px; }
+    .placeholder {
+      padding: 28px; border: 1px dashed var(--border); border-radius: 10px;
+      color: var(--dim); font-size: 13px; text-align: center;
+    }
+
+    /* form widgets used inside Settings panels */
+    .row { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 11px; color: var(--dim);
+                   text-transform: uppercase; letter-spacing: .06em; }
+    .field input, .field textarea, .field select {
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px;
+      padding: 9px 11px; font-size: 14px; font-family: inherit;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: none; border-color: var(--accent);
+    }
+    textarea.kb-edit {
+      min-height: 280px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 12.5px; line-height: 1.5; resize: vertical;
+    }
+    .toggle-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+    .toggle-row input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+    .toggle-row label { font-size: 13px; color: var(--text); cursor: pointer; }
+
+    .panel-actions { display: flex; justify-content: flex-end; gap: 10px;
+                     margin-top: 16px; align-items: center; }
+    .save-btn {
+      padding: 9px 18px; border-radius: 8px; border: 0;
+      background: var(--accent); color: white; font-size: 13px;
+      font-weight: 600; cursor: pointer;
+    }
+    .save-btn:disabled { opacity: 0.55; cursor: progress; }
+    .save-msg { font-size: 12px; color: var(--dim); }
+    .save-msg.ok  { color: #34d399; }
+    .save-msg.err { color: var(--err); }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 999px; font-size: 11px;
+      border: 1px solid var(--border); background: var(--panel);
+      color: var(--dim); text-transform: uppercase; letter-spacing: .05em;
+    }
+    .status-pill.on  { color: #34d399; border-color: #34d39955; background: #34d39911; }
+    .status-pill.off { color: #f87171; border-color: #f8717155; background: #f8717111; }
+    .status-pill .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Call Center Dashboard — active calls table */
+    .calls-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .calls-table th, .calls-table td {
+      text-align: left; padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .calls-table th {
+      font-size: 11px; color: var(--dim);
+      text-transform: uppercase; letter-spacing: .06em;
+      background: var(--panel);
+    }
+    .calls-table td { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+    .calls-table tr:last-child td { border-bottom: 0; }
+    .calls-empty {
+      padding: 36px 12px; text-align: center; color: var(--dim);
+      font-size: 13px;
+    }
+    .live-dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: #34d399; margin-right: 6px;
+      box-shadow: 0 0 0 0 #34d39966;
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   #34d39966; }
+      70%  { box-shadow: 0 0 0 10px #34d39900; }
+      100% { box-shadow: 0 0 0 0   #34d39900; }
+    }
+    /* ===================== Workspace Dashboard ===================== */
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 18px;
+    }
+    .dash-header h1 { margin: 0 0 4px 0; }
+    .dash-live-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; background: var(--panel);
+      border: 1px solid var(--border); border-radius: 999px;
+      font-size: 12px; color: var(--dim);
+    }
+    .dash-live-pill .live-dot {
+      background: #34d399; animation: pulse 1.6s infinite;
+    }
+
+    /* ----- Hero cards (top KPI row) ----- */
+    .hero-grid {
+      display: grid; gap: 14px; margin-bottom: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .hero-card {
+      position: relative; overflow: hidden;
+      padding: 18px 18px 12px;
+      border-radius: 14px; color: #fff;
+      box-shadow: 0 4px 18px rgba(0,0,0,.35);
+      animation: cardFadeIn .4s ease-out backwards;
+      transition: transform .15s ease, box-shadow .2s ease;
+    }
+    .hero-grid .hero-card:nth-child(1) { animation-delay: .00s; }
+    .hero-grid .hero-card:nth-child(2) { animation-delay: .07s; }
+    .hero-grid .hero-card:nth-child(3) { animation-delay: .14s; }
+    .hero-grid .hero-card:nth-child(4) { animation-delay: .21s; }
+    .hero-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    }
+    .grad-blue   { background: linear-gradient(135deg, #3E7BE8 0%, #2451B5 100%); }
+    .grad-green  { background: linear-gradient(135deg, #34d399 0%, #0f766e 100%); }
+    .grad-red    { background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%); }
+    .grad-violet { background: linear-gradient(135deg, #8b5cf6 0%, #5b21b6 100%); }
+    .hero-icon {
+      position: absolute; top: 14px; right: 16px;
+      font-size: 24px; opacity: .35;
+    }
+    .hero-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+      opacity: .85; font-weight: 600;
+    }
+    .hero-num {
+      font-size: 40px; font-weight: 800; line-height: 1.1;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      margin: 6px 0 4px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.2);
+    }
+    .hero-delta {
+      font-size: 12px; opacity: .9; min-height: 16px;
+    }
+    .hero-delta .arrow { font-weight: 700; margin-right: 4px; }
+    .hero-spark {
+      width: 100%; height: 30px;
+      margin-top: 8px; opacity: .7;
+    }
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----- Chart cards ----- */
+    .chart-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+      margin-bottom: 18px;
+      animation: cardFadeIn .5s ease-out .15s backwards;
+    }
+    .chart-row {
+      display: grid; gap: 16px; margin-bottom: 18px;
+      grid-template-columns: 1.4fr 1fr;
+    }
+    @media (max-width: 900px) {
+      .chart-row { grid-template-columns: 1fr; }
+    }
+    .chart-row .chart-card { margin-bottom: 0; }
+    .chart-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .chart-head h3 {
+      margin: 0; font-size: 14px; font-weight: 600;
+      letter-spacing: .01em;
+    }
+    .chart-legend {
+      display: flex; gap: 14px; font-size: 11px; color: var(--dim);
+    }
+    .chart-legend > span {
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .dot {
+      display: inline-block; width: 9px; height: 9px;
+      border-radius: 50%;
+    }
+    .dot-blue   { background: #3E7BE8; }
+    .dot-violet { background: #8b5cf6; }
+    .dot-green  { background: #34d399; }
+    .dot-red    { background: #ef4444; }
+    .dot-gray   { background: #4b5563; }
+    .legend-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 0; border-bottom: 1px solid var(--border);
+    }
+    .legend-row strong {
+      font-family: ui-monospace, monospace; font-weight: 700;
+    }
+
+    /* SVG path animation for the area chart */
+    .area-line {
+      fill: none; stroke-width: 2.5;
+      stroke-dasharray: 2000; stroke-dashoffset: 2000;
+      animation: drawLine 1.4s ease-out .2s forwards;
+    }
+    @keyframes drawLine { to { stroke-dashoffset: 0; } }
+    .area-fill {
+      opacity: 0;
+      animation: fillIn 1.2s ease-out .6s forwards;
+    }
+    @keyframes fillIn { to { opacity: 1; } }
+
+    /* Hourly bars — grow from baseline */
+    .bar-grow {
+      transform-origin: bottom;
+      transform: scaleY(0);
+      animation: barRise .6s cubic-bezier(.16, 1, .3, 1) forwards;
+    }
+    @keyframes barRise { to { transform: scaleY(1); } }
+
+    /* Donut — arc reveal */
+    .donut-arc {
+      stroke-dasharray: 314; stroke-dashoffset: 314;
+      animation: arcDraw 1.2s cubic-bezier(.16, 1, .3, 1) .3s forwards;
+    }
+    @keyframes arcDraw { to { stroke-dashoffset: var(--final-offset, 0); } }
+
+    /* ----- Period grid (smaller KPI tiles with trend bars) ----- */
+    .period-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .period-card {
+      background: var(--panel-2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .period-label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--dim); font-weight: 600;
+    }
+    .period-num {
+      font-size: 24px; font-weight: 700;
+      font-family: ui-monospace, monospace;
+      margin: 6px 0 4px;
+    }
+    .period-delta { font-size: 11px; color: var(--dim); min-height: 14px; }
+    .period-delta.up   { color: #34d399; }
+    .period-delta.down { color: #f87171; }
+    .period-bar {
+      height: 6px; display: flex; gap: 3px; margin-top: 10px;
+    }
+    .period-bar-prev, .period-bar-cur {
+      height: 100%; border-radius: 3px;
+      transition: width .8s cubic-bezier(.16, 1, .3, 1);
+    }
+    .period-bar-prev { background: #4b5563; }
+    .period-bar-cur  { background: #34d399; }
+
+    /* Green check badge — caller matched against Contacts List */
+    .contact-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; margin-left: 6px;
+      border-radius: 50%; background: #34d39922; color: #34d399;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      vertical-align: middle;
+      transition: background-color .12s;
+    }
+    .contact-badge:hover { background: #34d39944; }
+
+    /* Contact-details modal (built lazily by showContactModal) */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      z-index: 1000; display: flex; align-items: center;
+      justify-content: center; padding: 24px;
+    }
+    .modal-backdrop.hide { display: none; }
+    .modal-card {
+      background: var(--panel); color: var(--text);
+      border: 1px solid var(--border); border-radius: 12px;
+      max-width: 480px; width: 100%; box-shadow: 0 24px 48px rgba(0,0,0,.5);
+      max-height: 86vh; display: flex; flex-direction: column;
+    }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .modal-close {
+      background: transparent; border: 0; color: var(--dim);
+      font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 16px 20px; overflow-y: auto; }
+
+    /* Multi-select toolbar above Data Collected / Call History tables */
+    .bulk-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 12px; margin-bottom: 10px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 8px; font-size: 12px;
+    }
+    .bulk-count { color: var(--dim); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+    .bulk-del {
+      margin-left: auto;
+      background: #ef4444; color: #fff;
+      border: none; border-radius: 6px;
+      padding: 6px 14px; font-size: 12px; font-weight: 600;
+      cursor: pointer;
+    }
+    .bulk-del:hover:not(:disabled) { background: #dc2626; }
+    .bulk-del:disabled {
+      background: var(--panel-2); color: var(--dim);
+      cursor: not-allowed;
+    }
+    .calls-table input.row-sel, .calls-table input[type="checkbox"] {
+      cursor: pointer; accent-color: var(--accent);
+    }
+
+    /* Supervisor-flag indicator on the dashboard's active-calls table */
+    .flag-row { background: #ef444412 !important; }
+    .flag-dot {
+      display: inline-block; width: 9px; height: 9px;
+      border-radius: 50%; background: #ef4444; margin-right: 6px;
+      box-shadow: 0 0 0 0 #ef444499;
+      animation: pulseRed 1.2s infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulseRed {
+      0%   { box-shadow: 0 0 0 0   #ef444499; }
+      70%  { box-shadow: 0 0 0 10px #ef444400; }
+      100% { box-shadow: 0 0 0 0   #ef444400; }
+    }
+    .flag-banner {
+      background: linear-gradient(90deg, #ef444433, #ef444411);
+      border: 1px solid #ef444466;
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 12px;
+      font-size: 13px;
+    }
+    .flag-banner strong { color: #fca5a5; }
+    .flag-banner .reason {
+      flex: 1; color: var(--text); font-style: italic;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
+    }
+    .engage-btn, .ack-btn {
+      border: none; border-radius: 8px; padding: 6px 12px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      white-space: nowrap;
+    }
+    .engage-btn { background: #ef4444; color: #fff; }
+    .engage-btn:hover  { background: #dc2626; }
+    .engage-btn:disabled { background: #7f1d1d; cursor: not-allowed; opacity: .7; }
+    .ack-btn { background: transparent; color: var(--dim);
+               border: 1px solid var(--border); }
+    .ack-btn:hover { color: var(--text); border-color: var(--text); }
+    /* WhatsApp chat-list rows */
+    .wa-chat-row:hover  { background: var(--panel-2); }
+    .wa-chat-row.active { background: var(--panel-2);
+                          box-shadow: inset 3px 0 0 var(--accent); }
+
+    /* small SVG icons inlined via mask */
+    .ico-dashboard, .ico-callcenter, .ico-settings, .ico-config, .ico-chev {
+      display: inline-block; background: currentColor; mask-size: contain;
+      mask-repeat: no-repeat; -webkit-mask-size: contain;
+      -webkit-mask-repeat: no-repeat;
+    }
+    .ico-dashboard {
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>");
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='7' height='9'/><rect x='14' y='3' width='7' height='5'/><rect x='14' y='12' width='7' height='9'/><rect x='3' y='16' width='7' height='5'/></svg>");
+    }
+    .ico-callcenter {
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z'/></svg>");
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z'/></svg>");
+    }
+    .ico-chev {
+      width: 12px; height: 12px;
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'/></svg>");
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'/></svg>");
+      transition: transform .15s;
+      margin-left: auto;
+    }
+    .nav-item.open .ico-chev { transform: rotate(90deg); }
+  </style>
+</head>
+<body>
+
+<!-- =========================== LOGIN VIEW =========================== -->
+<div id="login-view" class="login-wrap">
+  <div class="login-card">
+    <div class="login-head">
+      <div>
+        <h1>Primewave Main</h1>
+        <p class="sub" style="margin:0;">Showcase hub for the platform.</p>
+      </div>
+      <a class="back" href="/demo">← All demos</a>
+    </div>
+    <form id="login-form">
+      <label for="u">Username</label>
+      <input id="u" name="username" autocomplete="username" required />
+      <label for="p">Password</label>
+      <input id="p" name="password" type="password"
+             autocomplete="current-password" required />
+      <button class="primary" type="submit" id="login-btn">Sign in</button>
+      <div class="err" id="login-err"></div>
+    </form>
+  </div>
+</div>
+
+<!-- =========================== APP VIEW ============================= -->
+<div id="app-view" class="app hide">
+  <aside>
+    <div class="brand">
+      <div class="logo">Primewave Main</div>
+      <div class="tag">Showcase Hub</div>
+    </div>
+    <nav>
+      <div class="nav-section">Workspace</div>
+      <div class="nav-item active" data-view="dashboard">
+        <span class="ico ico-dashboard"></span>Dashboard
+      </div>
+
+      <div class="nav-section">Modules</div>
+      <div class="nav-item" id="grp-callcenter" data-group="callcenter">
+        <span class="ico ico-callcenter"></span>Call Center
+        <span class="ico ico-chev"></span>
+      </div>
+      <div class="nav-child hide" id="grp-callcenter-children">
+        <div class="nav-item nav-child" data-view="callcenter-dashboard">
+          Dashboard
+        </div>
+        <div class="nav-item nav-child" data-view="callcenter-history">
+          Call History
+        </div>
+        <div class="nav-item nav-child" data-view="callcenter-data">
+          Data Collected
+        </div>
+        <div class="nav-item nav-child" data-view="callcenter-whatsapp">
+          WhatsApp
+        </div>
+        <div class="nav-item nav-child" data-view="callcenter-settings">
+          Settings
+        </div>
+        <div class="nav-item nav-child" data-view="callcenter-configuration">
+          Configuration
+        </div>
+      </div>
+
+      <div class="nav-item" id="grp-aicenter" data-group="aicenter">
+        <span class="ico ico-callcenter"></span>AI Center
+        <span class="ico ico-chev"></span>
+      </div>
+      <div class="nav-child hide" id="grp-aicenter-children">
+        <div class="nav-item nav-child" data-view="aicenter-playground">
+          Playground
+        </div>
+        <div class="nav-item nav-child" data-view="aicenter-history">
+          Playground History
+        </div>
+      </div>
+
+      <div class="nav-item" id="grp-contacts" data-group="contacts">
+        <span class="ico ico-callcenter"></span>Contacts
+        <span class="ico ico-chev"></span>
+      </div>
+      <div class="nav-child hide" id="grp-contacts-children">
+        <div class="nav-item nav-child" data-view="contacts-list">
+          List
+        </div>
+      </div>
+    </nav>
+    <div class="foot">
+      <a href="/demo">← Back to all demos</a>
+      <span id="user-info">Signed in</span>
+      <button id="logout-btn">Sign out</button>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ----- Dashboard view ------------------------------------- -->
+    <section data-page="dashboard">
+      <header class="dash-header">
+        <div>
+          <h1>Workspace</h1>
+          <p class="sub">Live activity overview — calls, intake, conversations.</p>
+        </div>
+        <div class="dash-live-pill" id="dash-live-pill">
+          <span class="live-dot"></span>
+          <span id="dash-live-text">refreshing…</span>
+        </div>
+      </header>
+
+      <!-- Hero KPI row — Today vs yesterday -->
+      <div class="hero-grid">
+        <div class="hero-card grad-blue" id="hero-today-calls">
+          <div class="hero-icon">📞</div>
+          <div class="hero-label">Calls today</div>
+          <div class="hero-num" data-target="0">0</div>
+          <div class="hero-delta"></div>
+          <svg class="hero-spark" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="hero-card grad-green" id="hero-today-data">
+          <div class="hero-icon">📋</div>
+          <div class="hero-label">Records captured</div>
+          <div class="hero-num" data-target="0">0</div>
+          <div class="hero-delta"></div>
+          <svg class="hero-spark" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="hero-card grad-red" id="hero-today-flagged">
+          <div class="hero-icon">🚩</div>
+          <div class="hero-label">Flagged today</div>
+          <div class="hero-num" data-target="0">0</div>
+          <div class="hero-delta"></div>
+          <svg class="hero-spark" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="hero-card grad-violet" id="hero-today-wa">
+          <div class="hero-icon">💬</div>
+          <div class="hero-label">WhatsApp chats</div>
+          <div class="hero-num" data-target="0">0</div>
+          <div class="hero-delta"></div>
+          <svg class="hero-spark" viewBox="0 0 100 30" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <!-- 14-day call volume area chart -->
+      <div class="chart-card">
+        <div class="chart-head">
+          <h3>Call volume — last 14 days</h3>
+          <div class="chart-legend">
+            <span><span class="dot dot-blue"></span>voice calls</span>
+            <span><span class="dot dot-violet"></span>WhatsApp chats</span>
+          </div>
+        </div>
+        <svg id="chart-area" viewBox="0 0 800 240" preserveAspectRatio="none"
+             style="width:100%; height:240px; display:block;"></svg>
+      </div>
+
+      <!-- Two-column: hourly bar chart + channel mix donut -->
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Today by hour</h3>
+            <div class="chart-legend">
+              <span><span class="dot dot-blue"></span>calls per hour</span>
+            </div>
+          </div>
+          <svg id="chart-hourly" viewBox="0 0 800 220"
+               style="width:100%; height:220px; display:block;"></svg>
+        </div>
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Channel mix · 7 days</h3>
+          </div>
+          <div style="display:flex; align-items:center; gap:24px; padding:8px 4px;">
+            <svg id="chart-donut" viewBox="0 0 120 120"
+                 style="width:160px; height:160px; flex-shrink:0;"></svg>
+            <div style="flex:1; font-size:13px;">
+              <div class="legend-row">
+                <span class="dot dot-blue"></span>
+                <span>Voice</span>
+                <strong id="donut-voice" style="margin-left:auto;">0</strong>
+              </div>
+              <div class="legend-row">
+                <span class="dot dot-violet"></span>
+                <span>WhatsApp</span>
+                <strong id="donut-wa" style="margin-left:auto;">0</strong>
+              </div>
+              <div class="legend-row" style="border:0; margin-top:8px;">
+                <span style="color:var(--dim);">Total intake</span>
+                <strong id="donut-total" style="margin-left:auto;">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Period KPIs — week + month cards with trend mini-bars -->
+      <div class="chart-card">
+        <div class="chart-head">
+          <h3>Period breakdown</h3>
+          <div class="chart-legend">
+            <span><span class="dot dot-green"></span>this period</span>
+            <span><span class="dot dot-gray"></span>previous period</span>
+          </div>
+        </div>
+        <div class="period-grid">
+          <div class="period-card" id="period-week-calls">
+            <div class="period-label">Calls this week</div>
+            <div class="period-num">0</div>
+            <div class="period-delta"></div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+          <div class="period-card" id="period-week-data">
+            <div class="period-label">Records this week</div>
+            <div class="period-num">0</div>
+            <div class="period-delta"></div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+          <div class="period-card" id="period-week-avg">
+            <div class="period-label">Avg call duration</div>
+            <div class="period-num">0s</div>
+            <div class="period-delta">this week</div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+          <div class="period-card" id="period-month-calls">
+            <div class="period-label">Calls this month</div>
+            <div class="period-num">0</div>
+            <div class="period-delta"></div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+          <div class="period-card" id="period-month-data">
+            <div class="period-label">Records this month</div>
+            <div class="period-num">0</div>
+            <div class="period-delta"></div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+          <div class="period-card" id="period-month-contacts">
+            <div class="period-label">Saved contacts</div>
+            <div class="period-num">0</div>
+            <div class="period-delta">total in Contacts</div>
+            <div class="period-bar">
+              <div class="period-bar-prev"></div>
+              <div class="period-bar-cur"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="kpi-updated" style="margin-top:18px; color:var(--dim);
+           font-size:11px; text-align:right;"></div>
+    </section>
+
+    <!-- ----- Call Center > Dashboard ---------------------------- -->
+    <section data-page="callcenter-dashboard" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Call Center · Dashboard</h1>
+          <p class="sub">Live view of active calls on the Primewave agent
+            (auto-refreshes every 2 seconds).</p>
+        </div>
+        <span class="status-pill off" id="dash-agent-pill">
+          <span class="dot"></span><span id="dash-agent-text">stopped</span>
+        </span>
+      </header>
+
+      <div class="grid" style="margin-bottom:18px;">
+        <div class="tile">
+          <h3>Active calls</h3>
+          <div class="num" id="dash-active-num">0</div>
+          <p>currently connected to Nora</p>
+        </div>
+        <div class="tile">
+          <h3>Listener</h3>
+          <div class="num" id="dash-port-num" style="font-size:22px;">—</div>
+          <p id="dash-port-sub">bind state from /agent/status</p>
+        </div>
+        <div class="tile">
+          <h3>PBX extension</h3>
+          <div class="num" style="font-size:22px;">9003</div>
+          <p>dial from any internal extension</p>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:0; overflow:hidden;">
+        <header style="padding:14px 18px; border-bottom: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;">Active calls · live collected data</h2>
+          <span class="save-msg" id="dash-updated"></span>
+        </header>
+        <div id="dash-calls-host" style="overflow-x:auto;">
+          <div class="calls-empty">No calls right now. Dial <strong>9003</strong>
+            from any internal extension to see one land here.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Call Center > Call History ------------------------- -->
+    <section data-page="callcenter-history" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Call Center · Call History</h1>
+          <p class="sub">Every completed call to Noura. Each row has the
+            caller-only, agent-only and mixed recordings, plus the
+            live transcript captured during the call.</p>
+        </div>
+        <button class="save-btn" id="hist-call-refresh"
+                style="background:transparent; border:1px solid var(--border); color:var(--text);">↻ Refresh</button>
+      </header>
+
+      <div class="panel" style="padding:0; overflow:hidden; margin-top:14px;">
+        <header style="padding:14px 18px; border-bottom:1px solid var(--border);
+                       display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;" id="hist-call-title">Past calls</h2>
+          <span class="save-msg" id="hist-call-updated"></span>
+        </header>
+        <div id="hist-call-host" style="overflow-x:auto;">
+          <div class="calls-empty">No completed calls yet. Dial
+            <strong>9003</strong> to record one.</div>
+        </div>
+      </div>
+
+      <!-- Detail panel — audio + transcript -->
+      <div id="hist-call-modal" class="hide"
+           style="position:fixed; inset:0; background:#000a; z-index:100;
+                  display:flex; align-items:center; justify-content:center; padding:24px;">
+        <div style="background:var(--panel-2); border:1px solid var(--border);
+                    border-radius:12px; max-width:1100px; width:100%;
+                    max-height:92vh; overflow:auto; padding:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h2 style="margin:0;" id="hist-call-modal-title">Call</h2>
+            <button class="save-btn" id="hist-call-modal-close"
+                    style="background:transparent; border:1px solid var(--border); color:var(--dim);">close</button>
+          </div>
+
+          <!-- Audio players -->
+          <div style="display:grid; gap:14px; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); margin-bottom:18px;">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          color:var(--dim); margin-bottom:4px;">Mixed</div>
+              <audio id="hist-call-audio-mixed" controls
+                     style="width:100%;" preload="none"></audio>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          color:var(--dim); margin-bottom:4px;">Caller</div>
+              <audio id="hist-call-audio-caller" controls
+                     style="width:100%;" preload="none"></audio>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          color:var(--dim); margin-bottom:4px;">Agent</div>
+              <audio id="hist-call-audio-agent" controls
+                     style="width:100%;" preload="none"></audio>
+            </div>
+          </div>
+
+          <!-- Customer data + transcript side-by-side -->
+          <div style="display:grid; gap:18px; grid-template-columns: 280px 1fr;">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          color:var(--dim); margin-bottom:6px;">Collected</div>
+              <div id="hist-call-data"
+                   style="font-size:13px;"></div>
+              <div id="hist-call-meta" style="margin-top:14px; font-size:11px;
+                                              color:var(--dim);"></div>
+            </div>
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          color:var(--dim); margin-bottom:6px;">Transcript</div>
+              <div id="hist-call-transcript"
+                   style="font-size:13px; line-height:1.5; max-height:55vh; overflow:auto;
+                          padding:14px; border:1px solid var(--border);
+                          border-radius:8px; background:var(--panel);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Call Center > WhatsApp ----------------------------- -->
+    <section data-page="callcenter-whatsapp" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Call Center · WhatsApp</h1>
+          <p class="sub">Send and receive WhatsApp messages via
+            WasenderApi. Webhook + credentials live in
+            <a href="#" id="wa-jump-settings" style="color:var(--accent);">Settings</a>.</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <!-- Auto-respond toggle -->
+          <label style="display:flex; align-items:center; gap:8px;
+                        background:var(--panel-2); border:1px solid var(--border);
+                        border-radius:8px; padding:6px 12px; cursor:pointer;">
+            <input type="checkbox" id="wa-bot-toggle"
+                   style="width:16px; height:16px; accent-color: var(--accent);">
+            <span style="font-size:13px;">Auto-respond</span>
+            <span class="save-msg" id="wa-bot-msg" style="font-size:11px;"></span>
+          </label>
+          <span class="status-pill off" id="wa-pill">
+            <span class="dot"></span><span id="wa-pill-text">not configured</span>
+          </span>
+          <button class="save-btn" id="wa-refresh"
+                  style="background:transparent; border:1px solid var(--border); color:var(--text);">↻ Refresh</button>
+        </div>
+      </header>
+
+      <div class="panel" style="padding:0; overflow:hidden; margin-top:14px;
+                                 display:grid; grid-template-columns: 320px 1fr;
+                                 grid-template-rows: 1fr;
+                                 height: 78vh;">
+        <!-- Conversation list (left) -->
+        <aside style="border-right:1px solid var(--border); overflow:auto;">
+          <header style="padding:12px 14px; border-bottom:1px solid var(--border);
+                          display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:13px;">Conversations</strong>
+            <span class="save-msg" id="wa-list-count" style="font-size:11px;"></span>
+          </header>
+          <div id="wa-chats"></div>
+        </aside>
+
+        <!-- Active chat (right) — min-height:0 + min-width:0 are critical:
+             they let the thread <div> below honour its overflow:auto and
+             cap its height to whatever's left in the grid row. Without
+             min-height:0 the <main> grows to fit content and the thread
+             never gets a constrained height, so scrolling silently fails. -->
+        <main style="display:flex; flex-direction:column;
+                     min-width:0; min-height:0;">
+          <header style="padding:12px 16px; border-bottom:1px solid var(--border);
+                          display:flex; justify-content:space-between; align-items:center;
+                          flex-shrink:0;">
+            <div>
+              <strong id="wa-chat-title" style="font-size:14px;">— pick a conversation —</strong>
+              <div id="wa-chat-sub" style="font-size:11px; color:var(--dim);"></div>
+            </div>
+            <span class="save-msg" id="wa-chat-meta"></span>
+          </header>
+          <div id="wa-thread"
+               style="flex:1 1 auto; min-height:0; overflow-y:auto;
+                      padding:14px 18px; display:flex;
+                      flex-direction:column; gap:8px;">
+            <div class="calls-empty" id="wa-thread-empty">
+              No conversation selected.<br>
+              <span style="font-size:11px;">Send a message below to start a new one.</span>
+            </div>
+          </div>
+          <footer style="border-top:1px solid var(--border); padding:12px 14px;
+                          display:flex; flex-direction:column; gap:8px;
+                          flex-shrink:0;">
+            <!-- Optional file-attach preview chip -->
+            <div id="wa-attach-chip" class="hide"
+                 style="background:var(--panel); border:1px solid var(--accent);
+                        border-radius:8px; padding:8px 12px; font-size:12px;
+                        display:flex; gap:8px; align-items:center;">
+              <span id="wa-attach-icon">📎</span>
+              <span id="wa-attach-name" style="flex:1; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;"></span>
+              <span id="wa-attach-size" style="color:var(--dim);"></span>
+              <button class="save-btn" id="wa-attach-clear"
+                      style="padding:2px 8px; background:transparent;
+                             border:1px solid var(--border); color:var(--dim);
+                             font-size:11px;">remove</button>
+            </div>
+            <!-- Recording indicator -->
+            <div id="wa-rec-chip" class="hide"
+                 style="background:var(--panel); border:1px solid var(--err);
+                        border-radius:8px; padding:8px 12px; font-size:12px;
+                        display:flex; gap:8px; align-items:center;">
+              <span style="color:var(--err);">●</span>
+              <span style="flex:1;">Recording voice note…
+                <span id="wa-rec-elapsed" style="font-family: ui-monospace, monospace;">0.0s</span>
+              </span>
+              <button class="save-btn" id="wa-rec-cancel"
+                      style="padding:2px 8px; background:transparent;
+                             border:1px solid var(--border); color:var(--dim);
+                             font-size:11px;">cancel</button>
+              <button class="save-btn" id="wa-rec-stop"
+                      style="padding:2px 10px; font-size:11px;">stop &amp; send</button>
+            </div>
+            <!-- Main compose row -->
+            <div style="display:grid; gap:8px;
+                        grid-template-columns: 200px 1fr auto auto auto;">
+              <input id="wa-to" placeholder="966501234567" dir="ltr"
+                     style="background:var(--panel); border:1px solid var(--border);
+                            color:var(--text); border-radius:8px; padding:9px 11px;
+                            font-size:13px; font-family: ui-monospace, 'SF Mono', Menlo, monospace;">
+              <input id="wa-text" placeholder="Type a message (or attach a file)…" dir="auto"
+                     style="background:var(--panel); border:1px solid var(--border);
+                            color:var(--text); border-radius:8px; padding:9px 11px;
+                            font-size:14px;">
+              <input type="file" id="wa-file" class="hide"
+                     accept="image/*,video/*,audio/*,application/pdf,
+                            application/msword,application/vnd.openxmlformats-officedocument.*">
+              <button class="save-btn" id="wa-attach-btn" title="Attach a file"
+                      style="padding:9px 12px; background:transparent;
+                             border:1px solid var(--border); color:var(--text);
+                             font-size:16px;">📎</button>
+              <button class="save-btn" id="wa-mic-btn" title="Record a voice note"
+                      style="padding:9px 12px; background:transparent;
+                             border:1px solid var(--border); color:var(--text);
+                             font-size:16px;">🎤</button>
+              <button class="save-btn" id="wa-send" style="padding:9px 18px;">Send</button>
+            </div>
+          </footer>
+        </main>
+      </div>
+      <div style="margin-top:12px; display:flex; justify-content:flex-end;">
+        <button class="save-btn" id="wa-clear-inbox"
+                style="background:transparent; border:1px solid var(--err); color:var(--err); font-size:12px;">
+          Clear inbox
+        </button>
+      </div>
+    </section>
+
+    <!-- ----- Call Center > Data Collected ----------------------- -->
+    <section data-page="callcenter-data" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Call Center · Data Collected</h1>
+          <p class="sub">Every call that landed on the Primewave agent
+            (newest first). Live calls show under
+            <a href="#" id="data-jump-dash">Dashboard</a>; completed calls
+            appear here once the caller hangs up.</p>
+        </div>
+        <button class="save-btn" id="data-refresh" style="background:transparent; border:1px solid var(--border); color:var(--text);">↻ Refresh</button>
+      </header>
+
+      <div class="panel" style="padding:0; overflow:hidden; margin-top:14px;">
+        <header style="padding:14px 18px; border-bottom:1px solid var(--border);
+                       display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;">Past calls</h2>
+          <span class="save-msg" id="data-updated"></span>
+        </header>
+        <div id="data-calls-host" style="overflow-x:auto;">
+          <div class="calls-empty">No calls yet.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Contacts > List ------------------------------------ -->
+    <section data-page="contacts-list" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>Contacts · List</h1>
+          <p class="sub">Sales leads + customers. Same six fields the
+            voice agent's <code>record_customer_info</code> tool captures,
+            plus Email and Lead Source for operator-driven entries.</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input id="ct-search" placeholder="search name / phone / email…"
+                 style="background:var(--panel); border:1px solid var(--border);
+                        color:var(--text); border-radius:8px; padding:8px 11px;
+                        font-size:13px; width:240px;" />
+          <button class="save-btn" id="ct-new"
+                  style="padding:8px 14px;">+ New contact</button>
+          <button class="save-btn" id="ct-reset"
+                  style="padding:8px 14px; background:transparent;
+                         border:1px solid var(--border); color:var(--dim);
+                         font-size:12px;">Reset to seed</button>
+        </div>
+      </header>
+
+      <div class="panel" style="padding:0; overflow:hidden; margin-top:14px;">
+        <header style="padding:12px 18px; border-bottom:1px solid var(--border);
+                       display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;" id="ct-title">Contacts</h2>
+          <span class="save-msg" id="ct-updated"></span>
+        </header>
+        <div id="ct-host" style="overflow-x:auto;">
+          <div class="calls-empty">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Edit / new modal -->
+      <div id="ct-modal" class="hide"
+           style="position:fixed; inset:0; background:#000a; z-index:100;
+                  display:flex; align-items:center; justify-content:center; padding:24px;">
+        <div style="background:var(--panel-2); border:1px solid var(--border);
+                    border-radius:12px; max-width:640px; width:100%;
+                    max-height:92vh; overflow:auto; padding:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h2 style="margin:0;" id="ct-modal-title">New contact</h2>
+            <button class="save-btn" id="ct-modal-close"
+                    style="background:transparent; border:1px solid var(--border); color:var(--dim);">close</button>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Name</label>
+              <input id="ct-f-name" placeholder="e.g. Ahmed Al-Qahtani" />
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input id="ct-f-phone" placeholder="+966501234567" dir="ltr" />
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input id="ct-f-email" placeholder="name@example.sa" dir="ltr" />
+            </div>
+            <div class="field">
+              <label>Location</label>
+              <input id="ct-f-location" placeholder="Riyadh · Al Olaya" />
+            </div>
+            <div class="field">
+              <label>Interest</label>
+              <select id="ct-f-interest">
+                <option value="">(unspecified)</option>
+                <option value="B2C">B2C — Smart Home</option>
+                <option value="B2B">B2B — Lighting / AI / Vision / Low Current</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Current phase</label>
+              <select id="ct-f-phase">
+                <option value="">(unspecified)</option>
+                <option value="design">Design</option>
+                <option value="under_construction">Under construction</option>
+                <option value="finishing">Finishing</option>
+                <option value="operational">Operational</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Lead source</label>
+              <select id="ct-f-source">
+                <option value="">(unspecified)</option>
+                <option value="referral">Referral</option>
+                <option value="website">Website</option>
+                <option value="walk_in">Walk-in</option>
+                <option value="social_media">Social media</option>
+                <option value="google_ads">Google Ads</option>
+                <option value="cold_call">Cold call</option>
+                <option value="exhibition">Exhibition</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <span class="save-msg" id="ct-modal-msg"></span>
+            <button class="save-btn" id="ct-modal-save">Save</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- AI Center > Playground ----------------------------- -->
+    <section data-page="aicenter-playground" class="hide">
+      <header>
+        <h1>AI Center · Playground</h1>
+        <p class="sub">Ask a vision model a free-form question about a
+          live Frigate camera or an uploaded image. Each ask is saved to
+          Playground History.</p>
+      </header>
+
+      <div class="panel">
+        <div class="row">
+          <div class="field">
+            <label>Source</label>
+            <select id="pg-source">
+              <option value="camera">Frigate camera (live snapshot)</option>
+              <option value="upload">Upload image</option>
+            </select>
+          </div>
+          <div class="field" id="pg-camera-field">
+            <label>Camera</label>
+            <select id="pg-camera"><option value="">(loading…)</option></select>
+          </div>
+          <div class="field hide" id="pg-upload-field">
+            <label>Image file</label>
+            <input type="file" id="pg-file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label>Provider</label>
+            <select id="pg-provider"><option value="gemini">Gemini</option></select>
+          </div>
+          <div class="field">
+            <label>Model</label>
+            <select id="pg-model"><option value="">(default)</option></select>
+          </div>
+        </div>
+
+        <!-- Live preview — visible only when source = camera and one is picked.
+             Refreshes every 1.5s by setting img.src to a cache-busting URL. -->
+        <div id="pg-preview-wrap" class="hide" style="margin-top:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <label style="font-size:11px; color:var(--dim);
+                          text-transform:uppercase; letter-spacing:.06em;">
+              Live preview · <span id="pg-preview-cam"></span>
+            </label>
+            <span class="save-msg" id="pg-preview-msg"></span>
+          </div>
+          <img id="pg-preview" alt="" style="width:100%; max-height:420px;
+               object-fit:contain; border-radius:8px;
+               border:1px solid var(--border); background:#000;">
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label>Question</label>
+          <textarea id="pg-question" rows="3" dir="auto"
+                    placeholder="What is in this image? Are there people? Is the room tidy?"></textarea>
+        </div>
+
+        <div class="panel-actions">
+          <span class="save-msg" id="pg-msg"></span>
+          <button class="save-btn" id="pg-run">Run</button>
+        </div>
+      </div>
+
+      <div class="panel hide" id="pg-result-panel" style="padding:0; overflow:hidden;">
+        <header style="padding:14px 18px; border-bottom:1px solid var(--border);
+                       display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;">Result</h2>
+          <span class="save-msg" id="pg-result-meta"></span>
+        </header>
+        <div style="padding:18px; display:grid; gap:14px; grid-template-columns: 320px 1fr;">
+          <img id="pg-result-img" style="width:100%; border-radius:8px;
+               border:1px solid var(--border); background:#000;" alt="">
+          <div>
+            <div style="font-size:11px; text-transform:uppercase;
+                        letter-spacing:.06em; color:var(--dim); margin-bottom:6px;">
+              Question
+            </div>
+            <div id="pg-result-q" dir="auto"
+                 style="font-size:14px; margin-bottom:14px; white-space:pre-wrap;"></div>
+            <div style="font-size:11px; text-transform:uppercase;
+                        letter-spacing:.06em; color:var(--dim); margin-bottom:6px;">
+              Answer
+            </div>
+            <div id="pg-result-a" dir="auto"
+                 style="font-size:14px; line-height:1.55; white-space:pre-wrap;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- AI Center > Playground History --------------------- -->
+    <section data-page="aicenter-history" class="hide">
+      <header style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap;">
+        <div>
+          <h1>AI Center · Playground History</h1>
+          <p class="sub">Past playground asks (newest first, capped at 300
+            entries with FIFO eviction). Click a thumbnail for the full
+            image and answer.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="save-btn" id="hist-refresh"
+                  style="background:transparent; border:1px solid var(--border); color:var(--text);">↻ Refresh</button>
+          <button class="save-btn" id="hist-clear"
+                  style="background:transparent; border:1px solid var(--err); color:var(--err);">Clear all</button>
+        </div>
+      </header>
+
+      <div class="panel" style="padding:0; overflow:hidden; margin-top:14px;">
+        <header style="padding:14px 18px; border-bottom:1px solid var(--border);
+                       display:flex; justify-content:space-between; align-items:center;">
+          <h2 style="margin:0;" id="hist-title">Entries</h2>
+          <span class="save-msg" id="hist-updated"></span>
+        </header>
+        <div id="hist-host" style="padding:18px;">
+          <div class="calls-empty">No playground entries yet.</div>
+        </div>
+      </div>
+
+      <!-- Modal — full image + Q+A -->
+      <div id="hist-modal" class="hide"
+           style="position:fixed; inset:0; background:#000a; z-index:100;
+                  display:flex; align-items:center; justify-content:center; padding:32px;">
+        <div style="background:var(--panel-2); border:1px solid var(--border);
+                    border-radius:12px; max-width:1100px; width:100%;
+                    max-height:90vh; overflow:auto; padding:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h2 style="margin:0;" id="hist-modal-title">Entry</h2>
+            <button class="save-btn" id="hist-modal-close"
+                    style="background:transparent; border:1px solid var(--border); color:var(--dim);">close</button>
+          </div>
+          <div style="display:grid; gap:18px; grid-template-columns: 1fr 1fr;">
+            <img id="hist-modal-img" style="width:100%; border-radius:8px;
+                 border:1px solid var(--border); background:#000;" alt="">
+            <div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          letter-spacing:.06em; color:var(--dim); margin-bottom:6px;">Question</div>
+              <div id="hist-modal-q" dir="auto"
+                   style="font-size:14px; margin-bottom:14px; white-space:pre-wrap;"></div>
+              <div style="font-size:11px; text-transform:uppercase;
+                          letter-spacing:.06em; color:var(--dim); margin-bottom:6px;">Answer</div>
+              <div id="hist-modal-a" dir="auto"
+                   style="font-size:14px; line-height:1.55; white-space:pre-wrap;"></div>
+              <div id="hist-modal-meta" style="margin-top:18px; font-size:12px;
+                                                color:var(--dim);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----- Call Center > Settings ----------------------------- -->
+    <section data-page="callcenter-settings" class="hide">
+      <header>
+        <h1>Call Center · Settings</h1>
+        <p class="sub">Live Agent configuration + persona + knowledge base
+          for the Primewave intake agent (Nora).</p>
+      </header>
+
+      <!-- Live Agent (port 8094, enabled toggle, voice, greeting, max_call_s) -->
+      <div class="panel">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <div>
+            <h2>Live Agent</h2>
+            <div class="panel-sub">Listens on <code>0.0.0.0:8094</code> for
+              FreePBX AudioSocket. Dialplan extension 9003 routes here.</div>
+          </div>
+          <span class="status-pill off" id="agent-status-pill">
+            <span class="dot"></span><span id="agent-status-text">stopped</span>
+          </span>
+        </div>
+
+        <div class="toggle-row" style="margin-top:14px;">
+          <input type="checkbox" id="cfg-enabled" />
+          <label for="cfg-enabled">Enable agent (bind listener on boot)</label>
+        </div>
+        <div class="toggle-row">
+          <input type="checkbox" id="cfg-interrupt" />
+          <label for="cfg-interrupt">Allow caller to interrupt — when ON, the agent
+            stops talking the moment the caller starts to speak
+            (full-duplex). When OFF, the agent finishes its sentence
+            before listening (half-duplex, no echo).</label>
+        </div>
+
+        <div class="row" style="margin-top:14px;">
+          <div class="field">
+            <label>Bind host</label>
+            <input id="cfg-host" placeholder="0.0.0.0" />
+          </div>
+          <div class="field">
+            <label>Bind port</label>
+            <input id="cfg-port" type="number" min="1024" max="65535"
+                   placeholder="8094" />
+          </div>
+          <div class="field">
+            <label>Voice (Gemini Live)</label>
+            <select id="cfg-voice">
+              <option value="Aoede">Aoede (default · warm female)</option>
+              <option value="Charon">Charon (deep male)</option>
+              <option value="Fenrir">Fenrir (gravelly male)</option>
+              <option value="Kore">Kore (clear female)</option>
+              <option value="Puck">Puck (bright male)</option>
+              <option value="Leda">Leda (smooth female)</option>
+              <option value="Orus">Orus (mature male)</option>
+              <option value="Zephyr">Zephyr (light male)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Max call seconds</label>
+            <input id="cfg-maxcall" type="number" min="60" max="3600"
+                   placeholder="900" />
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label>Greeting (sent at call start)</label>
+          <input id="cfg-greeting" dir="auto"
+                 placeholder="السلام عليكم، شركة برايم ويف. أنا نورة..." />
+        </div>
+
+        <div class="panel-actions">
+          <span class="save-msg" id="cfg-msg"></span>
+          <button class="save-btn" id="cfg-save">Save agent config</button>
+        </div>
+      </div>
+
+      <!-- Integrations — Frigate NVR (powers AI Center pages) -->
+      <div class="panel">
+        <h2>Integrations · Frigate NVR</h2>
+        <div class="panel-sub">Base URL of your Frigate server. The
+          AI Center → Playground page reads the camera list from
+          <code>&lt;url&gt;/api/config</code> and pulls snapshots from
+          <code>&lt;url&gt;/api/&lt;camera&gt;/latest.jpg</code>. Shared
+          across all demos on this VM.</div>
+        <div class="field">
+          <label>Frigate base URL</label>
+          <input id="integ-frigate-url" placeholder="http://192.168.100.42:5000"
+                 dir="ltr" />
+        </div>
+        <div class="panel-actions">
+          <span class="save-msg" id="integ-msg"></span>
+          <button class="save-btn" id="integ-save">Save integrations</button>
+        </div>
+      </div>
+
+      <!-- Integrations — WaSender (powers the WhatsApp page) -->
+      <div class="panel">
+        <h2>Integrations · WhatsApp (WasenderApi)</h2>
+        <div class="panel-sub">
+          WasenderApi credentials for the Call Center → WhatsApp page.
+          Get them from <a href="https://wasenderapi.com" target="_blank" rel="noopener" style="color:var(--accent);">wasenderapi.com</a>:
+          <strong>API Key</strong> from your paired WhatsApp session
+          (Settings → WhatsApp Sessions); <strong>Personal Token</strong>
+          from Settings → Personal Access Tokens (optional, only needed
+          for the outbound message logs API).
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>API key</label>
+            <input id="wa-api-key" type="password" autocomplete="off"
+                   placeholder="leave blank to keep existing" dir="ltr" />
+            <div id="wa-api-key-state" style="font-size:11px; color:var(--dim); margin-top:4px;"></div>
+          </div>
+          <div class="field">
+            <label>Personal access token (optional)</label>
+            <input id="wa-personal" type="password" autocomplete="off"
+                   placeholder="leave blank to keep existing" dir="ltr" />
+            <div id="wa-personal-state" style="font-size:11px; color:var(--dim); margin-top:4px;"></div>
+          </div>
+          <div class="field">
+            <label>Session ID (for outbound-log fetch — optional)</label>
+            <input id="wa-session" placeholder="(your WhatsApp session ID)" dir="ltr" />
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label>Webhook URL (paste this into WaSender → Webhooks)</label>
+          <input id="wa-webhook-url" readonly dir="ltr"
+                 style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size:12px;" />
+          <div style="font-size:11px; color:var(--dim); margin-top:4px;">
+            Configure your WhatsApp session in WaSender to POST every
+            incoming message to this URL. Master Basic Auth is bypassed
+            for this path so WaSender can reach it.
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <span class="save-msg" id="wa-msg"></span>
+          <button class="save-btn" id="wa-save">Save WhatsApp credentials</button>
+        </div>
+      </div>
+
+      <!-- Integrations — Supervisor escalation (AMI + ChanSpy) -->
+      <div class="panel">
+        <h2>Integrations · Supervisor Escalation</h2>
+        <div class="panel-sub">
+          When the Live Agent raises a red flag during a call, the
+          Dashboard shows an indicator and you can click <strong>Engage
+          supervisor</strong> to ring the configured extension and drop
+          them into the live call via FreePBX ChanSpy. Asterisk Manager
+          Interface (AMI) credentials below come from
+          <code>/etc/asterisk/manager.conf</code> on your PBX.
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Supervisor extension</label>
+            <input id="esc-extension" placeholder="e.g. 1001" dir="ltr" />
+          </div>
+          <div class="field">
+            <label>Caller ID shown to the supervisor</label>
+            <input id="esc-callerid" placeholder="Supervisor" dir="ltr" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:14px;">
+          <div class="field">
+            <label>AMI host</label>
+            <input id="esc-ami-host" placeholder="192.168.100.45" dir="ltr" />
+          </div>
+          <div class="field">
+            <label>AMI port</label>
+            <input id="esc-ami-port" type="number" min="1" max="65535"
+                   placeholder="5038" dir="ltr" />
+          </div>
+          <div class="field">
+            <label>AMI username</label>
+            <input id="esc-ami-user" placeholder="pwdemo" dir="ltr" />
+          </div>
+          <div class="field">
+            <label>AMI secret</label>
+            <input id="esc-ami-secret" type="password" autocomplete="off"
+                   placeholder="leave blank to keep existing" dir="ltr" />
+            <div id="esc-ami-secret-state"
+                 style="font-size:11px; color:var(--dim); margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <span class="save-msg" id="esc-msg"></span>
+          <button class="save-btn" id="esc-save">Save escalation settings</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ----- Call Center > Configuration ------------------------ -->
+    <section data-page="callcenter-configuration" class="hide">
+      <header>
+        <h1>Call Center · Configuration</h1>
+        <p class="sub">Noura's persona + knowledge base. Both are read
+          from disk on every call — no restart required after Save.</p>
+      </header>
+
+      <!-- Persona -->
+      <div class="panel">
+        <h2>Persona</h2>
+        <div class="panel-sub">Tone, language, identity rules, intake
+          flow, and what the agent will / won't do.</div>
+        <div class="field">
+          <textarea id="persona-edit" class="kb-edit" dir="auto"
+                    placeholder="Loading…"></textarea>
+        </div>
+        <div class="panel-actions">
+          <span class="save-msg" id="persona-msg"></span>
+          <button class="save-btn" id="persona-save">Save persona</button>
+        </div>
+      </div>
+
+      <!-- Knowledge Base -->
+      <div class="panel">
+        <h2>Knowledge base</h2>
+        <div class="panel-sub">Facts the agent uses as context during a
+          call (services, protocols, coverage, pricing policy).</div>
+        <div class="field">
+          <textarea id="kb-edit" class="kb-edit" dir="auto"
+                    placeholder="Loading…"></textarea>
+        </div>
+        <div class="panel-actions">
+          <span class="save-msg" id="kb-msg"></span>
+          <button class="save-btn" id="kb-save">Save knowledge base</button>
+        </div>
+      </div>
+
+      <!-- Tools — introspected live from live_agent.py -->
+      <div class="panel">
+        <h2>Tools</h2>
+        <div class="panel-sub">Functions the Live Agent can call during a
+          conversation. The agent decides when to call each based on the
+          persona's instructions. Read-only — to add or remove tools,
+          edit <code>_build_tools()</code> in
+          <code>backend/app/demos/primewave/live_agent.py</code>.</div>
+        <div id="tools-host">
+          <div class="placeholder">Loading…</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const $    = (id) => document.getElementById(id);
+  const $$   = (sel) => document.querySelectorAll(sel);
+  const show = (el) => el.classList.remove("hide");
+  const hide = (el) => el.classList.add("hide");
+
+  /* ---------- session probe + login ---------- */
+  async function probeSession() {
+    try {
+      const r = await fetch("/api/demo/primewave/me", { credentials: "include" });
+      if (r.ok) { mountApp(await r.json()); return; }
+    } catch (_) {}
+    show($("login-view")); hide($("app-view"));
+  }
+
+  function mountApp(user) {
+    hide($("login-view")); show($("app-view"));
+    $("user-info").textContent = "Signed in as " + (user?.username || "demo");
+    routeTo("dashboard");
+  }
+
+  $("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("login-btn"), err = $("login-err");
+    btn.disabled = true; err.textContent = "";
+    try {
+      const r = await fetch("/api/demo/primewave/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: $("u").value, password: $("p").value }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
+      mountApp(j.user);
+    } catch (e2) {
+      err.textContent = e2.message || "Sign-in failed";
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $("logout-btn").addEventListener("click", async () => {
+    try {
+      await fetch("/api/demo/primewave/logout",
+                  { method: "POST", credentials: "include" });
+    } finally {
+      show($("login-view")); hide($("app-view"));
+      $("u").value = $("p").value = "";
+    }
+  });
+
+  /* ---------- sidebar nav + routing ---------- */
+  function routeTo(view) {
+    $$("[data-page]").forEach(el => {
+      el.classList.toggle("hide", el.dataset.page !== view);
+    });
+    $$("aside .nav-item[data-view]").forEach(el => {
+      el.classList.toggle("active", el.dataset.view === view);
+    });
+    // auto-expand a group when a child is active
+    if (view.startsWith("callcenter-")) {
+      $("grp-callcenter").classList.add("open");
+      show($("grp-callcenter-children"));
+    }
+    if (view.startsWith("aicenter-")) {
+      $("grp-aicenter").classList.add("open");
+      show($("grp-aicenter-children"));
+    }
+    if (view.startsWith("contacts-")) {
+      $("grp-contacts").classList.add("open");
+      show($("grp-contacts-children"));
+    }
+    // Lazy-load whatever each page needs the first time.
+    if (view === "dashboard")                refreshWorkspaceStats();
+    if (view === "callcenter-settings")      loadSettings();
+    if (view === "callcenter-configuration") loadPersonaKB();
+    if (view === "callcenter-dashboard")     refreshDashboard();
+    if (view === "callcenter-data")          refreshDataCollected();
+    if (view === "callcenter-history")       refreshCallHistory();
+    if (view === "callcenter-whatsapp")      refreshWhatsApp();
+    if (view === "aicenter-playground")      { loadPlayground().then(refreshPreview); }
+    else                                       stopPreview();
+    if (view === "aicenter-history")         refreshPlaygroundHistory();
+    if (view === "contacts-list")            refreshContacts();
+  }
+
+  /* ---------- Settings page: load + save ---------- */
+  const API = "/api/demo/primewave";
+  let _settingsLoaded = false;
+
+  async function loadSettings() {
+    if (_settingsLoaded) { refreshAgentStatus(); return; }
+    _settingsLoaded = true;
+    try {
+      const [cfg, status, integ, waCfg, esc] = await Promise.all([
+        fetch(API + "/agent/config",     { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/agent/status",     { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/integrations",     { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/whatsapp/config",  { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/agent/escalation", { credentials: "include" }).then(r => r.json()),
+      ]);
+      $("cfg-enabled").checked   = !!cfg.enabled;
+      $("cfg-interrupt").checked = !!cfg.interruption_enabled;
+      $("cfg-host").value     = cfg.bind_host  || "0.0.0.0";
+      $("cfg-port").value     = cfg.bind_port  || 8094;
+      $("cfg-voice").value    = cfg.voice      || "Aoede";
+      $("cfg-maxcall").value  = cfg.max_call_s || 900;
+      $("cfg-greeting").value = cfg.greeting   || "";
+      $("integ-frigate-url").value = integ.frigate_url || "";
+
+      // WhatsApp credential placeholders + webhook URL
+      $("wa-api-key-state").textContent = waCfg.api_key_set
+        ? "set · " + (waCfg.api_key_masked || "") : "not set";
+      $("wa-personal-state").textContent = waCfg.personal_token_set
+        ? "set · " + (waCfg.personal_token_masked || "") : "not set";
+      $("wa-session").value = waCfg.session_id || "";
+      $("wa-webhook-url").value = location.origin
+        + API + "/whatsapp/webhook";
+
+      // Supervisor escalation
+      $("esc-extension").value = esc.supervisor_extension || "";
+      $("esc-callerid").value  = esc.supervisor_caller_id || "Supervisor";
+      $("esc-ami-host").value  = esc.ami_host || "";
+      $("esc-ami-port").value  = esc.ami_port || 5038;
+      $("esc-ami-user").value  = esc.ami_username || "";
+      $("esc-ami-secret-state").textContent = esc.ami_secret_set
+        ? "set · " + (esc.ami_secret_masked || "") : "not set";
+
+      paintStatus(status);
+    } catch (e) {
+      console.error("settings load failed", e);
+      _settingsLoaded = false;
+    }
+  }
+
+  /* ---------- Configuration page: persona + KB + tools lazy-load ---------- */
+  let _personaKbLoaded = false;
+  async function loadPersonaKB() {
+    if (_personaKbLoaded) return;
+    _personaKbLoaded = true;
+    try {
+      const [persona, kb, tools] = await Promise.all([
+        fetch(API + "/agent/persona", { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/agent/kb",      { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/agent/tools",   { credentials: "include" }).then(r => r.json()),
+      ]);
+      $("persona-edit").value = persona.text || "";
+      $("kb-edit").value      = kb.text      || "";
+      renderTools(tools.tools || []);
+    } catch (e) {
+      console.error("persona/kb/tools load failed", e);
+      _personaKbLoaded = false;
+    }
+  }
+
+  function renderTools(tools) {
+    const host = $("tools-host");
+    if (!tools.length) {
+      host.innerHTML = '<div class="placeholder">No tools registered.</div>';
+      return;
+    }
+    let h = "";
+    for (const t of tools) {
+      const params = t.parameters || [];
+      h += '<div style="background:var(--panel); border:1px solid var(--border); '
+        +  'border-radius:10px; padding:14px 16px; margin-bottom:12px;">'
+        +  '<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">'
+        +    '<code style="font-family: ui-monospace, monospace; '
+        +       'font-size:13px; color:var(--accent);">' + esc(t.name) + '</code>'
+        +    '<span style="font-size:10px; color:var(--dim); '
+        +       'text-transform:uppercase; letter-spacing:.06em;">'
+        +       params.length + (params.length === 1 ? " parameter" : " parameters") + '</span>'
+        +  '</div>'
+        +  '<div style="font-size:13px; line-height:1.5; color:var(--text); '
+        +     'margin-bottom:12px; white-space:pre-wrap;">'
+        +     esc(t.description) + '</div>';
+      if (params.length) {
+        h += '<table style="width:100%; border-collapse:collapse; font-size:12px;">'
+          +  '<thead><tr style="text-align:left; color:var(--dim); '
+          +    'font-size:10px; text-transform:uppercase; letter-spacing:.06em;">'
+          +    '<th style="padding:6px 8px 6px 0; width:160px;">Name</th>'
+          +    '<th style="padding:6px 8px; width:80px;">Type</th>'
+          +    '<th style="padding:6px 8px;">Description</th>'
+          +  '</tr></thead><tbody>';
+        for (const p of params) {
+          const enumPart = p.enum && p.enum.length
+            ? ' <span style="color:var(--dim);">· one of: '
+              + p.enum.map(esc).join(" | ") + '</span>'
+            : "";
+          const req = p.required
+            ? ' <span style="color:var(--err); font-size:10px;">(required)</span>'
+            : ' <span style="color:var(--dim); font-size:10px;">(optional)</span>';
+          h += '<tr style="border-top:1px solid var(--border);">'
+            +    '<td style="padding:8px 8px 8px 0; vertical-align:top; '
+            +       'font-family: ui-monospace, monospace;">'
+            +       esc(p.name) + req + '</td>'
+            +    '<td style="padding:8px; vertical-align:top; color:var(--dim);">'
+            +       esc(p.type) + '</td>'
+            +    '<td style="padding:8px; vertical-align:top;">'
+            +       esc(p.description) + enumPart + '</td>'
+            +  '</tr>';
+        }
+        h += '</tbody></table>';
+      }
+      h += '</div>';
+    }
+    host.innerHTML = h;
+  }
+
+  function paintStatus(s) {
+    const pill = $("agent-status-pill"), txt = $("agent-status-text");
+    const on = s && s.enabled && s.bound;
+    pill.classList.toggle("on",  on);
+    pill.classList.toggle("off", !on);
+    if (!s)                  txt.textContent = "unknown";
+    else if (s.last_error)   txt.textContent = "error: " + s.last_error.slice(0, 60);
+    else if (s.bound)        txt.textContent = `bound :${s.bind_port}  (${s.active} active)`;
+    else if (s.enabled)      txt.textContent = "starting…";
+    else                     txt.textContent = "stopped";
+  }
+
+  async function refreshAgentStatus() {
+    try {
+      const s = await fetch(API + "/agent/status",
+                            { credentials: "include" }).then(r => r.json());
+      paintStatus(s);
+    } catch (_) {}
+  }
+
+  function flashMsg(id, kind, text) {
+    const el = $(id);
+    el.className = "save-msg " + kind;
+    el.textContent = text;
+    setTimeout(() => { el.textContent = ""; }, 4000);
+  }
+
+  async function saveJSON(url, body, btnId, msgId, okMsg) {
+    const btn = $(btnId);
+    btn.disabled = true;
+    try {
+      const r = await fetch(url, {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
+      flashMsg(msgId, "ok", okMsg);
+      return j;
+    } catch (e) {
+      flashMsg(msgId, "err", e.message || "save failed");
+      throw e;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  $("cfg-save").addEventListener("click", async () => {
+    await saveJSON(API + "/agent/config", {
+      enabled:              $("cfg-enabled").checked,
+      interruption_enabled: $("cfg-interrupt").checked,
+      bind_host:            $("cfg-host").value.trim() || "0.0.0.0",
+      bind_port:            parseInt($("cfg-port").value, 10) || 8094,
+      voice:                $("cfg-voice").value,
+      max_call_s:           parseInt($("cfg-maxcall").value, 10) || 900,
+      greeting:             $("cfg-greeting").value,
+    }, "cfg-save", "cfg-msg", "Saved · applying live");
+    setTimeout(refreshAgentStatus, 800);
+  });
+
+  $("persona-save").addEventListener("click", () => {
+    saveJSON(API + "/agent/persona", { text: $("persona-edit").value },
+             "persona-save", "persona-msg", "Persona saved");
+  });
+
+  $("kb-save").addEventListener("click", () => {
+    saveJSON(API + "/agent/kb", { text: $("kb-edit").value },
+             "kb-save", "kb-msg", "Knowledge base saved");
+  });
+
+  $("integ-save").addEventListener("click", () => {
+    saveJSON(API + "/integrations",
+             { frigate_url: $("integ-frigate-url").value },
+             "integ-save", "integ-msg", "Frigate URL saved");
+  });
+
+  $("wa-save").addEventListener("click", async () => {
+    // Only send fields that the operator actually typed — blank means
+    // "keep existing", consistent with how the placeholders work.
+    const body = {};
+    if ($("wa-api-key").value.trim())  body.api_key = $("wa-api-key").value.trim();
+    if ($("wa-personal").value.trim()) body.personal_token = $("wa-personal").value.trim();
+    body.session_id = $("wa-session").value.trim();
+    try {
+      const j = await saveJSON(API + "/whatsapp/config", body,
+                               "wa-save", "wa-msg", "WhatsApp credentials saved");
+      // Repaint the masked-state lines + clear the inputs so they show
+      // the new placeholders.
+      $("wa-api-key").value = "";
+      $("wa-personal").value = "";
+      $("wa-api-key-state").textContent = j.api_key_set
+        ? "set · " + (j.api_key_masked || "") : "not set";
+      $("wa-personal-state").textContent = j.personal_token_set
+        ? "set · " + (j.personal_token_masked || "") : "not set";
+    } catch (_) {}
+  });
+
+  $("esc-save").addEventListener("click", async () => {
+    // Same pattern as WhatsApp creds: secret is blank-means-keep,
+    // everything else sends through.
+    const body = {
+      supervisor_extension: $("esc-extension").value.trim(),
+      supervisor_caller_id: $("esc-callerid").value.trim() || "Supervisor",
+      ami_host:             $("esc-ami-host").value.trim(),
+      ami_port:             parseInt($("esc-ami-port").value, 10) || 5038,
+      ami_username:         $("esc-ami-user").value.trim(),
+    };
+    const secret = $("esc-ami-secret").value.trim();
+    if (secret) body.ami_secret = secret;
+    try {
+      const j = await saveJSON(API + "/agent/escalation", body,
+                               "esc-save", "esc-msg", "Escalation settings saved");
+      $("esc-ami-secret").value = "";
+      $("esc-ami-secret-state").textContent = j.ami_secret_set
+        ? "set · " + (j.ami_secret_masked || "") : "not set";
+    } catch (_) {}
+  });
+
+  // Background poll of the agent status pill (every 8s while Settings open).
+  setInterval(() => {
+    const settingsActive = !$("agent-status-pill")
+      .closest("section[data-page]").classList.contains("hide");
+    if (settingsActive) refreshAgentStatus();
+  }, 8000);
+
+  /* ---------- Call Center Dashboard — live active-calls table ---------- */
+
+  function fmtDuration(startedAt) {
+    if (!startedAt) return "—";
+    const s = Math.max(0, Math.floor(Date.now() / 1000 - startedAt));
+    const mm = String(Math.floor(s / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    return mm + ":" + ss;
+  }
+
+  function fmtClock(ts) {
+    if (!ts) return "—";
+    const d = new Date(ts * 1000);
+    const pad = (n) => String(n).padStart(2, "0");
+    return pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+
+  // Project-wide date formatter — DD/MM/YYYY HH:MM:SS. Used everywhere
+  // a date is rendered so the SPA stays consistent (no toLocaleString
+  // calls bleeding in browser-locale-dependent formats).
+  function fmtDateTime(ts) {
+    if (!ts) return "—";
+    const d  = new Date(ts * 1000);
+    const p  = (n) => String(n).padStart(2, "0");
+    return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear()
+         + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  }
+  // Date only (no time) — for headers / log rows where seconds add noise.
+  function fmtDate(ts) {
+    if (!ts) return "—";
+    const d = new Date(ts * 1000);
+    const p = (n) => String(n).padStart(2, "0");
+    return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear();
+  }
+
+  /* ============================================================ */
+  /* Workspace Dashboard — KPI cards (today / week / month)        */
+  /* ============================================================ */
+
+  // Start-of-day epoch for the given Date.
+  function startOfDay(d) {
+    const x = new Date(d.getTime());
+    x.setHours(0, 0, 0, 0);
+    return x.getTime() / 1000;
+  }
+
+  // Start of the week containing `d` (Monday 00:00 local).
+  function startOfWeek(d) {
+    const x = new Date(d.getTime());
+    x.setHours(0, 0, 0, 0);
+    const dow = (x.getDay() + 6) % 7; // shift so Monday = 0
+    x.setDate(x.getDate() - dow);
+    return x.getTime() / 1000;
+  }
+
+  // Start of the month containing `d`.
+  function startOfMonth(d) {
+    const x = new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
+    return x.getTime() / 1000;
+  }
+
+  // Filter helper — count items whose `started_at` falls in [from, to).
+  function countInRange(items, from, to, pred) {
+    let n = 0;
+    for (const it of items) {
+      const t = it.started_at || 0;
+      if (t >= from && t < to && (!pred || pred(it))) n++;
+    }
+    return n;
+  }
+
+  // Easing for animated counters — cubic-out feels snappy without overshoot.
+  function _easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  // Tween an element's textContent from its current value to `target`.
+  // Used for the hero KPI numbers so they roll up like a stopwatch on
+  // every refresh.
+  function countUp(el, target, suffix = "", durMs = 700) {
+    if (!el) return;
+    const from = parseInt(el.getAttribute("data-target") || "0", 10) || 0;
+    el.setAttribute("data-target", String(target));
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / durMs);
+      const v = Math.round(from + (target - from) * _easeOut(t));
+      el.textContent = v + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // Render a small inline sparkline inside a hero card — shows the last
+  // 14 days of activity for that metric.
+  function renderSpark(svg, series, colour) {
+    if (!svg || !series.length) return;
+    const W = 100, H = 30, P = 2;
+    const max = Math.max(1, ...series);
+    const step = (W - P * 2) / Math.max(1, series.length - 1);
+    let d = "";
+    series.forEach((v, i) => {
+      const x = P + i * step;
+      const y = H - P - ((v / max) * (H - P * 2));
+      d += (i === 0 ? "M" : "L") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+    });
+    svg.innerHTML =
+        '<defs><linearGradient id="sg_' + (svg.id || Math.random()) + '" '
+      +   'x1="0" y1="0" x2="0" y2="1">'
+      +   '<stop offset="0%" stop-color="#fff" stop-opacity=".4"/>'
+      +   '<stop offset="100%" stop-color="#fff" stop-opacity="0"/>'
+      + '</linearGradient></defs>'
+      + '<path d="' + d + 'L' + (W - P) + ' ' + (H - P) + ' L' + P + ' '
+      +   (H - P) + ' Z" fill="rgba(255,255,255,.18)"/>'
+      + '<path d="' + d + '" fill="none" stroke="rgba(255,255,255,.9)" '
+      +   'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+
+  // Render the 14-day call-volume area chart. Two series: voice + WhatsApp.
+  function renderAreaChart(voiceByDay, waByDay, dayLabels) {
+    const svg = document.getElementById("chart-area");
+    if (!svg) return;
+    const W = 800, H = 240;
+    const padL = 36, padR = 12, padT = 16, padB = 28;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+    const maxY  = Math.max(1, ...voiceByDay, ...waByDay,
+                           ...voiceByDay.map((v, i) => v + waByDay[i]));
+    const xs = (i) => padL + (innerW * i / Math.max(1, voiceByDay.length - 1));
+    const ys = (v) => padT + innerH - (v / maxY) * innerH;
+
+    function path(series, close) {
+      let d = "";
+      series.forEach((v, i) => {
+        d += (i === 0 ? "M" : "L") + xs(i).toFixed(1) + " " + ys(v).toFixed(1) + " ";
+      });
+      if (close) {
+        d += "L" + xs(series.length - 1) + " " + (padT + innerH)
+           + " L" + xs(0) + " " + (padT + innerH) + " Z";
+      }
+      return d;
+    }
+
+    // Y-axis gridlines (4 of them, evenly spaced).
+    let grid = "";
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (innerH * i / 4);
+      const val = Math.round(maxY * (1 - i / 4));
+      grid +=
+        '<line x1="' + padL + '" x2="' + (W - padR) + '" '
+      +   'y1="' + y + '" y2="' + y + '" '
+      +   'stroke="var(--border)" stroke-width="1" opacity=".5"/>'
+      + '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" '
+      +   'fill="var(--dim)" font-size="10" '
+      +   'text-anchor="end" font-family="ui-monospace, monospace">'
+      +   val + '</text>';
+    }
+
+    // X-axis labels (every other day so it doesn't crowd).
+    let xLabels = "";
+    dayLabels.forEach((lbl, i) => {
+      if (i % 2 !== 0 && i !== dayLabels.length - 1) return;
+      xLabels +=
+        '<text x="' + xs(i) + '" y="' + (H - 8) + '" '
+      +   'fill="var(--dim)" font-size="10" text-anchor="middle">'
+      +   esc(lbl) + '</text>';
+    });
+
+    svg.innerHTML =
+        '<defs>'
+      +   '<linearGradient id="grad-blue-fill" x1="0" y1="0" x2="0" y2="1">'
+      +     '<stop offset="0%" stop-color="#3E7BE8" stop-opacity=".45"/>'
+      +     '<stop offset="100%" stop-color="#3E7BE8" stop-opacity="0"/>'
+      +   '</linearGradient>'
+      +   '<linearGradient id="grad-violet-fill" x1="0" y1="0" x2="0" y2="1">'
+      +     '<stop offset="0%" stop-color="#8b5cf6" stop-opacity=".35"/>'
+      +     '<stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>'
+      +   '</linearGradient>'
+      + '</defs>'
+      + grid
+      // Voice — filled area + line.
+      + '<path class="area-fill" d="' + path(voiceByDay, true)
+      +   '" fill="url(#grad-blue-fill)"/>'
+      + '<path class="area-line" d="' + path(voiceByDay, false)
+      +   '" stroke="#3E7BE8"/>'
+      // WhatsApp — line only (less prominent).
+      + '<path class="area-line" d="' + path(waByDay, false)
+      +   '" stroke="#8b5cf6" stroke-dasharray="0 2000" '
+      +   'style="animation-delay:.4s;"/>'
+      // Data point dots on the voice series.
+      + voiceByDay.map((v, i) =>
+          '<circle cx="' + xs(i) + '" cy="' + ys(v) + '" r="3" '
+        +   'fill="#3E7BE8" stroke="var(--panel)" stroke-width="2"/>'
+        ).join("")
+      + xLabels;
+  }
+
+  // Today-by-hour vertical bar chart. 24 bars representing call count
+  // per hour (0:00–23:00).
+  function renderHourlyChart(hourly) {
+    const svg = document.getElementById("chart-hourly");
+    if (!svg) return;
+    const W = 800, H = 220, padL = 28, padR = 8, padT = 12, padB = 24;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+    const max = Math.max(1, ...hourly);
+    const barW = innerW / 24 * .7;
+    const gap  = innerW / 24 * .3;
+
+    let bars = "", labels = "";
+    for (let h = 0; h < 24; h++) {
+      const v = hourly[h] || 0;
+      const x = padL + (innerW * h / 24) + gap / 2;
+      const bh = (v / max) * innerH;
+      const y = padT + innerH - bh;
+      bars +=
+        '<rect class="bar-grow" x="' + x.toFixed(1) + '" '
+      +   'y="' + y.toFixed(1) + '" '
+      +   'width="' + barW.toFixed(1) + '" '
+      +   'height="' + Math.max(2, bh).toFixed(1) + '" '
+      +   'rx="2" fill="url(#grad-bar-blue)" '
+      +   'style="animation-delay:' + (h * 0.02).toFixed(2) + 's;">'
+      +   '<title>' + h + ':00 — ' + v + ' calls</title>'
+      + '</rect>';
+      if (h % 3 === 0) {
+        labels +=
+          '<text x="' + (x + barW / 2).toFixed(1) + '" '
+        +   'y="' + (H - 8) + '" '
+        +   'fill="var(--dim)" font-size="10" text-anchor="middle">'
+        +   String(h).padStart(2, "0") + '</text>';
+      }
+    }
+    // 4 horizontal gridlines.
+    let grid = "";
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (innerH * i / 4);
+      const val = Math.round(max * (1 - i / 4));
+      grid +=
+        '<line x1="' + padL + '" x2="' + (W - padR) + '" '
+      +   'y1="' + y + '" y2="' + y + '" '
+      +   'stroke="var(--border)" stroke-width="1" opacity=".5"/>'
+      + '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" '
+      +   'fill="var(--dim)" font-size="10" '
+      +   'text-anchor="end" font-family="ui-monospace, monospace">'
+      +   val + '</text>';
+    }
+    svg.innerHTML =
+        '<defs><linearGradient id="grad-bar-blue" x1="0" y1="0" x2="0" y2="1">'
+      +   '<stop offset="0%" stop-color="#5b8ff0"/>'
+      +   '<stop offset="100%" stop-color="#3E7BE8"/>'
+      + '</linearGradient></defs>'
+      + grid + bars + labels;
+  }
+
+  // 2-segment donut chart (voice + WhatsApp).
+  function renderDonut(voiceN, waN) {
+    const svg = document.getElementById("chart-donut");
+    if (!svg) return;
+    const total = voiceN + waN;
+    document.getElementById("donut-voice").textContent = voiceN;
+    document.getElementById("donut-wa").textContent    = waN;
+    document.getElementById("donut-total").textContent = total;
+
+    const R = 48, cx = 60, cy = 60;
+    const C = 2 * Math.PI * R;
+    const voiceFrac = total > 0 ? voiceN / total : 0;
+    const waFrac    = total > 0 ? waN    / total : 0;
+
+    // Stroke-dasharray: <visible> <hidden>; stroke-dashoffset rotates start.
+    const voiceLen = C * voiceFrac;
+    const waLen    = C * waFrac;
+
+    svg.innerHTML =
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" '
+      +   'fill="none" stroke="var(--border)" stroke-width="14"/>'
+      // Voice segment.
+      + '<circle class="donut-arc" cx="' + cx + '" cy="' + cy + '" r="' + R + '" '
+      +   'fill="none" stroke="#3E7BE8" stroke-width="14" '
+      +   'stroke-dasharray="' + voiceLen.toFixed(2) + ' ' + C + '" '
+      +   'stroke-dashoffset="0" '
+      +   'transform="rotate(-90 ' + cx + ' ' + cy + ')" '
+      +   'style="--final-offset:0;"/>'
+      // WhatsApp segment (rotates to start where voice ends).
+      + '<circle class="donut-arc" cx="' + cx + '" cy="' + cy + '" r="' + R + '" '
+      +   'fill="none" stroke="#8b5cf6" stroke-width="14" '
+      +   'stroke-dasharray="' + waLen.toFixed(2) + ' ' + C + '" '
+      +   'stroke-dashoffset="' + (-voiceLen).toFixed(2) + '" '
+      +   'transform="rotate(-90 ' + cx + ' ' + cy + ')" '
+      +   'style="--final-offset:' + (-voiceLen).toFixed(2) + '; '
+      +     'animation-delay:.5s;"/>'
+      // Total inside the hole.
+      + '<text x="' + cx + '" y="' + (cy - 4) + '" '
+      +   'text-anchor="middle" fill="var(--text)" '
+      +   'font-size="22" font-weight="700" '
+      +   'font-family="ui-monospace, monospace">'
+      +   total + '</text>'
+      + '<text x="' + cx + '" y="' + (cy + 14) + '" '
+      +   'text-anchor="middle" fill="var(--dim)" font-size="10">'
+      +   'total</text>';
+  }
+
+  // Update a hero card's number with count-up animation + delta line.
+  function setHero(cardId, current, previous, periodLabel) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const numEl = card.querySelector(".hero-num");
+    const dEl   = card.querySelector(".hero-delta");
+    countUp(numEl, current, "", 700);
+
+    let text, arrow = "•";
+    if (previous === 0 && current === 0) {
+      text = "no activity " + periodLabel;
+    } else if (previous === 0) {
+      arrow = "▲";
+      text  = "+" + current + " " + periodLabel + " (new)";
+    } else {
+      const pct = ((current - previous) / previous) * 100;
+      if (pct > 1)       { arrow = "▲"; text = "+" + Math.round(pct) + "% " + periodLabel; }
+      else if (pct < -1) { arrow = "▼"; text = Math.round(pct) + "% " + periodLabel; }
+      else               { arrow = "→"; text = "flat " + periodLabel; }
+    }
+    dEl.innerHTML = '<span class="arrow">' + arrow + '</span>' + esc(text);
+  }
+
+  // Period card (week / month tiles in the bottom grid).
+  function setPeriod(cardId, current, previous, label, suffix = "") {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+    const numEl = card.querySelector(".period-num");
+    const dEl   = card.querySelector(".period-delta");
+    const prev  = card.querySelector(".period-bar-prev");
+    const cur   = card.querySelector(".period-bar-cur");
+
+    if (numEl) {
+      // Numbers like "45s" use suffix; pure ints countUp.
+      if (suffix) {
+        countUp(numEl, current, suffix, 700);
+      } else {
+        countUp(numEl, current, "", 700);
+      }
+    }
+
+    // Delta line.
+    if (dEl) {
+      let text, cls = "flat";
+      if (previous === 0 && current === 0) { text = "no activity " + label; }
+      else if (previous === 0)             { text = "+" + current + " " + label + " (was 0)"; cls = "up"; }
+      else {
+        const pct = ((current - previous) / previous) * 100;
+        const sign = pct > 0 ? "+" : (pct < 0 ? "−" : "");
+        text = sign + Math.abs(Math.round(pct)) + "% " + label
+             + " · prev " + previous;
+        cls = pct > 1 ? "up" : (pct < -1 ? "down" : "flat");
+      }
+      dEl.textContent = text;
+      dEl.className   = "period-delta " + cls;
+    }
+
+    // Trend bar: previous vs current as proportional widths.
+    if (prev && cur) {
+      const max = Math.max(current, previous, 1);
+      prev.style.width = (previous / max * 50) + "%";
+      cur.style.width  = (current  / max * 50) + "%";
+    }
+  }
+
+  async function refreshWorkspaceStats() {
+    // Pull merged intake list (calls + WhatsApp) + contacts once;
+    // every metric below is computed client-side.
+    let intake = [], contacts = [];
+    try {
+      const r = await fetch(API + "/agent/calls?limit=2000",
+                            { credentials: "include" }).then(r => r.json());
+      intake = r.calls || [];
+    } catch (e) {
+      console.warn("workspace stats: /agent/calls failed", e);
+    }
+    try {
+      const r = await fetch(API + "/contacts",
+                            { credentials: "include" }).then(r => r.json());
+      contacts = r.contacts || [];
+    } catch (_) {}
+
+    const voice = intake.filter(c => (c.source || "call") !== "whatsapp");
+    const wa    = intake.filter(c => (c.source || "call") === "whatsapp");
+    const hasData   = c => Object.keys(c.customer_data || {}).length > 0;
+    const isFlagged = c => !!c.active_flag;
+
+    // ---- Time anchors ----
+    const now      = new Date();
+    const nowSec   = now.getTime() / 1000;
+    const today    = startOfDay(now);
+    const tom      = today + 86400;
+    const yest     = today - 86400;
+    const week     = startOfWeek(now);
+    const weekP    = week - 7 * 86400;
+    const month    = startOfMonth(now);
+    const prevMonth = startOfMonth(
+      new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    );
+
+    // ---- Hero cards (Today + delta vs yesterday) ----
+    const todayCalls   = countInRange(voice, today, tom);
+    const yestCalls    = countInRange(voice, yest, today);
+    setHero("hero-today-calls", todayCalls, yestCalls, "vs yesterday");
+
+    const todayData    = countInRange(voice, today, tom, hasData);
+    const yestData     = countInRange(voice, yest, today, hasData);
+    setHero("hero-today-data", todayData, yestData, "vs yesterday");
+
+    const todayFlagged = countInRange(voice, today, tom, isFlagged);
+    const yestFlagged  = countInRange(voice, yest, today, isFlagged);
+    setHero("hero-today-flagged", todayFlagged, yestFlagged, "vs yesterday");
+
+    const todayWa = countInRange(wa, today, tom);
+    const yestWa  = countInRange(wa, yest, today);
+    setHero("hero-today-wa", todayWa, yestWa, "vs yesterday");
+
+    // ---- 14-day series for the area chart + hero sparklines ----
+    const days = 14;
+    const voiceByDay = [];
+    const waByDay    = [];
+    const dataByDay  = [];
+    const flagByDay  = [];
+    const dayLabels  = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const s = today - i * 86400;
+      const e = s + 86400;
+      voiceByDay.push(countInRange(voice, s, e));
+      waByDay.push(   countInRange(wa,    s, e));
+      dataByDay.push( countInRange(voice, s, e, hasData));
+      flagByDay.push( countInRange(voice, s, e, isFlagged));
+      const dt = new Date(s * 1000);
+      dayLabels.push(String(dt.getDate()).padStart(2, "0") + "/"
+                   + String(dt.getMonth() + 1).padStart(2, "0"));
+    }
+    renderAreaChart(voiceByDay, waByDay, dayLabels);
+    renderSpark(document.querySelector("#hero-today-calls   .hero-spark"), voiceByDay);
+    renderSpark(document.querySelector("#hero-today-data    .hero-spark"), dataByDay);
+    renderSpark(document.querySelector("#hero-today-flagged .hero-spark"), flagByDay);
+    renderSpark(document.querySelector("#hero-today-wa      .hero-spark"), waByDay);
+
+    // ---- Hourly distribution (today) ----
+    const hourly = new Array(24).fill(0);
+    for (const c of voice) {
+      const t = c.started_at || 0;
+      if (t >= today && t < tom) {
+        hourly[new Date(t * 1000).getHours()]++;
+      }
+    }
+    renderHourlyChart(hourly);
+
+    // ---- Channel mix (7 days) ----
+    const sevenAgo = today - 6 * 86400;
+    const voice7   = countInRange(voice, sevenAgo, tom);
+    const wa7      = countInRange(wa,    sevenAgo, tom);
+    renderDonut(voice7, wa7);
+
+    // ---- Period grid (week + month) ----
+    setPeriod("period-week-calls",
+              countInRange(voice, week, nowSec),
+              countInRange(voice, weekP, week),
+              "vs last week");
+
+    setPeriod("period-week-data",
+              countInRange(voice, week, nowSec, hasData),
+              countInRange(voice, weekP, week,  hasData),
+              "vs last week");
+
+    // Avg duration this week (special — uses suffix "s").
+    const weekRows = voice.filter(c => (c.started_at || 0) >= week
+                                    && (c.started_at || 0) < nowSec);
+    const totSec = weekRows.reduce((a, c) => a + (c.duration_s || 0), 0);
+    const avgWeek = weekRows.length ? Math.round(totSec / weekRows.length) : 0;
+    // Last-week average for the trend bar.
+    const lastWeekRows = voice.filter(c => (c.started_at || 0) >= weekP
+                                        && (c.started_at || 0) < week);
+    const totSecP = lastWeekRows.reduce((a, c) => a + (c.duration_s || 0), 0);
+    const avgPrev = lastWeekRows.length ? Math.round(totSecP / lastWeekRows.length) : 0;
+    setPeriod("period-week-avg", avgWeek, avgPrev, "vs last week", "s");
+
+    setPeriod("period-month-calls",
+              countInRange(voice, month, nowSec),
+              countInRange(voice, prevMonth, month),
+              "vs last month");
+
+    setPeriod("period-month-data",
+              countInRange(voice, month, nowSec, hasData),
+              countInRange(voice, prevMonth, month, hasData),
+              "vs last month");
+
+    setPeriod("period-month-contacts",
+              contacts.length, 0, "total in Contacts");
+
+    // Header status pill + footer timestamp.
+    const live = document.getElementById("dash-live-text");
+    if (live) live.textContent = "live · updated " + fmtClock(Date.now() / 1000);
+    const upd = document.getElementById("kpi-updated");
+    if (upd) upd.textContent = "Auto-refreshes every 30s · last update "
+                             + fmtDateTime(Date.now() / 1000);
+  }
+
+  // Auto-refresh every 30s while the workspace dashboard is the active
+  // section.
+  setInterval(() => {
+    const sec = document.querySelector('section[data-page="dashboard"]');
+    if (sec && !sec.classList.contains("hide")) refreshWorkspaceStats();
+  }, 30_000);
+
+  // Customer-info schema lazy-loaded once (column order + labels). Backend
+  // is the source of truth so adding a field is a one-place change.
+  let _schema = null;
+  async function ensureSchema() {
+    if (_schema) return _schema;
+    try {
+      _schema = await fetch(API + "/agent/customer-schema",
+                            { credentials: "include" }).then(r => r.json());
+    } catch (_) {
+      _schema = { fields: ["main_interest","name","phone","location",
+                            "project_phase","purchase_intent"],
+                  labels: {} };
+    }
+    return _schema;
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function cell(v) { return v ? esc(v) : '<span style="color:var(--dim)">—</span>'; }
+
+  function renderDashboard(s) {
+    // Top tiles
+    $("dash-active-num").textContent = (s.calls || []).length;
+    if (s.bound) {
+      $("dash-port-num").textContent = (s.bind_host || "0.0.0.0") + ":" + s.bind_port;
+      $("dash-port-sub").textContent = "listening since " + fmtClock(s.bound_at);
+    } else if (s.enabled) {
+      $("dash-port-num").textContent = "starting…";
+      $("dash-port-sub").textContent = "agent enabled, not yet bound";
+    } else {
+      $("dash-port-num").textContent = "stopped";
+      $("dash-port-sub").textContent = "enable in Call Center → Settings";
+    }
+    // Pill
+    const pill = $("dash-agent-pill"), txt = $("dash-agent-text");
+    const on = s.enabled && s.bound;
+    pill.classList.toggle("on",  on);
+    pill.classList.toggle("off", !on);
+    txt.textContent = s.last_error ? ("error: " + s.last_error.slice(0, 50))
+                    : s.bound      ? "running"
+                    : s.enabled    ? "starting"
+                                   : "stopped";
+    $("dash-updated").textContent = "updated " + fmtClock(Date.now() / 1000);
+
+    // Active-calls table with collected-field columns (live, in-progress).
+    const host = $("dash-calls-host");
+    const calls = s.calls || [];
+    if (!calls.length) {
+      host.innerHTML = '<div class="calls-empty">No calls right now. Dial '
+                     + '<strong>9003</strong> from any internal extension '
+                     + 'to see one land here.</div>';
+      return;
+    }
+    const fields = (_schema && _schema.fields) || [];
+    const labels = (_schema && _schema.labels) || {};
+
+    // Top-of-table banner per flagged call — operator can act on the
+    // most-urgent one without scanning the table.
+    let bannerHtml = "";
+    for (const c of calls) {
+      const f = c.active_flag;
+      if (!f) continue;
+      const sev = (f.severity || "normal").toLowerCase();
+      const sevLabel = sev === "high" ? "HIGH PRIORITY" : "supervisor needed";
+      // Prefer the actual caller number; fall back to AudioSocket peer
+      // only when the PBX hint hasn't landed yet.
+      const fromTag = c.caller_phone ? esc(c.caller_phone)
+                    : (c.peer ? esc(c.peer) : "");
+      bannerHtml += '<div class="flag-banner">'
+        + '<span class="flag-dot"></span>'
+        + '<div><strong>' + esc(sevLabel) + '</strong> on call '
+        +   esc(c.call_id || "—")
+        +   (fromTag ? ' (' + fromTag + ')' : '')
+        +   '<div class="reason">' + esc(f.reason || "(no reason given)") + '</div>'
+        + '</div>'
+        + '<button class="engage-btn" data-engage="' + esc(c.call_id) + '">'
+        +   'Engage supervisor</button>'
+        + '<button class="ack-btn" data-ack="' + esc(c.call_id) + '">'
+        +   'Dismiss</button>'
+        + '</div>';
+    }
+
+    let html = bannerHtml
+      + '<table class="calls-table"><thead><tr>'
+      + '<th>Status</th><th>Call ID</th><th>From</th><th>Duration</th>';
+    for (const f of fields) html += '<th>' + esc(labels[f] || f) + '</th>';
+    html += '<th>Supervisor</th>'
+         +  '</tr></thead><tbody>';
+    for (const c of calls) {
+      const d = c.customer_data || {};
+      const flagged = !!c.active_flag;
+      const statusCell = flagged
+        ? '<td><span class="flag-dot"></span><strong style="color:#fca5a5;">flagged</strong></td>'
+        : '<td><span class="live-dot"></span>live</td>';
+      // "From" column: prefer the actual caller phone (from PBX
+      // call-init hint). Fall back to the AudioSocket peer ip:port
+      // only when we don't have a number yet (e.g. PBX hook hasn't
+      // fired or the trunk dropped CallerID). When the caller matches
+      // a row in Contacts, append a green check badge that opens the
+      // contact-details modal on click.
+      const fromCell = c.caller_phone
+        ? (esc(c.caller_phone) + renderContactBadge(c.caller_phone))
+        : ('<span style="color:var(--dim);">' + cell(c.peer) + '</span>');
+      html += '<tr' + (flagged ? ' class="flag-row"' : '') + '>'
+        + statusCell
+        + '<td>' + cell(c.call_id) + '</td>'
+        + '<td>' + fromCell + '</td>'
+        + '<td>' + fmtDuration(c.started_at) + '</td>';
+      for (const f of fields) html += '<td>' + cell(d[f]) + '</td>';
+      // Per-row supervisor controls — always show Engage so the operator
+      // can pull in a supervisor proactively, not just when the agent flags.
+      html += '<td style="white-space:nowrap;">'
+        + '<button class="engage-btn" data-engage="' + esc(c.call_id) + '">'
+        +   'Engage</button>'
+        + (flagged
+            ? ' <button class="ack-btn" data-ack="' + esc(c.call_id) + '">'
+              + 'Ack</button>'
+            : '')
+        + '</td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+
+    // Wire the just-rendered buttons.
+    host.querySelectorAll("button[data-engage]").forEach(btn => {
+      btn.addEventListener("click", () => engageSupervisor(btn.dataset.engage, btn));
+    });
+    host.querySelectorAll("button[data-ack]").forEach(btn => {
+      btn.addEventListener("click", () => ackFlag(btn.dataset.ack, btn));
+    });
+    wireContactBadges(host);
+  }
+
+  async function engageSupervisor(callId, btn) {
+    if (!callId) return;
+    if (btn) { btn.disabled = true; btn.textContent = "Ringing…"; }
+    try {
+      const r = await fetch(
+        API + "/agent/calls/" + encodeURIComponent(callId)
+            + "/engage_supervisor?mode=barge",
+        { method: "POST", credentials: "include" });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.ok === false) {
+        alert("Engage supervisor failed: " + (j.error || j.detail
+              || ("HTTP " + r.status)));
+      }
+    } catch (e) {
+      alert("Engage supervisor failed: " + (e.message || e));
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "Engage"; }
+      refreshDashboard();
+    }
+  }
+
+  async function ackFlag(callId, btn) {
+    if (!callId) return;
+    if (btn) btn.disabled = true;
+    try {
+      await fetch(API + "/agent/calls/" + encodeURIComponent(callId)
+                      + "/ack_flag",
+                  { method: "POST", credentials: "include" });
+    } catch (_) {}
+    refreshDashboard();
+  }
+
+  async function refreshDashboard() {
+    await ensureSchema();
+    await ensureContactsFresh();
+    try {
+      const s = await fetch(API + "/agent/status",
+                            { credentials: "include" }).then(r => r.json());
+      renderDashboard(s);
+    } catch (e) {
+      console.warn("dashboard refresh failed", e);
+    }
+  }
+
+  // Poll every 2s but only while dashboard is the active page.
+  setInterval(() => {
+    const sec = document.querySelector('section[data-page="callcenter-dashboard"]');
+    if (sec && !sec.classList.contains("hide")) refreshDashboard();
+  }, 2000);
+
+  /* ---------- Call Center > Data Collected ---------- */
+
+  function renderDataCollected(calls) {
+    const host = $("data-calls-host");
+    if (!calls.length) {
+      host.innerHTML = '<div class="calls-empty">No calls yet.</div>';
+      return;
+    }
+    const fields = (_schema && _schema.fields) || [];
+    const labels = (_schema && _schema.labels) || {};
+    // Multi-select toolbar — appears above the table; the "Delete selected"
+    // button is disabled until at least one row checkbox is ticked.
+    let html =
+        '<div class="bulk-bar">'
+      +   '<span class="bulk-count" id="data-sel-count">0 selected</span>'
+      +   '<button class="bulk-del" id="data-bulk-del" disabled>'
+      +     'Delete selected</button>'
+      + '</div>'
+      + '<table class="calls-table"><thead><tr>'
+      + '<th style="width:28px;"><input type="checkbox" '
+      +   'id="data-sel-all" title="Select all" /></th>'
+      + '<th>Source</th><th>When</th><th>From</th><th>Duration</th>';
+    for (const f of fields) html += '<th>' + esc(labels[f] || f) + '</th>';
+    html += '<th></th></tr></thead><tbody>';
+    for (const c of calls) {
+      const d = c.customer_data || {};
+      // Source badge — voice call vs WhatsApp conversation.
+      const src   = c.source || "call";
+      const isWa  = src === "whatsapp";
+      const srcBg = isWa ? "#34d39922" : "#3E7BE822";
+      const srcFg = isWa ? "#34d399"   : "#7AB0FF";
+      const srcLbl = isWa
+        ? "💬 WhatsApp"
+        : "📞 Call";
+      // Duration column: calls show seconds, WhatsApp shows turn count.
+      const durCell = isWa
+        ? ((c.turn_count || 0) + " msgs")
+        : (Math.round(c.duration_s || 0) + "s");
+      // "From" column on Data Collected — same precedence as the
+      // Dashboard: caller_phone if known, otherwise customer_data.phone,
+      // otherwise the AudioSocket/WhatsApp peer string. Tack a contact
+      // badge on whichever phone we end up showing.
+      const fromCell = c.caller_phone
+        ? (esc(c.caller_phone) + renderContactBadge(c.caller_phone))
+        : (d.phone ? (esc(d.phone) + renderContactBadge(d.phone))
+                   : ('<span style="color:var(--dim);">' + cell(c.peer) + '</span>'));
+      const rowId = c.id || c.call_id;
+      html += '<tr>'
+        + '<td><input type="checkbox" class="row-sel" '
+        +   'data-id="' + esc(rowId) + '" /></td>'
+        + '<td><span style="background:' + srcBg + '; color:' + srcFg + '; '
+        +   'padding:3px 8px; border-radius:6px; font-size:11px; '
+        +   'font-weight:500; white-space:nowrap;">' + esc(srcLbl) + '</span></td>'
+        + '<td>' + fmtDateTime(c.started_at) + '</td>'
+        + '<td>' + fromCell + '</td>'
+        + '<td>' + durCell + '</td>';
+      for (const f of fields) html += '<td>' + cell(d[f]) + '</td>';
+      html += '<td><button class="save-btn" style="padding:4px 10px; '
+            + 'background:transparent; border:1px solid var(--border); '
+            + 'color:var(--dim); font-size:11px;" '
+            + 'data-del="' + esc(rowId) + '">delete</button></td>';
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+    // Wire per-row delete buttons.
+    host.querySelectorAll('button[data-del]').forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.getAttribute("data-del");
+        if (!confirm("Delete record for call " + id + "?")) return;
+        try {
+          await fetch(API + "/agent/calls/" + id,
+                      { method: "DELETE", credentials: "include" });
+          refreshDataCollected();
+        } catch (e) { alert(e.message || "delete failed"); }
+      });
+    });
+    // Wire multi-select: row checkboxes, header "select all", and the
+    // bulk-delete button. Updates the count display + button state on
+    // every check change.
+    wireBulkSelect(host, {
+      countId:    "data-sel-count",
+      btnId:      "data-bulk-del",
+      selectAll:  "data-sel-all",
+      onDelete:   async (ids) => {
+        for (const id of ids) {
+          try {
+            await fetch(API + "/agent/calls/" + encodeURIComponent(id),
+                        { method: "DELETE", credentials: "include" });
+          } catch (_) {}
+        }
+        refreshDataCollected();
+      },
+      noun: "record",
+    });
+    wireContactBadges(host);
+  }
+
+  // Shared multi-select wiring used by Data Collected + Call History.
+  // Expects a host container with:
+  //   - .row-sel checkboxes (one per row, with data-id attr)
+  //   - a "select all" checkbox at #selectAll
+  //   - a count badge at #countId
+  //   - a "Delete selected" button at #btnId
+  // Calls onDelete(idList) when the operator confirms a bulk delete.
+  function wireBulkSelect(host, { countId, btnId, selectAll, onDelete, noun }) {
+    const cnt  = document.getElementById(countId);
+    const btn  = document.getElementById(btnId);
+    const all  = document.getElementById(selectAll);
+    const rows = host.querySelectorAll("input.row-sel");
+
+    function updateState() {
+      const checked = host.querySelectorAll("input.row-sel:checked");
+      cnt.textContent = checked.length + " selected";
+      btn.disabled = checked.length === 0;
+      if (all) {
+        all.checked = checked.length > 0 && checked.length === rows.length;
+        all.indeterminate = checked.length > 0
+          && checked.length < rows.length;
+      }
+    }
+
+    rows.forEach(cb => cb.addEventListener("change", updateState));
+    if (all) all.addEventListener("change", () => {
+      rows.forEach(cb => { cb.checked = all.checked; });
+      updateState();
+    });
+    btn.addEventListener("click", async () => {
+      const ids = Array.from(host.querySelectorAll("input.row-sel:checked"))
+                       .map(cb => cb.getAttribute("data-id"));
+      if (!ids.length) return;
+      const what = noun + (ids.length === 1 ? "" : "s");
+      if (!confirm("Delete " + ids.length + " " + what + "? This cannot be undone."))
+        return;
+      btn.disabled = true;
+      btn.textContent = "Deleting…";
+      try { await onDelete(ids); }
+      finally { btn.textContent = "Delete selected"; }
+    });
+    updateState();
+  }
+
+  async function refreshDataCollected() {
+    await ensureSchema();
+    await ensureContactsFresh();
+    try {
+      const r = await fetch(API + "/agent/calls?limit=200",
+                            { credentials: "include" }).then(r => r.json());
+      renderDataCollected(r.calls || []);
+      $("data-updated").textContent = "updated " + fmtClock(Date.now() / 1000);
+    } catch (e) {
+      console.warn("data collected refresh failed", e);
+    }
+  }
+
+  $("data-refresh").addEventListener("click", refreshDataCollected);
+  $("data-jump-dash").addEventListener("click", (e) => {
+    e.preventDefault(); routeTo("callcenter-dashboard");
+  });
+
+  /* ---------- Call Center > Call History ---------- */
+
+  async function refreshCallHistory() {
+    await ensureContactsFresh();
+    try {
+      const r = await fetch(API + "/agent/calls?limit=200",
+                            { credentials: "include" }).then(r => r.json());
+      renderCallHistory(r.calls || []);
+      $("hist-call-updated").textContent = "updated " + fmtClock(Date.now() / 1000);
+    } catch (e) {
+      console.warn("call history refresh failed", e);
+    }
+  }
+
+  function renderCallHistory(calls) {
+    // Call History is voice-only — WhatsApp conversations belong on
+    // the WhatsApp page, not in the call list.
+    calls = (calls || []).filter(c => (c.source || "call") !== "whatsapp");
+    $("hist-call-title").textContent = "Past calls (" + calls.length + ")";
+    const host = $("hist-call-host");
+    if (!calls.length) {
+      host.innerHTML = '<div class="calls-empty">No completed calls yet. '
+                     + 'Dial <strong>9003</strong> to record one.</div>';
+      return;
+    }
+    let html =
+        '<div class="bulk-bar">'
+      +   '<span class="bulk-count" id="hist-sel-count">0 selected</span>'
+      +   '<button class="bulk-del" id="hist-bulk-del" disabled>'
+      +     'Delete selected</button>'
+      + '</div>'
+      + '<table class="calls-table"><thead><tr>'
+      + '<th style="width:28px;"><input type="checkbox" '
+      +   'id="hist-sel-all" title="Select all" /></th>'
+      + '<th>When</th><th>From</th><th>Flag</th><th>Duration</th><th>Turns</th>'
+      + '<th>Transcript</th><th>Audio</th><th>Collected</th><th></th></tr></thead><tbody>';
+    for (const c of calls) {
+      const audio = [
+        c.has_mixed_wav  ? "mixed"  : null,
+        c.has_caller_wav ? "caller" : null,
+        c.has_agent_wav  ? "agent"  : null,
+      ].filter(Boolean).join(" · ") || "—";
+      const d = c.customer_data || {};
+      const dCount = Object.keys(d).length;
+      // Enhancement status badge (matches restaurant's pattern).
+      const st = c.enhanced_status || "pending";
+      const stColor = st === "done"    ? "#34d399"
+                    : st === "running" ? "#fbbf24"
+                    : st === "failed"  ? "var(--err)"
+                                       : "var(--dim)";
+      const stLabel = st === "done"    ? "enhanced ("+(c.enhanced_turn_count||0)+")"
+                    : st === "running" ? "enhancing…"
+                    : st === "failed"  ? "raw only (enhance failed)"
+                                       : "raw (pending enhance)";
+      const fromCell = c.caller_phone
+        ? (esc(c.caller_phone) + renderContactBadge(c.caller_phone))
+        : (d.phone ? (esc(d.phone) + renderContactBadge(d.phone))
+                   : ('<span style="color:var(--dim);">' + cell(c.peer) + '</span>'));
+      // Supervisor-flag column. Persisted with the call when the agent
+      // raised one mid-call; reason text shown inline so the operator
+      // can scan history without opening each call.
+      const flag = c.active_flag;
+      const flagCell = flag
+        ? ('<span class="flag-dot"></span>'
+           + '<span style="color:#fca5a5; font-weight:600; font-size:11px;">'
+           + esc((flag.severity || "normal").toUpperCase()) + '</span>'
+           + '<div style="font-size:11px; color:var(--text); font-style:italic; '
+           +   'margin-top:3px; max-width:240px;">'
+           + esc(flag.reason || "(no reason given)") + '</div>')
+        : '<span style="color:var(--dim); font-size:11px;">—</span>';
+      const trClass = flag ? ' class="flag-row"' : '';
+      html += '<tr' + trClass + '>'
+        + '<td><input type="checkbox" class="row-sel" '
+        +   'data-id="' + esc(c.id) + '" /></td>'
+        + '<td>' + esc(fmtDateTime(c.started_at)) + '</td>'
+        + '<td>' + fromCell + '</td>'
+        + '<td>' + flagCell + '</td>'
+        + '<td>' + (c.duration_s || 0) + 's</td>'
+        + '<td>' + (c.turn_count || 0) + '</td>'
+        + '<td><span style="color:' + stColor + '; font-size:11px;">●</span> '
+              + '<span style="font-size:11px; color:var(--dim);">'
+              + esc(stLabel) + '</span></td>'
+        + '<td><span style="color:var(--dim); font-size:11px;">' + esc(audio) + '</span></td>'
+        + '<td>' + dCount + ' / 6'
+              + (dCount ? ' <span style="color:var(--dim); font-size:11px;">('
+                  + esc(Object.keys(d).join(", ")) + ')</span>' : '')
+              + '</td>'
+        + '<td style="white-space:nowrap;">'
+            + '<button class="save-btn" data-open="' + esc(c.id) + '" '
+              + 'style="padding:4px 10px; background:transparent; '
+              + 'border:1px solid var(--accent); color:var(--accent); '
+              + 'font-size:11px; margin-right:6px;">open</button>'
+            + '<button class="save-btn" data-del-hist="' + esc(c.id) + '" '
+              + 'style="padding:4px 10px; background:transparent; '
+              + 'border:1px solid var(--border); color:var(--dim); '
+              + 'font-size:11px;">delete</button>'
+        + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+
+    host.querySelectorAll('[data-open]').forEach(b => {
+      b.addEventListener("click", () => openCallHistory(b.getAttribute("data-open")));
+    });
+    host.querySelectorAll('[data-del-hist]').forEach(b => {
+      b.addEventListener("click", async () => {
+        const id = b.getAttribute("data-del-hist");
+        if (!confirm("Delete this call record (audio + transcript)?")) return;
+        await fetch(API + "/agent/calls/" + encodeURIComponent(id),
+                    { method: "DELETE", credentials: "include" });
+        refreshCallHistory();
+      });
+    });
+    // Multi-select wiring (shared helper).
+    wireBulkSelect(host, {
+      countId:   "hist-sel-count",
+      btnId:     "hist-bulk-del",
+      selectAll: "hist-sel-all",
+      noun:      "call",
+      onDelete:  async (ids) => {
+        for (const id of ids) {
+          try {
+            await fetch(API + "/agent/calls/" + encodeURIComponent(id),
+                        { method: "DELETE", credentials: "include" });
+          } catch (_) {}
+        }
+        refreshCallHistory();
+      },
+    });
+    wireContactBadges(host);
+  }
+
+  async function openCallHistory(id) {
+    try {
+      const m = await fetch(API + "/agent/calls/" + encodeURIComponent(id),
+                            { credentials: "include" }).then(r => r.json());
+      $("hist-call-modal-title").textContent =
+        "Call · " + fmtDateTime(m.started_at);
+      // Audio sources — cache-bust with the id so re-opening different
+      // calls doesn't show the previous one.
+      const base = API + "/agent/calls/" + encodeURIComponent(id) + "/audio/";
+      $("hist-call-audio-mixed").src  = base + "mixed";
+      $("hist-call-audio-caller").src = base + "caller";
+      $("hist-call-audio-agent").src  = base + "agent";
+
+      // Customer data
+      const dEl = $("hist-call-data");
+      const d = m.customer_data || {};
+      const fields = (_schema && _schema.fields) || [
+        "main_interest","name","phone","location","project_phase","purchase_intent"];
+      const labels = (_schema && _schema.labels) || {};
+      if (Object.keys(d).length === 0) {
+        dEl.innerHTML = '<div style="color:var(--dim);">No fields captured.</div>';
+      } else {
+        let h = '<table style="width:100%; font-size:13px;">';
+        for (const f of fields) {
+          if (d[f] == null || d[f] === "") continue;
+          h += '<tr><td style="color:var(--dim); padding:4px 8px 4px 0;">'
+             + esc(labels[f] || f) + '</td>'
+             + '<td style="padding:4px 0;">' + esc(d[f]) + '</td></tr>';
+        }
+        h += '</table>';
+        dEl.innerHTML = h;
+      }
+      $("hist-call-meta").innerHTML =
+          'call_id: <code>' + esc(m.call_id || "") + '</code><br>'
+        + 'duration: <strong>' + (m.duration_s || 0) + 's</strong><br>'
+        + 'voice: <strong>' + esc(m.voice || "default") + '</strong><br>'
+        + 'peer: <code>' + esc(m.peer || "—") + '</code>';
+
+      // Transcript — prefer enhanced_turns (cleaner offline pass via
+      // non-Live Gemini), fall back to the live transcript captured
+      // during the call.
+      const tEl = $("hist-call-transcript");
+      const enhanced = m.enhanced_turns;
+      const turns = (Array.isArray(enhanced) && enhanced.length)
+                      ? enhanced : (m.turns || []);
+      const using = (Array.isArray(enhanced) && enhanced.length) ? "enhanced" : "live";
+      const status = m.enhanced_status || "pending";
+      let banner = "";
+      if (using === "enhanced") {
+        banner = '<div style="font-size:11px; color:#34d399; margin-bottom:10px;">'
+               + '● Enhanced transcript (Gemini offline pass · '
+               + (enhanced.length) + ' turns)</div>';
+      } else if (status === "running") {
+        banner = '<div style="font-size:11px; color:#fbbf24; margin-bottom:10px;">'
+               + '● Enhancing transcript in the background — refresh in a moment.</div>';
+      } else if (status === "failed") {
+        banner = '<div style="font-size:11px; color:var(--err); margin-bottom:10px;">'
+               + '● Enhancement failed ('
+               + esc(m.enhanced_error || "unknown") + '). Showing raw live transcript.</div>';
+      } else {
+        banner = '<div style="font-size:11px; color:var(--dim); margin-bottom:10px;">'
+               + '● Live transcript (Gemini Live).</div>';
+      }
+
+      if (!turns.length) {
+        tEl.innerHTML = banner +
+          '<div style="color:var(--dim);">No transcript captured for this call.</div>';
+      } else {
+        let h = banner;
+        for (const t of turns) {
+          const isAgent = t.role === "agent";
+          const bg     = isAgent ? "#3E7BE822" : "#5B2A9E22";
+          const label  = isAgent ? "Nora" : "Caller";
+          h += '<div style="margin-bottom:10px; padding:10px 12px; '
+            +  'background:' + bg + '; border-radius:8px;">'
+            +  '<div style="font-size:10px; text-transform:uppercase; '
+            +  'color:var(--dim); margin-bottom:4px;">' + esc(label) + '</div>'
+            +  '<div dir="auto" style="white-space:pre-wrap;">' + esc(t.text || "") + '</div>'
+            +  '</div>';
+        }
+        tEl.innerHTML = h;
+      }
+
+      $("hist-call-modal").classList.remove("hide");
+    } catch (e) {
+      alert("Failed to load call: " + (e.message || e));
+    }
+  }
+
+  $("hist-call-refresh").addEventListener("click", refreshCallHistory);
+
+  /* ---------- Call Center > WhatsApp ---------- */
+  // Single source of truth = the local inbox endpoint, refreshed every
+  // 5s while this tab is active. Messages are grouped by phone number
+  // client-side so we don't need a chat-list endpoint on the backend.
+
+  let _waSelectedPhone     = null;
+  let _waLastRenderedPhone = null;   // which chat the thread DOM currently shows
+  let _waPollTimer         = null;
+  let _waLastMessages      = [];
+  // Phone-digits → contact map, rebuilt on every WhatsApp refresh so
+  // edits in Contacts → List propagate within one poll tick.
+  // Also used by Dashboard / Call History / Data Collected to surface
+  // "known contact" badges next to caller phone numbers.
+  let _waContactByPhone = new Map();
+  // Sorted list of (digits, contact) tuples, longest-digits first —
+  // used by `matchContact()` for suffix-style lookup (covers
+  // "966591697226" vs "+966591697226" vs "0591697226" mismatches).
+  let _contactsByLen = [];
+  // Tracks when we last refreshed so the table renderers don't spam
+  // /contacts on every poll tick.
+  let _contactsLastFetch = 0;
+
+  function _phoneDigits(s) { return String(s || "").replace(/\D/g, ""); }
+
+  async function rebuildContactMap() {
+    try {
+      const j = await fetch(API + "/contacts",
+                            { credentials: "include" }).then(r => r.json());
+      const map = new Map();
+      const sorted = [];
+      for (const c of (j.contacts || [])) {
+        const d = _phoneDigits(c.phone);
+        if (d) { map.set(d, c); sorted.push([d, c]); }
+      }
+      // Longest first so suffix-match prefers the most specific entry.
+      sorted.sort((a, b) => b[0].length - a[0].length);
+      _waContactByPhone  = map;
+      _contactsByLen     = sorted;
+      _contactsLastFetch = Date.now();
+    } catch (_) { /* keep last good map */ }
+  }
+
+  // Lookup a contact by phone using suffix-match — handles cases where
+  // the stored contact has a +966 prefix but the caller_phone comes
+  // through as "966591697226" or "0591697226".
+  function matchContact(rawPhone) {
+    const q = _phoneDigits(rawPhone);
+    if (!q) return null;
+    if (_waContactByPhone.has(q)) return _waContactByPhone.get(q);
+    for (const [d, c] of _contactsByLen) {
+      if (d === q || d.endsWith(q) || q.endsWith(d)) return c;
+    }
+    return null;
+  }
+
+  // Lazy refresh — used by table renderers so the contact map stays
+  // current without hammering /contacts on every dashboard poll.
+  async function ensureContactsFresh(maxAgeMs = 30_000) {
+    if (Date.now() - _contactsLastFetch > maxAgeMs) {
+      await rebuildContactMap();
+    }
+  }
+
+  // Render the per-row "known contact" badge + open-details button.
+  // Returns inline HTML to embed inside any table cell.
+  function renderContactBadge(rawPhone) {
+    const c = matchContact(rawPhone);
+    if (!c) return "";
+    return ' <span class="contact-badge"'
+         +    ' title="Known contact: ' + esc(c.name || c.client_id || "") + '"'
+         +    ' data-contact-id="' + esc(c.id || "") + '"'
+         +    ' role="button">✓</span>';
+  }
+
+  // Wire any .contact-badge buttons just rendered into `host` — opens
+  // the contact-details modal on click.
+  function wireContactBadges(host) {
+    host.querySelectorAll(".contact-badge").forEach(el => {
+      el.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        openContactDetails(el.getAttribute("data-contact-id"));
+      });
+    });
+  }
+
+  function openContactDetails(contactId) {
+    // Find contact by id (or fall back to phone match if id missing).
+    let contact = null;
+    for (const [, c] of _waContactByPhone) {
+      if (c.id === contactId) { contact = c; break; }
+    }
+    if (!contact) return;
+    const rows = [
+      ["Client ID",     contact.client_id],
+      ["Name",          contact.name],
+      ["Phone",         contact.phone],
+      ["Email",         contact.email],
+      ["Location",      contact.location],
+      ["Interest",      contact.interest],
+      ["Project phase", contact.project_phase],
+      ["Lead source",   contact.lead_source],
+    ].filter(([_, v]) => v != null && v !== "");
+    let body =
+        '<table style="width:100%; border-collapse:collapse; font-size:13px;">';
+    for (const [k, v] of rows) {
+      body += '<tr style="border-top:1px solid var(--border);">'
+           +    '<td style="padding:8px 10px 8px 0; color:var(--dim); '
+           +       'width:120px; vertical-align:top;">' + esc(k) + '</td>'
+           +    '<td style="padding:8px 0;">' + esc(v) + '</td>'
+           +  '</tr>';
+    }
+    body += '</table>';
+    showContactModal(contact.name || contact.client_id || "Contact", body);
+  }
+
+  function showContactModal(title, bodyHtml) {
+    let modal = document.getElementById("contact-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "contact-modal";
+      modal.className = "modal-backdrop";
+      modal.innerHTML =
+          '<div class="modal-card">'
+        +   '<div class="modal-head">'
+        +     '<h2 id="contact-modal-title" style="margin:0;"></h2>'
+        +     '<button class="modal-close" id="contact-modal-close" '
+        +       'aria-label="Close">&times;</button>'
+        +   '</div>'
+        +   '<div id="contact-modal-body" class="modal-body"></div>'
+        + '</div>';
+      document.body.appendChild(modal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) modal.classList.add("hide");
+      });
+      modal.querySelector("#contact-modal-close")
+           .addEventListener("click", () => modal.classList.add("hide"));
+    }
+    modal.querySelector("#contact-modal-title").textContent = title;
+    modal.querySelector("#contact-modal-body").innerHTML    = bodyHtml;
+    modal.classList.remove("hide");
+  }
+
+  // Extract the caller's REAL phone number from a WaSender webhook row.
+  // Preference order is crucial because WaSender (post-WhatsApp's LID
+  // rollout) sends messages with a privacy JID like "233908264300569@lid"
+  // as the `remoteJid` AND the real phone alongside it as
+  // `key.cleanedSenderPn` / `key.senderPn`. If we picked `remoteJid` first
+  // we'd group + display the LID instead of the actual sender.
+  function waPhoneOf(m) {
+    // Look at key.* first (where the real phone lives).
+    const k = m.key || {};
+    const candidates = [
+      k.cleanedSenderPn,             // bare digits (best)
+      k.senderPn,                    // 9665…@s.whatsapp.net
+      k.participantPn,               // group-message variant
+      // Local outbound rows we wrote ourselves
+      m.to,
+      // Fallback to the chat / sender JID, but only after the above.
+      m.jid, m.remoteJid, m.chatJid, m.chat_id, m.chatId,
+      m.from, m.sender, m.recipient, m.phone, m.number,
+      k.remoteJid,
+    ];
+    for (const v of candidates) {
+      if (typeof v !== "string") continue;
+      const head = v.split("@")[0];
+      // Skip LIDs that happen to be in lower-priority slots — they end
+      // in '@lid' so we already missed them via split; but if a bare LID
+      // digit appears with no suffix, we have no way to know. Take whatever
+      // produces a usable digit string.
+      const digits = head.replace(/\D/g, "");
+      if (digits) return digits;
+    }
+    return "";
+  }
+
+  // Friendly display name for a contact, from WaSender's pushName.
+  function waNameOf(m) {
+    if (typeof m.pushName === "string" && m.pushName) return m.pushName;
+    if (m.contact && typeof m.contact.name === "string" && m.contact.name)
+      return m.contact.name;
+    return "";
+  }
+
+  // Detect media on a webhook row. Returns {kind, src, filename, caption}
+  // or null. `src` always points at our own backend so we don't expose
+  // WaSender's auth-required URLs to the browser.
+  function waMediaInfo(m) {
+    const raw = m.raw || m;
+    const id  = raw.id || (raw.key && raw.key.id) || "";
+    // OUTBOUND rows we wrote locally carry an explicit pointer.
+    if (raw.media_kind && (raw.media_url || raw.media_local)) {
+      return {
+        kind: raw.media_kind,
+        src:  raw.media_url
+              || (API + "/whatsapp/outgoing/" + encodeURIComponent(raw.media_local)),
+        filename: raw.media_local || "",
+        caption:  raw.text || "",
+      };
+    }
+    // INCOMING — look at the WaSender envelope shapes.
+    const body = (raw.message && typeof raw.message === "object") ? raw.message : {};
+    const map = [
+      ["imageMessage",    "image"],
+      ["videoMessage",    "video"],
+      ["audioMessage",    "audio"],
+      ["documentMessage", "document"],
+      ["stickerMessage",  "image"],
+    ];
+    for (const [field, kind] of map) {
+      const sub = body[field];
+      if (sub && typeof sub === "object") {
+        return {
+          kind,
+          src:      id ? (API + "/whatsapp/media/" + encodeURIComponent(id)) : "",
+          filename: sub.fileName || sub.title || "",
+          caption:  sub.caption  || "",
+        };
+      }
+    }
+    return null;
+  }
+
+  // Pick the message body from a WaSender row — varies by webhook version.
+  // Returns the plain caption/text (no "[image]" prefix); the renderer
+  // handles media itself.
+  function waTextOf(m) {
+    if (typeof m.text === "string" && m.text)    return m.text;
+    if (typeof m.body === "string" && m.body)    return m.body;
+    if (typeof m.message === "string" && m.message) return m.message;
+    if (typeof m.messageText === "string")       return m.messageText;
+    if (typeof m.messageContent === "string")    return m.messageContent;
+    const msg = m.message;
+    if (msg && typeof msg === "object") {
+      if (typeof msg.conversation === "string") return msg.conversation;
+      if (msg.extendedTextMessage && typeof msg.extendedTextMessage.text === "string")
+        return msg.extendedTextMessage.text;
+      if (msg.imageMessage && typeof msg.imageMessage.caption === "string")
+        return msg.imageMessage.caption;
+      if (msg.videoMessage && typeof msg.videoMessage.caption === "string")
+        return msg.videoMessage.caption;
+    }
+    return "";
+  }
+
+  // Friendly chat-list preview for a message — uses the text/caption,
+  // or falls back to a media type tag for media-only messages.
+  function waPreviewOf(m) {
+    const t = waTextOf(m);
+    if (t) return t;
+    const media = waMediaInfo(m);
+    if (!media) return "";
+    if (media.kind === "image")    return "🖼️  Photo";
+    if (media.kind === "video")    return "🎬  Video";
+    if (media.kind === "audio")    return "🎤  Voice note";
+    if (media.kind === "document") return "📄  Document";
+    return "";
+  }
+
+  function waTsOf(m) {
+    const v = m.received_at || m.messageTimestamp || m.timestamp
+            || m.ts || m.createdAt || m.created_at || 0;
+    let n = parseInt(v, 10);
+    if (!n) return 0;
+    if (n > 32_000_000_000) n = Math.floor(n / 1000); // ms → s
+    return n;
+  }
+
+  function waFromMe(m) {
+    if (typeof m.from_me === "boolean") return m.from_me;
+    if (typeof m.fromMe  === "boolean") return m.fromMe;
+    if (m.key && typeof m.key.fromMe === "boolean") return m.key.fromMe;
+    if (m.source === "outbound") return true;
+    return false;
+  }
+
+  function waGroup(messages) {
+    // Group → Map<phone, {phone, name, lastTs, lastText, msgs}>
+    const groups = new Map();
+    for (const m of messages) {
+      const phone = waPhoneOf(m);
+      if (!phone) continue;
+      const ts      = waTsOf(m);
+      const txt     = waTextOf(m);
+      const preview = waPreviewOf(m);
+      const name    = waNameOf(m);
+      let g = groups.get(phone);
+      if (!g) {
+        g = { phone, name: "", lastTs: 0, lastText: "", msgs: [] };
+        groups.set(phone, g);
+      }
+      if (name && ts >= g.lastTs) g.name = name;
+      else if (name && !g.name)   g.name = name;
+      // text = caption only (thread renders the media inline);
+      // preview = caption OR media-type fallback (for chat list).
+      g.msgs.push({ ts, text: txt, fromMe: waFromMe(m), raw: m });
+      if (ts > g.lastTs) { g.lastTs = ts; g.lastText = preview; }
+    }
+    for (const g of groups.values()) g.msgs.sort((a, b) => a.ts - b.ts);
+    return [...groups.values()].sort((a, b) => b.lastTs - a.lastTs);
+  }
+
+  function fmtRelative(ts) {
+    if (!ts) return "";
+    const diff = (Date.now() / 1000) - ts;
+    if (diff <  60)  return Math.floor(diff)  + "s ago";
+    if (diff < 3600) return Math.floor(diff / 60)  + "m ago";
+    if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+    return fmtDate(ts);
+  }
+
+  async function refreshWhatsApp() {
+    // Pull status (for pill), inbox, contacts, and bot-toggle state
+    // in parallel — one tick keeps everything consistent.
+    try {
+      const [statusRes, inboxRes, botRes] = await Promise.all([
+        fetch(API + "/whatsapp/status",      { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/whatsapp/inbox",       { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/whatsapp/bot/status",  { credentials: "include" }).then(r => r.json()),
+        rebuildContactMap(),
+      ]);
+      $("wa-bot-toggle").checked = !!botRes.enabled;
+      $("wa-bot-msg").textContent = botRes.enabled
+          ? ("on · " + (botRes.conversations || 0) + " chats")
+          : "off";
+      // Status pill
+      const pill = $("wa-pill"), txt = $("wa-pill-text");
+      const ok = !!statusRes.ok;
+      pill.classList.toggle("on",  ok);
+      pill.classList.toggle("off", !ok);
+      if (statusRes.ok) {
+        const cc = statusRes.ping && statusRes.ping.contact_count;
+        txt.textContent = "connected" + (cc != null ? " · " + cc + " contacts" : "");
+      } else if (statusRes.error) {
+        txt.textContent = "error: " + String(statusRes.error).slice(0, 50);
+      } else {
+        txt.textContent = "not configured";
+      }
+
+      _waLastMessages = inboxRes.messages || [];
+      renderWhatsApp();
+    } catch (e) {
+      console.warn("whatsapp refresh failed", e);
+    }
+  }
+
+  function renderWhatsApp() {
+    const groups = waGroup(_waLastMessages);
+    $("wa-list-count").textContent = groups.length
+        ? (groups.length + " chats") : "no chats yet";
+
+    // Chats list
+    const list = $("wa-chats");
+    if (!groups.length) {
+      list.innerHTML = '<div class="calls-empty" style="padding:18px;">'
+                     + 'No messages yet. Send one or wait for an incoming.</div>';
+    } else {
+      let h = "";
+      for (const g of groups) {
+        const sel = g.phone === _waSelectedPhone ? " active" : "";
+        const client = _waContactByPhone.get(g.phone);
+        // Header line — client name wins, then pushName, then phone.
+        const displayName = (client && client.name) || g.name;
+        const head = displayName
+          ? '<strong style="font-size:13px;">' + esc(displayName) + '</strong>'
+            + ' <span style="font-family: ui-monospace, monospace; '
+            + 'font-size:10px; color:var(--dim);">+' + esc(g.phone) + '</span>'
+          : '<strong style="font-family: ui-monospace, monospace; font-size:13px;">+'
+            + esc(g.phone) + '</strong>';
+        // Client badge — its own line, only when the phone matches a contact.
+        // The "✓ client" span is wrapped as a contact-badge so clicking
+        // it opens the contact-details modal. stopPropagation in the
+        // badge handler keeps the row click (which switches chats)
+        // from also firing.
+        const clientLine = client
+          ? '<div style="margin-top:3px; display:flex; align-items:center; gap:6px;">'
+            +   '<span class="contact-badge" '
+            +     'data-contact-id="' + esc(client.id || "") + '" '
+            +     'title="View client details" role="button" '
+            +     'style="margin-left:0;">✓</span>'
+            +   '<span style="font-size:11px; color:#34d399;">client</span>'
+            +   '<span style="font-family: ui-monospace, monospace; '
+            +     'font-size:10px; color:var(--accent);">'
+            +     esc(client.client_id || "")
+            +   '</span>'
+            + '</div>'
+          : "";
+        h += '<div data-phone="' + esc(g.phone) + '" '
+          +  'style="padding:12px 14px; border-bottom:1px solid var(--border); '
+          +  'cursor:pointer;" class="wa-chat-row' + sel + '">'
+          +  '<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">'
+          +    '<div style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">' + head + '</div>'
+          +    '<span style="font-size:10px; color:var(--dim); flex-shrink:0;">'
+          +      esc(fmtRelative(g.lastTs)) + '</span>'
+          +  '</div>'
+          +  clientLine
+          +  '<div style="font-size:12px; color:var(--dim); '
+          +  'white-space:nowrap; overflow:hidden; text-overflow:ellipsis; '
+          +  'margin-top:3px;" dir="auto">' + esc(g.lastText || "(no preview)") + '</div>'
+          +  '</div>';
+      }
+      list.innerHTML = h;
+      list.querySelectorAll("[data-phone]").forEach(el => {
+        el.addEventListener("click", () => {
+          _waSelectedPhone = el.getAttribute("data-phone");
+          $("wa-to").value = _waSelectedPhone;
+          renderWhatsApp();
+        });
+      });
+      // Contact-badge clicks (stops the row-switch so the modal can
+      // open without switching the active chat).
+      wireContactBadges(list);
+    }
+
+    // Active conversation thread
+    const thread = $("wa-thread");
+    const active = groups.find(g => g.phone === _waSelectedPhone);
+    if (!active) {
+      thread.innerHTML = '<div class="calls-empty" id="wa-thread-empty">'
+        + 'No conversation selected.<br><span style="font-size:11px;">'
+        + 'Send a message below to start a new one.</span></div>';
+      $("wa-chat-title").textContent = "— pick a conversation —";
+      $("wa-chat-sub").textContent   = "";
+      $("wa-chat-meta").textContent  = "";
+      return;
+    }
+    // Match against Contacts using the project-wide suffix-aware lookup
+    // (also handles +966 / 966 / 05… variants the WA exact-match Map
+    // would miss).
+    const activeClient = _waContactByPhone.get(active.phone)
+                       || matchContact(active.phone);
+    const displayName = (activeClient && activeClient.name) || active.name;
+    // Title — name (or phone if anonymous). When the contact is known,
+    // the title itself becomes a clickable contact-badge so the operator
+    // can pull up the full record without leaving the WhatsApp page.
+    const titleBadge = activeClient
+      ? (' <span class="contact-badge" data-contact-id="'
+         + esc(activeClient.id || "") + '" role="button" '
+         + 'title="View client details">✓</span>')
+      : "";
+    $("wa-chat-title").innerHTML = displayName
+      ? '<span>' + esc(displayName) + '</span>' + titleBadge
+      : '<span style="font-family: ui-monospace, monospace;">+'
+        + esc(active.phone) + '</span>';
+    // Sub-line — badge first (if client), then phone, then message count.
+    const subBadge = activeClient
+      ? '<span title="Saved as client — click ✓ to view" '
+        + 'style="color:#34d399;">✓ client</span>'
+        + ' <span style="font-family: ui-monospace, monospace; '
+        + 'color:var(--accent);">' + esc(activeClient.client_id || "") + '</span>'
+        + ' · '
+      : "";
+    const subPhone = displayName
+      ? '<span style="font-family: ui-monospace, monospace;">+'
+        + esc(active.phone) + '</span> · '
+      : "";
+    $("wa-chat-sub").innerHTML = subBadge + subPhone
+                               + active.msgs.length + " messages";
+    // Wire the just-rendered title badge so a click opens the
+    // contact-details modal (shared with Dashboard / Call History /
+    // Data Collected).
+    wireContactBadges($("wa-chat-title"));
+    $("wa-chat-meta").textContent  = fmtRelative(active.lastTs);
+
+    let h = "";
+    for (const m of active.msgs) {
+      const isMe = m.fromMe;
+      const align = isMe ? "flex-end" : "flex-start";
+      const bg    = isMe ? "#3E7BE822" : "#5B2A9E22";
+      const border = isMe ? "#3E7BE855" : "#5B2A9E55";
+      const media = waMediaInfo(m);
+      let mediaHtml = "";
+      if (media) {
+        if (media.kind === "image") {
+          mediaHtml = '<img src="' + esc(media.src) + '" loading="lazy" '
+                    + 'style="max-width:300px; max-height:300px; '
+                    + 'border-radius:6px; display:block;">';
+        } else if (media.kind === "video") {
+          mediaHtml = '<video src="' + esc(media.src) + '" controls preload="metadata" '
+                    + 'style="max-width:300px; max-height:300px; '
+                    + 'border-radius:6px; display:block;"></video>';
+        } else if (media.kind === "audio") {
+          // preload="auto" fetches the WHOLE file ahead of play, so the
+          // player has the full audio buffered and can render the
+          // correct duration in the controls. "metadata" was causing
+          // Chrome to fetch only the first 3-4s of decoded OGG/Opus and
+          // stop, with the timeline reflecting only that prefix.
+          // data-media-id wires the transcript fetch below.
+          mediaHtml = '<audio src="' + esc(media.src) + '" controls preload="auto" '
+                    + 'style="display:block; min-width:240px;"></audio>'
+                    + '<div class="wa-transcript" data-media-id="' + esc(m.raw.id
+                        || (m.raw.key && m.raw.key.id) || "") + '" '
+                    + 'style="margin-top:6px; font-size:12px; line-height:1.4; '
+                    + 'color:var(--dim); font-style:italic;" dir="auto"></div>';
+        } else if (media.kind === "document") {
+          mediaHtml = '<a href="' + esc(media.src) + '" target="_blank" rel="noopener" '
+                    + 'style="display:inline-flex; align-items:center; gap:8px; '
+                    + 'padding:8px 10px; background:var(--panel); border:1px solid '
+                    + 'var(--border); border-radius:6px; color:var(--text); '
+                    + 'text-decoration:none; font-size:13px;">📄 '
+                    + esc(media.filename || "document") + '</a>';
+        }
+      }
+      const textHtml = m.text
+        ? '<div dir="auto" style="font-size:14px; white-space:pre-wrap;'
+        +  (mediaHtml ? ' margin-top:6px;' : '') + '">'
+        +  esc(m.text) + '</div>'
+        : (!mediaHtml
+            ? '<div dir="auto" style="font-size:14px; color:var(--dim);">(empty)</div>'
+            : '');
+      h += '<div style="align-self:' + align + '; max-width:75%; '
+        +  'background:' + bg + '; border:1px solid ' + border + '; '
+        +  'border-radius:10px; padding:8px 12px;">'
+        +  mediaHtml + textHtml
+        +  '<div style="font-size:10px; color:var(--dim); margin-top:3px; text-align:right;">'
+        +    esc(fmtClock(m.ts)) + '</div>'
+        +  '</div>';
+    }
+    // Stick-to-bottom: if the user is switching to a different chat OR
+    // is already at (or very near) the bottom of the current chat, jump
+    // to the latest message after re-render.
+    const chatChanged = (_waLastRenderedPhone !== active.phone);
+    const wasAtBottom = (thread.scrollHeight
+                        - thread.scrollTop - thread.clientHeight) < 60;
+    thread.innerHTML = h;
+    _waLastRenderedPhone = active.phone;
+    if (chatChanged || wasAtBottom) {
+      const scroll = () => { thread.scrollTop = thread.scrollHeight; };
+      scroll();
+      requestAnimationFrame(scroll);
+    }
+    // Fire-and-forget transcript fetches for any voice-note players
+    // we just rendered. Re-rendering re-uses cached results so the
+    // text appears immediately on subsequent polls.
+    thread.querySelectorAll('.wa-transcript[data-media-id]').forEach(el => {
+      const id = el.getAttribute("data-media-id");
+      if (!id) return;
+      const cached = _waTranscriptCache.get(id);
+      if (cached !== undefined) {
+        el.textContent = cached || "";
+        return;
+      }
+      el.textContent = "Transcribing…";
+      fetchTranscript(id).then(text => {
+        _waTranscriptCache.set(id, text);
+        el.textContent = text || "";
+      });
+    });
+  }
+
+  // Per-page-load transcript memo so we don't re-hit the backend every
+  // 5s when the thread re-renders. The backend itself also caches to
+  // disk, so even a hard refresh stays fast after the first call.
+  const _waTranscriptCache = new Map();
+
+  async function fetchTranscript(messageId) {
+    try {
+      const r = await fetch(API + "/whatsapp/transcript/" + encodeURIComponent(messageId),
+                            { credentials: "include" });
+      const j = await r.json();
+      if (j.error && !j.text) {
+        // Distinct sentinel so we don't keep retrying on every poll.
+        return "(transcript: " + j.error + ")";
+      }
+      return j.text || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function startWaPoll() {
+    stopWaPoll();
+    _waPollTimer = setInterval(() => {
+      const sec = document.querySelector('section[data-page="callcenter-whatsapp"]');
+      if (sec && !sec.classList.contains("hide")) refreshWhatsApp();
+    }, 5000);
+  }
+  function stopWaPoll() {
+    if (_waPollTimer) { clearInterval(_waPollTimer); _waPollTimer = null; }
+  }
+  startWaPoll();
+
+  $("wa-refresh").addEventListener("click", refreshWhatsApp);
+
+  $("wa-bot-toggle").addEventListener("change", async () => {
+    const want = $("wa-bot-toggle").checked;
+    $("wa-bot-msg").textContent = "saving…";
+    try {
+      const r = await fetch(API + "/whatsapp/bot/toggle", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: want }),
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
+      $("wa-bot-msg").textContent = j.enabled ? "on" : "off";
+    } catch (e) {
+      // Revert the visual toggle if the backend rejected.
+      $("wa-bot-toggle").checked = !want;
+      $("wa-bot-msg").textContent = "error: " + (e.message || e);
+    }
+  });
+
+  $("wa-jump-settings").addEventListener("click", (e) => {
+    e.preventDefault(); routeTo("callcenter-settings");
+  });
+
+  /* ---------- Send: text OR attached file OR recorded voice note ---------- */
+
+  // Holds the currently-staged outgoing attachment, if any.
+  let _waPendingFile = null;
+  // MediaRecorder + state for voice-note capture.
+  let _waMediaRecorder = null;
+  let _waRecChunks  = [];
+  let _waRecStream  = null;
+  let _waRecTimer   = null;
+  let _waRecT0      = 0;
+  let _waRecCanceled = false;
+
+  function _human_size(bytes) {
+    if (!bytes && bytes !== 0) return "";
+    const u = ["B","KB","MB","GB"]; let i = 0;
+    while (bytes >= 1024 && i < u.length - 1) { bytes /= 1024; i++; }
+    return bytes.toFixed(bytes < 10 ? 1 : 0) + " " + u[i];
+  }
+
+  function _waAttachClear() {
+    _waPendingFile = null;
+    $("wa-file").value = "";
+    $("wa-attach-chip").classList.add("hide");
+  }
+
+  function _waAttachShow(file) {
+    _waPendingFile = file;
+    const ct = (file.type || "").toLowerCase();
+    const icon = ct.startsWith("image/") ? "🖼️"
+              :  ct.startsWith("video/") ? "🎬"
+              :  ct.startsWith("audio/") ? "🎵"
+              : "📎";
+    $("wa-attach-icon").textContent = icon;
+    $("wa-attach-name").textContent = file.name;
+    $("wa-attach-size").textContent = _human_size(file.size);
+    $("wa-attach-chip").classList.remove("hide");
+  }
+
+  $("wa-attach-btn").addEventListener("click", () => $("wa-file").click());
+  $("wa-file").addEventListener("change", () => {
+    const f = $("wa-file").files[0];
+    if (f) _waAttachShow(f);
+  });
+  $("wa-attach-clear").addEventListener("click", _waAttachClear);
+
+  async function _waUploadAndSendMedia(to, file, caption, explicitKind) {
+    const fd = new FormData();
+    fd.append("to", to);
+    if (caption) fd.append("caption", caption);
+    // Voice-note recordings pass kind="audio" explicitly so the backend
+    // doesn't mis-detect a `.webm` voice file as video.
+    if (explicitKind) fd.append("kind", explicitKind);
+    fd.append("file", file, file.name || ("upload-" + Date.now()));
+    const r = await fetch(API + "/whatsapp/send-media", {
+      method: "POST", credentials: "include", body: fd,
+    });
+    const j = await r.json();
+    if (!r.ok || !j.ok) {
+      throw new Error(j.error || j.detail || ("HTTP " + r.status));
+    }
+    return j;
+  }
+
+  $("wa-send").addEventListener("click", async () => {
+    const to   = $("wa-to").value.trim();
+    const text = $("wa-text").value.trim();
+    if (!to)  { alert("Recipient (To) is required"); return; }
+    if (!_waPendingFile && !text) {
+      alert("Either type a message or attach a file");
+      return;
+    }
+    const btn = $("wa-send");
+    btn.disabled = true;
+    try {
+      if (_waPendingFile) {
+        await _waUploadAndSendMedia(to, _waPendingFile, text);
+      } else {
+        const r = await fetch(API + "/whatsapp/send", {
+          method: "POST", credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ to, text }),
+        });
+        const j = await r.json();
+        if (!r.ok || !j.ok) {
+          throw new Error(j.error || j.detail || ("HTTP " + r.status));
+        }
+      }
+      $("wa-text").value = "";
+      _waAttachClear();
+      _waSelectedPhone = to.replace(/\D/g, "");
+      await refreshWhatsApp();
+    } catch (e) {
+      alert("Send failed: " + (e.message || e));
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* ---------- Voice note recording (MediaRecorder API) ---------- */
+
+  function _waMicSupported() {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+              && window.MediaRecorder);
+  }
+
+  // Pick the best mimeType the browser can produce. Chrome: webm/opus,
+  // Safari: mp4. WaSender accepts both — the backend detects audio/* and
+  // forwards as audioUrl.
+  function _waPickMime() {
+    const cands = [
+      "audio/webm;codecs=opus", "audio/webm",
+      "audio/ogg;codecs=opus",  "audio/ogg",
+      "audio/mp4",
+    ];
+    for (const m of cands) {
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m;
+    }
+    return "";
+  }
+
+  async function _waStartRecording() {
+    if (!_waMicSupported()) {
+      alert("Microphone capture not supported in this browser.");
+      return;
+    }
+    const to = $("wa-to").value.trim();
+    if (!to) { alert("Pick a recipient before recording."); return; }
+    try {
+      _waRecStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+      alert("Microphone permission denied or unavailable.");
+      return;
+    }
+    _waRecCanceled = false;
+    _waRecChunks = [];
+    const mime = _waPickMime();
+    const opts = mime ? { mimeType: mime } : {};
+    try {
+      _waMediaRecorder = new MediaRecorder(_waRecStream, opts);
+    } catch (_) {
+      _waMediaRecorder = new MediaRecorder(_waRecStream);
+    }
+    _waMediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) _waRecChunks.push(e.data);
+    };
+    _waMediaRecorder.onstop = async () => {
+      // Always release the mic.
+      try { _waRecStream.getTracks().forEach(t => t.stop()); } catch (_) {}
+      _waRecStream = null;
+      clearInterval(_waRecTimer); _waRecTimer = null;
+      $("wa-rec-chip").classList.add("hide");
+      $("wa-mic-btn").disabled = false;
+
+      if (_waRecCanceled) return;
+      const recMime = _waMediaRecorder.mimeType || "audio/webm";
+      const ext = recMime.includes("ogg")  ? "ogg"
+                : recMime.includes("mp4")  ? "m4a"
+                                            : "webm";
+      const blob = new Blob(_waRecChunks, { type: recMime });
+      if (!blob.size) { alert("Recording is empty."); return; }
+      const file = new File([blob], `voice-note-${Date.now()}.${ext}`,
+                            { type: recMime });
+      const to = $("wa-to").value.trim();
+      if (!to) { alert("Recipient cleared during recording."); return; }
+      try {
+        // Explicit kind=audio — bypasses backend detection so even if
+        // the browser produces an ambiguous Content-Type we still hit
+        // the OGG transcode + ptt:true path.
+        await _waUploadAndSendMedia(to, file, "", "audio");
+        _waSelectedPhone = to.replace(/\D/g, "");
+        await refreshWhatsApp();
+      } catch (e) {
+        alert("Voice note send failed: " + (e.message || e));
+      }
+    };
+    _waMediaRecorder.start();
+    _waRecT0 = Date.now();
+    $("wa-rec-chip").classList.remove("hide");
+    $("wa-mic-btn").disabled = true;
+    _waRecTimer = setInterval(() => {
+      const s = ((Date.now() - _waRecT0) / 1000).toFixed(1);
+      $("wa-rec-elapsed").textContent = s + "s";
+      if (Date.now() - _waRecT0 > 60_000) {  // 60s hard cap
+        _waMediaRecorder.stop();
+      }
+    }, 100);
+  }
+
+  $("wa-mic-btn").addEventListener("click", _waStartRecording);
+  $("wa-rec-stop").addEventListener("click", () => {
+    if (_waMediaRecorder && _waMediaRecorder.state === "recording") {
+      _waMediaRecorder.stop();
+    }
+  });
+  $("wa-rec-cancel").addEventListener("click", () => {
+    _waRecCanceled = true;
+    if (_waMediaRecorder && _waMediaRecorder.state === "recording") {
+      _waMediaRecorder.stop();
+    }
+  });
+
+  $("wa-text").addEventListener("keydown", (e) => {
+    // Enter sends (without Shift)
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); $("wa-send").click();
+    }
+  });
+
+  $("wa-clear-inbox").addEventListener("click", async () => {
+    if (!confirm("Clear the entire WhatsApp inbox? This cannot be undone.")) return;
+    await fetch(API + "/whatsapp/inbox", { method: "DELETE", credentials: "include" });
+    _waSelectedPhone = null;
+    refreshWhatsApp();
+  });
+  $("hist-call-modal-close").addEventListener("click", () => {
+    // Stop the audio so closing pauses playback.
+    ["mixed","caller","agent"].forEach(s => {
+      const a = $("hist-call-audio-" + s); a.pause(); a.removeAttribute("src");
+    });
+    $("hist-call-modal").classList.add("hide");
+  });
+  $("hist-call-modal").addEventListener("click", (e) => {
+    if (e.target.id === "hist-call-modal") {
+      $("hist-call-modal-close").click();
+    }
+  });
+
+  /* ---------- AI Center > Playground ---------- */
+
+  let _pgLoaded = false;
+  async function loadPlayground() {
+    if (_pgLoaded) return;
+    _pgLoaded = true;
+    // Load cameras + vision models in parallel.
+    try {
+      const [camsResp, modelsResp] = await Promise.all([
+        fetch(API + "/ai-center/cameras",       { credentials: "include" }).then(r => r.json()),
+        fetch(API + "/ai-center/vision-models", { credentials: "include" }).then(r => r.json()),
+      ]);
+      // Cameras
+      const camSel = $("pg-camera");
+      camSel.innerHTML = "";
+      const cams = camsResp.cameras || [];
+      if (!camsResp.ok || !cams.length) {
+        const opt = document.createElement("option");
+        opt.value = ""; opt.textContent = camsResp.detail
+          ? "— " + camsResp.detail
+          : "— no cameras (set Frigate URL in Settings)";
+        camSel.appendChild(opt);
+      } else {
+        for (const c of cams) {
+          const opt = document.createElement("option");
+          opt.value = c; opt.textContent = c;
+          camSel.appendChild(opt);
+        }
+      }
+      // Providers / models
+      const provSel = $("pg-provider");
+      provSel.innerHTML = "";
+      const providers = modelsResp.providers || {};
+      const provs = Object.keys(providers);
+      if (!provs.length) {
+        const opt = document.createElement("option");
+        opt.value = "gemini"; opt.textContent = "Gemini (no key set)";
+        provSel.appendChild(opt);
+      } else {
+        for (const p of provs) {
+          const opt = document.createElement("option");
+          opt.value = p; opt.textContent = p[0].toUpperCase() + p.slice(1);
+          provSel.appendChild(opt);
+        }
+      }
+      _pgProviders = providers;
+      refreshModelsForProvider();
+    } catch (e) {
+      console.error("playground load failed", e);
+      _pgLoaded = false;
+    }
+  }
+  let _pgProviders = {};
+
+  function refreshModelsForProvider() {
+    const prov = $("pg-provider").value;
+    const models = (_pgProviders[prov] || []);
+    const sel = $("pg-model");
+    sel.innerHTML = "";
+    const def = document.createElement("option");
+    def.value = ""; def.textContent = "(default — server picks)";
+    sel.appendChild(def);
+    for (const m of models) {
+      const id = (typeof m === "string") ? m : (m.id || m.name);
+      if (!id) continue;
+      const label = (typeof m === "string") ? id
+                  : (m.label ? `${m.label} — ${id}` : id);
+      const opt = document.createElement("option");
+      opt.value = id; opt.textContent = label;
+      sel.appendChild(opt);
+    }
+  }
+
+  $("pg-source").addEventListener("change", () => {
+    const v = $("pg-source").value;
+    $("pg-camera-field").classList.toggle("hide", v !== "camera");
+    $("pg-upload-field").classList.toggle("hide", v !== "upload");
+    refreshPreview();
+  });
+
+  $("pg-provider").addEventListener("change", refreshModelsForProvider);
+
+  /* ---------- Playground live camera preview ---------- */
+  // Polls the snapshot proxy every 1.5s. Cache-bust each fetch so the
+  // browser doesn't show a stale frame. Hidden when source != camera or
+  // when the Playground tab isn't active.
+  let _previewTimer = null;
+  let _previewCam   = null;
+
+  function previewActive() {
+    if ($("pg-source").value !== "camera") return false;
+    if (!$("pg-camera").value) return false;
+    const sec = document.querySelector('section[data-page="aicenter-playground"]');
+    return sec && !sec.classList.contains("hide");
+  }
+
+  function pollPreview() {
+    if (!previewActive()) { stopPreview(); return; }
+    const cam = $("pg-camera").value;
+    $("pg-preview").src = API + "/ai-center/camera/" + encodeURIComponent(cam)
+                        + "/snapshot?t=" + Date.now();
+  }
+
+  function startPreview() {
+    if (_previewTimer) return;
+    pollPreview();
+    _previewTimer = setInterval(pollPreview, 1500);
+  }
+
+  function stopPreview() {
+    if (_previewTimer) { clearInterval(_previewTimer); _previewTimer = null; }
+    $("pg-preview").removeAttribute("src");
+  }
+
+  function refreshPreview() {
+    if (!previewActive()) {
+      $("pg-preview-wrap").classList.add("hide");
+      stopPreview();
+      return;
+    }
+    _previewCam = $("pg-camera").value;
+    $("pg-preview-cam").textContent = _previewCam;
+    $("pg-preview-wrap").classList.remove("hide");
+    startPreview();
+  }
+
+  $("pg-camera").addEventListener("change", refreshPreview);
+  $("pg-preview").addEventListener("error", () => {
+    flashMsg("pg-preview-msg", "err", "snapshot fetch failed");
+  });
+
+  $("pg-run").addEventListener("click", async () => {
+    const btn = $("pg-run"), msg = $("pg-msg");
+    const question = $("pg-question").value.trim();
+    if (!question) { flashMsg("pg-msg", "err", "Question is required."); return; }
+
+    const fd = new FormData();
+    fd.append("question", question);
+    fd.append("provider", $("pg-provider").value || "gemini");
+    if ($("pg-model").value) fd.append("model", $("pg-model").value);
+
+    if ($("pg-source").value === "camera") {
+      const cam = $("pg-camera").value;
+      if (!cam) { flashMsg("pg-msg", "err", "Pick a camera (or set Frigate URL in Settings)."); return; }
+      fd.append("camera", cam);
+    } else {
+      const f = $("pg-file").files[0];
+      if (!f) { flashMsg("pg-msg", "err", "Pick an image file."); return; }
+      fd.append("file", f);
+    }
+
+    btn.disabled = true;
+    msg.className = "save-msg";
+
+    // Live elapsed-seconds counter — gives the user real feedback while
+    // Gemini grinds on a vision request (can take 5-60s).
+    const t0 = Date.now();
+    const tick = () => {
+      const s = ((Date.now() - t0) / 1000).toFixed(1);
+      msg.textContent = "Running… " + s + "s";
+    };
+    tick();
+    const timer = setInterval(tick, 200);
+
+    try {
+      const r = await fetch(API + "/ai-center/ask", {
+        method: "POST", credentials: "include", body: fd,
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || ("HTTP " + r.status));
+      const entry = j.entry || {};
+      $("pg-result-panel").classList.remove("hide");
+      $("pg-result-img").src = API + "/ai-center/history/" + entry.id + "/image?t=" + Date.now();
+      $("pg-result-q").textContent = entry.question || question;
+      $("pg-result-a").textContent = entry.error
+        ? "(error) " + entry.error
+        : (entry.response || "(empty)");
+      $("pg-result-meta").textContent =
+          (entry.provider || "?") + " · " + (entry.model || "default")
+        + " · " + (entry.latency_ms || 0) + " ms";
+      const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+      flashMsg("pg-msg", j.ok ? "ok" : "err",
+               j.ok ? ("Done in " + elapsed + "s · saved to history")
+                    : ("Returned in " + elapsed + "s but model errored — see history"));
+      // Force a re-fetch of history on next open so the new entry shows.
+      // (Done by clearing the simple cache flag that some lists use.)
+      try { refreshPlaygroundHistory(); } catch (_) {}
+    } catch (e) {
+      flashMsg("pg-msg", "err", e.message || "Run failed");
+    } finally {
+      clearInterval(timer);
+      btn.disabled = false;
+    }
+  });
+
+  /* ---------- AI Center > Playground History ---------- */
+
+  async function refreshPlaygroundHistory() {
+    try {
+      const j = await fetch(API + "/ai-center/history?limit=200",
+                            { credentials: "include" }).then(r => r.json());
+      renderPlaygroundHistory(j.entries || [], j.total || 0);
+      $("hist-updated").textContent = "updated " + fmtClock(Date.now() / 1000);
+    } catch (e) {
+      console.warn("history refresh failed", e);
+    }
+  }
+
+  function renderPlaygroundHistory(entries, total) {
+    $("hist-title").textContent = "Entries (" + entries.length
+                                + " of " + total + ")";
+    const host = $("hist-host");
+    if (!entries.length) {
+      host.innerHTML = '<div class="calls-empty">No playground entries yet.</div>';
+      return;
+    }
+    let html = '<div style="display:grid; gap:14px; '
+             + 'grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));">';
+    for (const e of entries) {
+      const when = fmtDateTime(e.created_at);
+      const src = e.source === "camera" ? ("📷 " + (e.camera || "camera"))
+                                       : "📤 upload";
+      html += '<div class="tile" style="cursor:pointer; padding:12px; '
+            + 'display:flex; flex-direction:column; gap:8px;" '
+            + 'data-id="' + esc(e.id) + '" data-act="open">'
+        + '<img src="' + API + '/ai-center/history/' + esc(e.id)
+            + '/image" loading="lazy" '
+            + 'style="width:100%; height:140px; object-fit:cover; '
+            + 'border-radius:6px; border:1px solid var(--border); background:#000;">'
+        + '<div style="display:flex; justify-content:space-between; '
+            + 'font-size:11px; color:var(--dim);">'
+            + '<span>' + esc(src) + '</span><span>' + esc(when) + '</span></div>'
+        + '<div style="font-size:13px; max-height:38px; overflow:hidden; '
+            + 'text-overflow:ellipsis;" dir="auto">' + esc(e.question || "") + '</div>'
+        + '<div style="display:flex; justify-content:space-between; align-items:center;">'
+            + '<span style="font-size:10px; color:var(--dim);">'
+              + esc(e.provider || "?") + ' · ' + esc(e.model || "default")
+              + ' · ' + (e.latency_ms || 0) + 'ms</span>'
+            + '<button class="save-btn" data-id="' + esc(e.id) + '" data-act="del" '
+              + 'style="padding:3px 8px; background:transparent; '
+              + 'border:1px solid var(--border); color:var(--dim); font-size:10px;">delete</button>'
+        + '</div></div>';
+    }
+    html += '</div>';
+    host.innerHTML = html;
+    // Click handlers — tile opens modal, delete removes (with stopPropagation).
+    host.querySelectorAll('[data-act="open"]').forEach(el => {
+      el.addEventListener("click", () => openHistoryEntry(el.getAttribute("data-id")));
+    });
+    host.querySelectorAll('[data-act="del"]').forEach(btn => {
+      btn.addEventListener("click", async (ev) => {
+        ev.stopPropagation();
+        const id = btn.getAttribute("data-id");
+        if (!confirm("Delete this entry?")) return;
+        await fetch(API + "/ai-center/history/" + id,
+                    { method: "DELETE", credentials: "include" });
+        refreshPlaygroundHistory();
+      });
+    });
+  }
+
+  async function openHistoryEntry(id) {
+    // We already have the entry data from the list, but it's cheaper to
+    // re-fetch the list once and look it up than to wire a side-channel.
+    try {
+      const j = await fetch(API + "/ai-center/history?limit=200",
+                            { credentials: "include" }).then(r => r.json());
+      const e = (j.entries || []).find(x => x.id === id);
+      if (!e) return;
+      $("hist-modal-title").textContent = "Entry · " + fmtDateTime(e.created_at);
+      $("hist-modal-img").src = API + "/ai-center/history/" + e.id + "/image";
+      $("hist-modal-q").textContent = e.question || "";
+      $("hist-modal-a").textContent = e.error
+        ? "(error) " + e.error
+        : (e.response || "(empty)");
+      $("hist-modal-meta").innerHTML =
+          'provider: <strong>' + esc(e.provider || "?") + '</strong> · '
+        + 'model: <strong>' + esc(e.model || "default") + '</strong> · '
+        + 'source: <strong>' + esc(e.source || "?") + '</strong>'
+        + (e.camera ? ' (' + esc(e.camera) + ')' : '')
+        + ' · latency: <strong>' + (e.latency_ms || 0) + ' ms</strong>';
+      $("hist-modal").classList.remove("hide");
+    } catch (err) {
+      alert(err.message || "Failed to load entry");
+    }
+  }
+
+  $("hist-modal-close").addEventListener("click", () =>
+    $("hist-modal").classList.add("hide"));
+  $("hist-modal").addEventListener("click", (e) => {
+    if (e.target.id === "hist-modal") $("hist-modal").classList.add("hide");
+  });
+  $("hist-refresh").addEventListener("click", refreshPlaygroundHistory);
+  $("hist-clear").addEventListener("click", async () => {
+    if (!confirm("Delete ALL playground entries? This cannot be undone.")) return;
+    await fetch(API + "/ai-center/history",
+                { method: "DELETE", credentials: "include" });
+    refreshPlaygroundHistory();
+  });
+
+  // Group expand/collapse
+  $("grp-callcenter").addEventListener("click", () => {
+    const open = $("grp-callcenter").classList.toggle("open");
+    $("grp-callcenter-children").classList.toggle("hide", !open);
+  });
+  $("grp-aicenter").addEventListener("click", () => {
+    const open = $("grp-aicenter").classList.toggle("open");
+    $("grp-aicenter-children").classList.toggle("hide", !open);
+  });
+  $("grp-contacts").addEventListener("click", () => {
+    const open = $("grp-contacts").classList.toggle("open");
+    $("grp-contacts-children").classList.toggle("hide", !open);
+  });
+
+  // Leaf click → route
+  $$("aside .nav-item[data-view]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      routeTo(el.dataset.view);
+    });
+  });
+
+  /* ---------- Contacts > List ---------- */
+
+  let _contacts = [];
+  let _ctEditingId = null;
+
+  // Pretty-print enum values as Title Case ("under_construction" → "Under construction").
+  function ctNice(v) {
+    if (!v) return "";
+    return String(v).replace(/_/g, " ")
+                     .replace(/\b(\w)/g, (_, c) => c.toUpperCase());
+  }
+
+  async function refreshContacts() {
+    try {
+      const j = await fetch(API + "/contacts",
+                            { credentials: "include" }).then(r => r.json());
+      _contacts = j.contacts || [];
+      renderContacts();
+      $("ct-updated").textContent = "updated " + fmtClock(Date.now() / 1000);
+    } catch (e) {
+      console.warn("contacts refresh failed", e);
+    }
+  }
+
+  function renderContacts() {
+    const q = ($("ct-search").value || "").trim().toLowerCase();
+    const rows = !q ? _contacts : _contacts.filter(c => {
+      const hay = (c.client_id + " " + c.name + " " + c.phone + " " + c.email
+                 + " " + c.location + " " + c.interest + " " + c.project_phase
+                 + " " + c.lead_source).toLowerCase();
+      return hay.includes(q);
+    });
+    $("ct-title").textContent = "Contacts (" + rows.length
+        + (q ? " of " + _contacts.length : "") + ")";
+    const host = $("ct-host");
+    if (!rows.length) {
+      host.innerHTML = '<div class="calls-empty">'
+        + (q ? "No contacts match your search." : "No contacts yet.")
+        + '</div>';
+      return;
+    }
+    let html = '<table class="calls-table"><thead><tr>'
+      + '<th>Client ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Location</th>'
+      + '<th>Interest</th><th>Current phase</th><th>Lead source</th>'
+      + '<th></th></tr></thead><tbody>';
+    for (const c of rows) {
+      html += '<tr>'
+        + '<td style="font-family: ui-monospace, monospace; color:var(--accent);">'
+        +   cell(c.client_id) + '</td>'
+        + '<td>' + cell(c.name) + '</td>'
+        + '<td style="font-family: ui-monospace, monospace;">' + cell(c.phone) + '</td>'
+        + '<td>' + cell(c.email) + '</td>'
+        + '<td>' + cell(c.location) + '</td>'
+        + '<td>' + cell(c.interest) + '</td>'
+        + '<td>' + cell(ctNice(c.project_phase)) + '</td>'
+        + '<td>' + cell(ctNice(c.lead_source)) + '</td>'
+        + '<td style="white-space:nowrap;">'
+            + '<button class="save-btn" data-edit="' + esc(c.id) + '" '
+              + 'style="padding:4px 10px; background:transparent; '
+              + 'border:1px solid var(--accent); color:var(--accent); '
+              + 'font-size:11px; margin-right:6px;">edit</button>'
+            + '<button class="save-btn" data-del="' + esc(c.id) + '" '
+              + 'style="padding:4px 10px; background:transparent; '
+              + 'border:1px solid var(--border); color:var(--dim); '
+              + 'font-size:11px;">delete</button>'
+        + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    host.innerHTML = html;
+
+    host.querySelectorAll('[data-edit]').forEach(b => {
+      b.addEventListener("click", () => openContactModal(b.getAttribute("data-edit")));
+    });
+    host.querySelectorAll('[data-del]').forEach(b => {
+      b.addEventListener("click", async () => {
+        const id = b.getAttribute("data-del");
+        const c = _contacts.find(x => x.id === id);
+        if (!confirm("Delete " + (c?.name || "this contact") + "?")) return;
+        await fetch(API + "/contacts/" + encodeURIComponent(id),
+                    { method: "DELETE", credentials: "include" });
+        refreshContacts();
+      });
+    });
+  }
+
+  function openContactModal(id) {
+    _ctEditingId = id || null;
+    const c = id ? _contacts.find(x => x.id === id) : {};
+    $("ct-modal-title").textContent = id
+      ? ("Edit · " + (c?.client_id ? c.client_id + " · " : "") + (c?.name || "contact"))
+      : "New contact (Client ID will auto-assign)";
+    $("ct-f-name").value     = c?.name     || "";
+    $("ct-f-phone").value    = c?.phone    || "";
+    $("ct-f-email").value    = c?.email    || "";
+    $("ct-f-location").value = c?.location || "Riyadh · ";
+    $("ct-f-interest").value = c?.interest || "";
+    $("ct-f-phase").value    = c?.project_phase || "";
+    $("ct-f-source").value   = c?.lead_source   || "";
+    $("ct-modal-msg").textContent = "";
+    $("ct-modal").classList.remove("hide");
+  }
+
+  $("ct-new").addEventListener("click",   () => openContactModal(null));
+  $("ct-reset").addEventListener("click", async () => {
+    if (!confirm("Reset contacts to the built-in 20-row Riyadh seed? "
+                + "All current contacts will be lost.")) return;
+    await fetch(API + "/contacts/reset",
+                { method: "POST", credentials: "include" });
+    refreshContacts();
+  });
+  $("ct-search").addEventListener("input", renderContacts);
+  $("ct-modal-close").addEventListener("click", () =>
+    $("ct-modal").classList.add("hide"));
+  $("ct-modal").addEventListener("click", (e) => {
+    if (e.target.id === "ct-modal") $("ct-modal").classList.add("hide");
+  });
+
+  $("ct-modal-save").addEventListener("click", async () => {
+    const body = {
+      name:          $("ct-f-name").value.trim(),
+      phone:         $("ct-f-phone").value.trim(),
+      email:         $("ct-f-email").value.trim(),
+      location:      $("ct-f-location").value.trim(),
+      interest:      $("ct-f-interest").value,
+      project_phase: $("ct-f-phase").value,
+      lead_source:   $("ct-f-source").value,
+    };
+    if (!body.name) {
+      flashMsg("ct-modal-msg", "err", "Name is required");
+      return;
+    }
+    const url = _ctEditingId
+      ? API + "/contacts/" + encodeURIComponent(_ctEditingId)
+      : API + "/contacts";
+    const method = _ctEditingId ? "PUT" : "POST";
+    try {
+      const r = await fetch(url, {
+        method, credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const j = await r.json();
+      if (!r.ok || !j.ok) {
+        flashMsg("ct-modal-msg", "err", j.detail || ("HTTP " + r.status));
+        return;
+      }
+      $("ct-modal").classList.add("hide");
+      refreshContacts();
+    } catch (e) {
+      flashMsg("ct-modal-msg", "err", e.message || "Save failed");
+    }
+  });
+
+  probeSession();
+</script>
+</body>
+</html>

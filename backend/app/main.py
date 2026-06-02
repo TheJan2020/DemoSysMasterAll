@@ -44,6 +44,8 @@ from .demos.restaurant import router as demos_restaurant
 from .demos.restaurant.live_agent import restaurant_live_agent_service
 from .demos.restaurant import kitchen_ai_history_task as kitchen_ai_history_task
 from .demos.restaurant import kitchen_rules_engine as kitchen_rules_engine
+from .demos.primewave import router as demos_primewave
+from .demos.primewave.live_agent import primewave_live_agent_service
 
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 DEMOS_DIR = FRONTEND_DIR / "demos"
@@ -88,6 +90,7 @@ async def lifespan(_app: FastAPI):
     sip_live_rep_service.apply_config()
     clinic_live_agent_service.apply_config()
     restaurant_live_agent_service.apply_config()
+    primewave_live_agent_service.apply_config()
     # Kitchen → AI-History background poller. Self-pauses when no
     # cameras are selected, so this is safe to start eagerly.
     kitchen_ai_history_task.ensure_running()
@@ -97,6 +100,7 @@ async def lifespan(_app: FastAPI):
     try:
         yield
     finally:
+        await primewave_live_agent_service.stop()
         await restaurant_live_agent_service.stop()
         await clinic_live_agent_service.stop()
         await sip_live_rep_service.stop()
@@ -132,8 +136,10 @@ _BASIC_AUTH_ENABLED = bool(_BASIC_AUTH_USER) and bool(_BASIC_AUTH_PASS)
 _BASIC_AUTH_EXEMPT_PREFIXES = (
     "/api/demo/clinic",
     "/api/demo/restaurant",
+    "/api/demo/primewave",
     "/demo/clinic",
     "/demo/restaurant",
+    "/demo/primewave",
 )
 
 
@@ -192,6 +198,7 @@ app.include_router(sip_live_rep.router,   prefix="/api/sip-live-rep",   tags=["s
 app.include_router(demos_landing.router,    prefix="/demo",                 tags=["demos"])
 app.include_router(demos_clinic.router,     prefix="/api/demo/clinic",      tags=["demo-clinic"])
 app.include_router(demos_restaurant.router, prefix="/api/demo/restaurant",  tags=["demo-restaurant"])
+app.include_router(demos_primewave.router,  prefix="/api/demo/primewave",   tags=["demo-primewave"])
 
 
 @app.get("/api/health")
@@ -233,6 +240,20 @@ if (DEMOS_DIR / "restaurant").is_dir():
         "/demo/restaurant",
         _HttpOnlyStaticFiles(directory=str(DEMOS_DIR / "restaurant"), html=True),
         name="demo-restaurant-spa",
+    )
+
+# Primewave Main — static single-page stub (no build step).
+if (DEMOS_DIR / "primewave").is_dir():
+    from fastapi.responses import RedirectResponse  # idempotent import
+
+    @app.get("/demo/primewave", include_in_schema=False)
+    async def _redirect_to_primewave_slash() -> RedirectResponse:
+        return RedirectResponse(url="/demo/primewave/", status_code=308)
+
+    app.mount(
+        "/demo/primewave",
+        _HttpOnlyStaticFiles(directory=str(DEMOS_DIR / "primewave"), html=True),
+        name="demo-primewave-spa",
     )
 
 

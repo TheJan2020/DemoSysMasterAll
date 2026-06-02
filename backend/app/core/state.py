@@ -158,6 +158,43 @@ class State:
         )
         self.cda_max_call_s: int = 900
         self.cda_interruption_enabled: bool = True
+        # ---- Primewave Main Demo Live Agent (pwa_*) -------------------------
+        # AudioSocket service for the Primewave platform showcase demo (Nora,
+        # the Primewave intake / sales agent). Default port 8094 — keeps
+        # clear of clinic (8092), restaurant (8093) and the admin SLA/SLR
+        # (8090/8091). Persona + KB live at data/demos/primewave/persona.txt
+        # and .../kb.txt; the SPA's Settings page publishes there via
+        # /api/demo/primewave/agent/*.
+        self.pwa_enabled: bool = False
+        self.pwa_bind_host: str = "0.0.0.0"
+        self.pwa_bind_port: int = 8094
+        self.pwa_voice: str = "Aoede"
+        self.pwa_greeting: str = (
+            "السلام عليكم، شركة برايم ويف. أنا نورة. كيف أقدر أخدمك اليوم؟"
+        )
+        self.pwa_max_call_s: int = 900
+        self.pwa_interruption_enabled: bool = True
+        # WaSender — outbound + webhook for the Primewave WhatsApp page.
+        # Same shape as the restaurant demo's escalation.json fields, but
+        # held in shared state here because primewave doesn't otherwise
+        # carry an escalation.json file.
+        self.pwa_wasender_api_key:        str = ""
+        self.pwa_wasender_personal_token: str = ""
+        self.pwa_wasender_session_id:     str = ""
+        # Auto-respond WhatsApp bot: when true, every inbound message
+        # to /whatsapp/webhook gets dispatched to whatsapp_bot.py for a
+        # Gemini-driven reply (same persona + KB + tools as the Live
+        # Agent). Toggled from the WhatsApp page header.
+        self.pwa_whatsapp_bot_enabled:    bool = False
+        # Supervisor escalation — AMI dial + ChanSpy when the agent
+        # calls flag_for_supervisor. Configured in Settings; AMI host
+        # is usually the PBX's LAN IP (192.168.100.45 in our setup).
+        self.pwa_supervisor_extension:    str = ""
+        self.pwa_ami_host:                str = ""
+        self.pwa_ami_port:                int = 5038
+        self.pwa_ami_username:            str = ""
+        self.pwa_ami_secret:              str = ""
+        self.pwa_supervisor_caller_id:    str = "Supervisor"
         # When true, the agent stops speaking the moment the caller starts
         # (Gemini VAD with HIGH start-of-speech sensitivity, plus we drop the
         # output audio queue). When false, the agent finishes its turn before
@@ -270,6 +307,26 @@ class State:
             self.cda_max_call_s    = int(data.get("cda_max_call_s") or 900)
             if "cda_interruption_enabled" in data:
                 self.cda_interruption_enabled = bool(data.get("cda_interruption_enabled"))
+            # Primewave Main Demo Live Agent (pwa_*)
+            self.pwa_enabled       = bool(data.get("pwa_enabled"))
+            self.pwa_bind_host     = data.get("pwa_bind_host") or "0.0.0.0"
+            self.pwa_bind_port     = int(data.get("pwa_bind_port") or 8094)
+            self.pwa_voice         = data.get("pwa_voice") or "Aoede"
+            self.pwa_greeting      = data.get("pwa_greeting") if data.get("pwa_greeting") is not None else self.pwa_greeting
+            self.pwa_max_call_s    = int(data.get("pwa_max_call_s") or 900)
+            if "pwa_interruption_enabled" in data:
+                self.pwa_interruption_enabled = bool(data.get("pwa_interruption_enabled"))
+            self.pwa_wasender_api_key        = data.get("pwa_wasender_api_key") or ""
+            self.pwa_wasender_personal_token = data.get("pwa_wasender_personal_token") or ""
+            self.pwa_wasender_session_id     = data.get("pwa_wasender_session_id") or ""
+            if "pwa_whatsapp_bot_enabled" in data:
+                self.pwa_whatsapp_bot_enabled = bool(data.get("pwa_whatsapp_bot_enabled"))
+            self.pwa_supervisor_extension = data.get("pwa_supervisor_extension") or ""
+            self.pwa_ami_host             = data.get("pwa_ami_host") or ""
+            self.pwa_ami_port             = int(data.get("pwa_ami_port") or 5038)
+            self.pwa_ami_username         = data.get("pwa_ami_username") or ""
+            self.pwa_ami_secret           = data.get("pwa_ami_secret") or ""
+            self.pwa_supervisor_caller_id = data.get("pwa_supervisor_caller_id") or "Supervisor"
             kb = data.get("slr_knowledge")
             if isinstance(kb, str):
                 self.slr_knowledge = kb
@@ -340,6 +397,23 @@ class State:
                         "cda_greeting":         self.cda_greeting,
                         "cda_max_call_s":       self.cda_max_call_s,
                         "cda_interruption_enabled": self.cda_interruption_enabled,
+                        "pwa_enabled":          self.pwa_enabled,
+                        "pwa_bind_host":        self.pwa_bind_host,
+                        "pwa_bind_port":        self.pwa_bind_port,
+                        "pwa_voice":            self.pwa_voice,
+                        "pwa_greeting":         self.pwa_greeting,
+                        "pwa_max_call_s":       self.pwa_max_call_s,
+                        "pwa_interruption_enabled": self.pwa_interruption_enabled,
+                        "pwa_wasender_api_key":        self.pwa_wasender_api_key,
+                        "pwa_wasender_personal_token": self.pwa_wasender_personal_token,
+                        "pwa_wasender_session_id":     self.pwa_wasender_session_id,
+                        "pwa_whatsapp_bot_enabled":    self.pwa_whatsapp_bot_enabled,
+                        "pwa_supervisor_extension":    self.pwa_supervisor_extension,
+                        "pwa_ami_host":                self.pwa_ami_host,
+                        "pwa_ami_port":                self.pwa_ami_port,
+                        "pwa_ami_username":            self.pwa_ami_username,
+                        "pwa_ami_secret":              self.pwa_ami_secret,
+                        "pwa_supervisor_caller_id":    self.pwa_supervisor_caller_id,
                         "slr_knowledge":        self.slr_knowledge,
                         "slr_info_schema":      self.slr_info_schema,
                     },

@@ -54,12 +54,40 @@ sync:
         - "*.pyc"
 
         # Per-machine state — NEVER overwrite the VM's copies with
-        # local-dev credentials / call recordings / inboxes.
+        # local-dev credentials / call recordings / inboxes / PII.
+        # These directories EXIST on the VM as the operator uses each
+        # demo, but typically do NOT exist on the developer Mac. Without
+        # explicit ignores, one-way-replica would delete the VM-side
+        # data on the next sync tick.
         - "/data/state.json"
         - "/data/demos/*/calls"
         - "/data/demos/*/snapshot.json"
         - "/data/demos/*/whatsapp_inbox.json"
         - "/data/demos/*/escalation.json"
+        # AI-Center Playground ledger + thumbnails (operator Q+A, PII).
+        - "/data/demos/*/ai_center"
+        - "/data/demos/*/ai_center.json"
+        - "/data/demos/*/ai_center.json.tmp"
+        # Primewave contacts ledger (operator-managed leads, PII).
+        - "/data/demos/*/contacts.json"
+        # Primewave WhatsApp inbox (received caller messages, PII).
+        - "/data/demos/*/whatsapp_inbox.json"
+        # WhatsApp outgoing media uploads (operator-supplied files, PII).
+        - "/data/demos/*/whatsapp_outgoing"
+        # WhatsApp incoming media decrypt cache (PII).
+        - "/data/demos/*/whatsapp_media"
+        # WhatsApp voice-note transcript cache (PII).
+        - "/data/demos/*/whatsapp_transcripts"
+        # WhatsApp auto-responder bot state — per-phone conversation
+        # history + captured customer data (PII).
+        - "/data/demos/*/whatsapp_bot_state.json"
+        # Kitchen AI-History + AI-Rules ledgers (kitchen camera footage).
+        - "/data/demos/*/ai_history"
+        - "/data/demos/*/ai_history.json"
+        - "/data/demos/*/kitchen_rules"
+        - "/data/demos/*/kitchen_rules.json"
+        # Atomic-write temp files Mutagen would chase during a save.
+        - "/data/demos/*/*.json.tmp"
         - "/data/ai_camera"
 
         # macOS noise.

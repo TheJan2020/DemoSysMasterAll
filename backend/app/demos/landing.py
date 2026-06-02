@@ -75,6 +75,12 @@ _HTML = """<!DOCTYPE html>
     <div class="cards">
       <div class="card live">
         <span class="badge">Live</span>
+        <h2>Primewave Main</h2>
+        <p>Showcase hub for the Primewave platform itself.</p>
+        <a href="/demo/primewave/">Open Primewave →</a>
+      </div>
+      <div class="card live">
+        <span class="badge">Live</span>
         <h2>Clinic</h2>
         <p>Front-desk receptionist, appointment intake, follow-ups.</p>
         <a href="/demo/clinic/">Open Clinic →</a>
